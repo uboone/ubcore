@@ -4,19 +4,23 @@ typedef struct _drawopt
   int         color;
 } drawopt;
 
-microboone_geo(TString volName="")
+microboone_overburden_geo(TString volName="volWorld")
 {
   gSystem->Load("libGeom");
   gSystem->Load("libGdml");
 
-  TGeoManager::Import("microboone_nowires.gdml");
+  TGeoManager::Import("microboone_overburden_nowires.gdml");
 
   drawopt optuboone[] = {
-    {"volGround",       kOrange-7},
-    {"volConcreteEnclosure", kGray},
+    {"volGround",       kBlue},
+    {"volConcreteEnclosure", kOrange},
+    {"volConcreteEnclosureBottom", kMagenta},
+    {"volConcreteWallAboveGrade",kGreen},
+    {"volOverburden",       kRed}// taken out of above
     {0, 0}
   };
 
+  gGeoManager->SetVisDensity(7);
 
   for (int i=0;; ++i) {
      if (optuboone[i].volume==0) break;
@@ -30,7 +34,8 @@ microboone_geo(TString volName="")
   }
 
   gGeoManager->GetTopNode();
-  gGeoManager->CheckOverlaps(10e-12);
+  gGeoManager->CheckOverlaps(0.1);
+  //gGeoManager->CheckOverlaps(10e-24);
   gGeoManager->PrintOverlaps();
   gGeoManager->SetMaxVisNodes(70000);
 
@@ -44,9 +49,8 @@ microboone_geo(TString volName="")
   float m_tpc = TPC->Weight();
   TGeoVolume *Cathode = gGeoManager->FindVolumeFast("volCathodePlate");
   float m_cathode = Cathode->Weight();
- // TGeoVolume *Ground = gGeoManager->FindVolumeFast("volGroundPlate");
- // float m_ground = Ground->Weight();
-  float m_ground = 0 ;
+  TGeoVolume *Ground = gGeoManager->FindVolumeFast("volGroundPlate");
+  float m_ground = Ground->Weight();
   TGeoVolume *UVPlane = gGeoManager->FindVolumeFast("volTPCPlane");
   float m_uvplane = UVPlane->Weight();
   TGeoVolume *YPlane = gGeoManager->FindVolumeFast("volTPCPlaneVert");
@@ -60,7 +64,7 @@ microboone_geo(TString volName="")
   //float m_tpc_argon = m_tpc - m_yplane;
   cout << "LAr weight in TPC = " << m_tpc_argon << " kg\n" <<endl;
 
-  TFile *tf = new TFile("microboone.root", "RECREATE");
+  TFile *tf = new TFile("microboone_overburden.root", "RECREATE");
  
   gGeoManager->Write();
 
