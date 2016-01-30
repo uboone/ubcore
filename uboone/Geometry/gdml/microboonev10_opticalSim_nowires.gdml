@@ -3012,10 +3012,10 @@
         <volumeref ref="volInsulation"/>
         <position name="posInsulation" unit="cm" x="0" y="0" z="0"/>
       </physvol> 
-      <physvol>
+<!--      <physvol>
         <volumeref ref="volPlatformSpace"/>
         <position name="posPlatform" unit="cm" x="0" y="292.74" z="0"/>
-      </physvol>
+      </physvol>-->
 <!--      <physvol>
         <volumeref ref="volColumn"/>
         <position name="posColumn1" unit="cm" x="266" y="-121.261" z="0"/>
