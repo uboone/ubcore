@@ -1,34 +1,34 @@
 <!-- Bottom Plane -->
 
 <physvol>
-<volumeref ref="volAl_Layer_Under"/>
+<volumeref ref="volAl_Layer_Under_Side"/>
 <position name="posUnder0" unit="cm" x="0" y="-236.0" z="-116.45"/>
 </physvol>
 
 <physvol>
-<volumeref ref="volAuxDet_Sci_Layer_Under"/>
+<volumeref ref="volAuxDet_Sci_Layer_Under_Side"/>
 <position name="posUnder1" unit="cm" x="0" y="-236.3" z="-116.45"/>
 </physvol>
 
 <physvol>
-<volumeref ref="volAl_Layer_Under"/>
+<volumeref ref="volAl_Layer_Under_Side"/>
 <position name="posUnder2" unit="cm" x="0" y="-237.4" z="-116.45"/>
 </physvol>
 
 <physvol>
-<volumeref ref="volAl_Layer_Under"/>
+<volumeref ref="volAl_Layer_Under_Side"/>
 <position name="posUnder3" unit="cm" x="0" y="-237.6" z="-116.45"/>
 </physvol>
 
 <physvol>
-<volumeref ref="volAuxDet_Sci_Layer_Under"/>
+<volumeref ref="volAuxDet_Sci_Layer_Under_Side"/>
 <position name="posUnder4" unit="cm" x="0" y="-237.9" z="-116.45"/>
 </physvol>
 
 <physvol>
-<volumeref ref="volAl_Layer_Under"/>
+<volumeref ref="volAl_Layer_Under_Side"/>
 <position name="posUnder5" unit="cm" x="0" y="-239.0" z="-116.45"/>
-</physvol> -->
+</physvol> 
 
 
 <!-- Bottom Plane -->
@@ -110,34 +110,33 @@
 
 <physvol>
 <volumeref ref="volAl_Layer_Top"/>
-<position name="posTop0" unit="cm" x="0" y="657.20" z="0"/>
+<position name="posTop0" unit="cm" x="-90.17" y="657.20" z="0"/>
 </physvol>
 
 <physvol>
 <volumeref ref="volAuxDet_Sci_Layer_Top"/>
-<position name="posTop1" unit="cm" x="0" y="657.50" z="0"/>
+<position name="posTop1" unit="cm" x="-90.17" y="657.50" z="0"/>
 </physvol>
 
 <physvol>
 <volumeref ref="volAl_Layer_Top"/>
-<position name="posTop2" unit="cm" x="0" y="658.6" z="0"/>
+<position name="posTop2" unit="cm" x="-90.17" y="658.6" z="0"/>
 </physvol>
 
 <physvol>
 <volumeref ref="volAl_Layer_Top"/>
-<position name="posTop3" unit="cm" x="0" y="658.8" z="0"/>
+<position name="posTop3" unit="cm" x="-90.17" y="658.8" z="0"/>
 </physvol>
 
 <physvol>
 <volumeref ref="volAuxDet_Sci_Layer_Top"/>
-<position name="posTop4" unit="cm" x="0" y="659.1" z="0"/>
+<position name="posTop4" unit="cm" x="-90.17" y="659.1" z="0"/>
 </physvol>
 
 <physvol>
 <volumeref ref="volAl_Layer_Top"/>
-<position name="posTop5" unit="cm" x="0" y="660.2" z="0"/>
+<position name="posTop5" unit="cm" x="-90.17" y="660.2" z="0"/>
 </physvol>
-
 
 
 <!-- Top -->
