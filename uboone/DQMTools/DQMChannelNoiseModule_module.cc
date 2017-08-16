@@ -33,6 +33,7 @@ namespace dqm {
 const uint32_t num_channels = 8256;
 
 
+
 class dqm::DQMChannelNoiseModule : public art::EDAnalyzer {
 public:
   explicit DQMChannelNoiseModule(fhicl::ParameterSet const & p);
