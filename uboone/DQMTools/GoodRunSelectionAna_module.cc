@@ -640,7 +640,7 @@
 	_f_mean_flashzcenterPE0_20_simpleFlashBeam    = Nflashz0_20_simpleFlashBeam[i]/Nentries[i];
 	_f_rms_flashzcenterPE0_20_simpleFlashBeam    = Nflashz0_20RMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_flashPE_simpleFlashBeam               = Nflashpe_simpleFlashBeam[i]/Nentries[i];
-	_f_mean_flashPE_simpleFlashBeam               = NflashpeRMS_simpleFlashBeam[i]/Nentries[i];
+	_f_rms_flashPE_simpleFlashBeam               = NflashpeRMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_nvrtx_pmtrack                         = Nvtx_pmtrk[i]/Nentries[i];
 	_f_rms_nvrtx_pmtrack                          = NvtxRMS_pmtrk[i]/Nentries[i];
 	_f_mean_nvrtx_pandoraCosmic                   = Nvtx_panCos[i]/Nentries[i];
