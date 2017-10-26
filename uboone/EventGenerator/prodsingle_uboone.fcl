@@ -16,7 +16,7 @@ services:
   RandomNumberGenerator: {} #ART native random number generator
   @table::microboone_full_services
 }
-services.BackTracker: @local::microboone_backtracker
+services.BackTrackerService: @local::microboone_backtracker
 
 
 #Start each new event with an empty event.
