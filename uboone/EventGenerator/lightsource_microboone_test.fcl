@@ -21,7 +21,7 @@ services:
   @table::microboone_full_services
 #  @table::microboone_services
 }
-#services.BackTracker: @local::microboone_backtracker
+#services.BackTrackerService: @local::microboone_backtracker
 services.OpDigiProperties: @local::microboone_opdigiproperties
 
 #Start each new event with an empty event.
