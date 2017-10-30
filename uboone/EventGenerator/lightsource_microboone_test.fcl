@@ -22,6 +22,7 @@ services:
 #  @table::microboone_services
 }
 #services.BackTrackerService: @local::microboone_backtrackerservice
+  service.ParticleInventoryService: @local::standard_particleinventoryservice
 services.OpDigiProperties: @local::microboone_opdigiproperties
 
 #Start each new event with an empty event.
