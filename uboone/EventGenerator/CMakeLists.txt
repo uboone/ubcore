@@ -4,7 +4,7 @@ add_subdirectory(GENIE)
 
 art_make( BASENAME_ONLY
           MODULE_LIBRARIES 	  		   
-		   larcore_Geometry
+		   larcorealg_Geometry
 		   uboone_Geometry
 		   larcore_Geometry_Geometry_service
 		   larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
@@ -23,11 +23,9 @@ art_make( BASENAME_ONLY
 		   ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
                    ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
 		   art_Persistency_Common 
-		   canvas_Persistency_Common
 		   art_Persistency_Provenance 
-		   canvas_Persistency_Provenance
 		   art_Utilities 
-		   canvas_Utilities
+		   canvas
 		   ${MF_MESSAGELOGGER}
 		   ${MF_UTILITIES}
 		   ${FHICLCPP}
