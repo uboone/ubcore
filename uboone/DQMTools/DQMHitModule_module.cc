@@ -194,6 +194,8 @@ void dqm::DQMHitModule::analyze(art::Event const & e)
   //get the wire data
   art::Handle< std::vector<recob::Wire> > wireHandle;
   e.getByLabel(fWireModuleLabel,wireHandle);
+  if(!wireHandle.isValid())
+    return;
   std::vector<recob::Wire> const& wireVector(*wireHandle);
 
   //get the flash data
