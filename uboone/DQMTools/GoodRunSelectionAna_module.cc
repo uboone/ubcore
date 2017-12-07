@@ -656,7 +656,7 @@
    //-----------------------------------------------------------------------
    void GoodRunSelectionAna::beginRun(const art::Run& run)
   {
- _run                               = new TH1F("_run","run number",10000,0,10000);  
+ _run                               = new TH1F("_run","run number",20000,0,20000);  
  _ntrack_pmtrack                    = new TH1F("_ntrack_pmtrack","Number of tracks (pmtrack) per event",100,0,100);
  _ntrack_pandoraNu                  = new TH1F("_ntrack_pandoraNu","Number of tracks (pandoraNu) per event",100,0,100);
  _ntrack_pandoraNuPMA               = new TH1F("_ntrack_pandoraNuPMA","Number of tracks (pandoraNu) per event",100,0,100);
