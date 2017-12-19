@@ -46,14 +46,10 @@
 #include "lardataobj/RecoBase/PFParticle.h"
 #include "lardataobj/RecoBase/Wire.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "larreco/RecoAlg/TrackMomentumCalculator.h"
 #include "uboone/RawData/utils/ubdaqSoftwareTriggerData.h"
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 #include "lardataobj/AnalysisBase/FlashMatch.h"
 #include "lardataobj/AnalysisBase/T0.h"
-
-
-#include "larpandora/LArPandoraInterface/LArPandoraHelper.h"
 
 #include <cstddef> // std::ptrdiff_t
 #include <cstring> // std::memcpy()
@@ -608,11 +604,11 @@
 	_f_mean_flashzcenter_opFlashSat               = Nflashz_opFlashSat[i]/Nentries[i];
 	_f_rms_flashzcenter_opFlashSat                = NflashzRMS_opFlashSat[i]/Nentries[i];
 	_f_mean_flashzcenterPE50_opFlashSat           = Nflashz50_opFlashSat[i]/Nentries[i];
-	_f_mean_flashzcenterPE50_opFlashSat           = Nflashz50RMS_opFlashSat[i]/Nentries[i];
+	_f_rms_flashzcenterPE50_opFlashSat           = Nflashz50RMS_opFlashSat[i]/Nentries[i];
 	_f_mean_flashzcenterPE20_opFlashSat           = Nflashz20_opFlashSat[i]/Nentries[i];
-	_f_mean_flashzcenterPE20_opFlashSat           = Nflashz20RMS_opFlashSat[i]/Nentries[i];
+	_f_rms_flashzcenterPE20_opFlashSat           = Nflashz20RMS_opFlashSat[i]/Nentries[i];
 	_f_mean_flashzcenterPE0_20_opFlashSat         = Nflashz0_20_opFlashSat[i]/Nentries[i];
-	_f_mean_flashzcenterPE0_20_opFlashSat         = Nflashz0_20RMS_opFlashSat[i]/Nentries[i];
+	_f_rms_flashzcenterPE0_20_opFlashSat         = Nflashz0_20RMS_opFlashSat[i]/Nentries[i];
 	_f_mean_flashPE_opFlashSat                    = Nflashpe_opFlashSat[i]/Nentries[i];
 	_f_rms_flashPE_opFlashSat                     = NflashpeRMS_opFlashSat[i]/Nentries[i];
 	_f_mean_nflashTot_simpleFlashBeam             = Nflash_simpleFlashBeam[i]/Nentries[i];
@@ -634,13 +630,13 @@
 	_f_mean_flashzcenter_simpleFlashBeam          = Nflashz_simpleFlashBeam[i]/Nentries[i];
 	_f_rms_flashzcenter_simpleFlashBeam           = NflashzRMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_flashzcenterPE50_simpleFlashBeam      = Nflashz50_simpleFlashBeam[i]/Nentries[i];
-	_f_mean_flashzcenterPE50_simpleFlashBeam      = Nflashz50RMS_simpleFlashBeam[i]/Nentries[i];
+	_f_rms_flashzcenterPE50_simpleFlashBeam      = Nflashz50RMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_flashzcenterPE20_simpleFlashBeam      = Nflashz20_simpleFlashBeam[i]/Nentries[i];
-	_f_mean_flashzcenterPE20_simpleFlashBeam      = Nflashz20RMS_simpleFlashBeam[i]/Nentries[i];
+	_f_rms_flashzcenterPE20_simpleFlashBeam      = Nflashz20RMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_flashzcenterPE0_20_simpleFlashBeam    = Nflashz0_20_simpleFlashBeam[i]/Nentries[i];
-	_f_mean_flashzcenterPE0_20_simpleFlashBeam    = Nflashz0_20RMS_simpleFlashBeam[i]/Nentries[i];
+	_f_rms_flashzcenterPE0_20_simpleFlashBeam    = Nflashz0_20RMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_flashPE_simpleFlashBeam               = Nflashpe_simpleFlashBeam[i]/Nentries[i];
-	_f_mean_flashPE_simpleFlashBeam               = NflashpeRMS_simpleFlashBeam[i]/Nentries[i];
+	_f_rms_flashPE_simpleFlashBeam               = NflashpeRMS_simpleFlashBeam[i]/Nentries[i];
 	_f_mean_nvrtx_pmtrack                         = Nvtx_pmtrk[i]/Nentries[i];
 	_f_rms_nvrtx_pmtrack                          = NvtxRMS_pmtrk[i]/Nentries[i];
 	_f_mean_nvrtx_pandoraCosmic                   = Nvtx_panCos[i]/Nentries[i];
@@ -660,7 +656,7 @@
    //-----------------------------------------------------------------------
    void GoodRunSelectionAna::beginRun(const art::Run& run)
   {
- _run                               = new TH1F("_run","run number",10000,0,10000);  
+ _run                               = new TH1F("_run","run number",20000,0,20000);  
  _ntrack_pmtrack                    = new TH1F("_ntrack_pmtrack","Number of tracks (pmtrack) per event",100,0,100);
  _ntrack_pandoraNu                  = new TH1F("_ntrack_pandoraNu","Number of tracks (pandoraNu) per event",100,0,100);
  _ntrack_pandoraNuPMA               = new TH1F("_ntrack_pandoraNuPMA","Number of tracks (pandoraNu) per event",100,0,100);

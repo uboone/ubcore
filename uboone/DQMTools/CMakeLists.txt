@@ -16,7 +16,8 @@ art_make(
           MODULE_LIBRARIES
      uboone_DQMTools
 	    larreco_HitFinder
-                        larsim_MCCheater_BackTracker_service
+                        larsim_MCCheater_ParticleInventoryService_service
+                        larsim_MCCheater_BackTrackerService_service
 			larreco_RecoAlg
                         lardataobj_RecoBase
 			lardataobj_MCBase
