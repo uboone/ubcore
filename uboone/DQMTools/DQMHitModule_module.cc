@@ -113,9 +113,9 @@ private:
   TH1F *HitChargeSkew_Plane2;
 
 
-  TH1F *NFlashes;
+  //TH1F *NFlashes;
 
-  TH1F *MeanFlashLight;
+  //TH1F *MeanFlashLight;
 
   DQMHitAlg analysisAlg;
 
