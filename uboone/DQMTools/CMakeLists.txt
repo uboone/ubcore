@@ -1,5 +1,6 @@
 
-art_make( 
+art_make( BASENAME_ONLY
+          LIBRARY_NAME uboone_DQMTools
           LIB_LIBRARIES
 			lardataobj_RawData
 			lardataobj_RecoBase 
