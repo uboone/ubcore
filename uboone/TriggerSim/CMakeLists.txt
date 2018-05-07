@@ -1,6 +1,6 @@
 
 art_make( BASENAME_ONLY
-	  LIBRARY_NAME  uboonecode_uboone_TriggerSim
+	  LIBRARY_NAME  uboonecore_TriggerSim
 	  LIB_LIBRARIES lardataobj_RawData
 			lardata_Utilities
                         ${ART_FRAMEWORK_CORE}
@@ -15,11 +15,11 @@ art_make( BASENAME_ONLY
                         ${Boost_SYSTEM_LIBRARY}
                         ${ROOT_BASIC_LIB_LIST}
 	  MODULE_LIBRARIES
-			larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+			nutools_ParticleNavigation lardataobj_Simulation
 			lardataobj_RawData
 			lardataobj_OpticalDetectorData
 			lardata_Utilities
-			uboonecode_uboone_TriggerSim
+			uboonecore_TriggerSim
                         ${ART_FRAMEWORK_CORE}
                         ${ART_FRAMEWORK_PRINCIPAL}
                         ${ART_FRAMEWORK_SERVICES_REGISTRY}
