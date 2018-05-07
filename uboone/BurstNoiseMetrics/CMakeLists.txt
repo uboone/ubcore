@@ -13,12 +13,7 @@ art_make(
 			larcore_Geometry_Geometry_service
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase	
-			lardata_RecoObjects larreco_Deprecated  
-			larreco_RecoAlg
 			lardata_Utilities
-			larevt_Filters
-			nusimdata_SimulationBase
-			${LARRECO_LIB}
 			${LARDATA_LIB}
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}

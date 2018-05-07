@@ -5,9 +5,9 @@ add_subdirectory(GENIE)
 art_make( BASENAME_ONLY
           MODULE_LIBRARIES 	  		   
 		   larcorealg_Geometry
-		   uboone_Geometry
+		   uboonecore_Geometry
 		   larcore_Geometry_Geometry_service
-		   larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+		   nutools_ParticleNavigation lardataobj_Simulation
 		   nusimdata_SimulationBase
 		   lardata_Utilities
 		   lardataobj_MCBase
