@@ -1,6 +1,6 @@
 
 art_make( BASENAME_ONLY
-          LIBRARY_NAME uboonecore_DQMTools
+          LIBRARY_NAME uboonecode_DQMTools
           LIB_LIBRARIES
 			lardataobj_RawData
 			lardataobj_RecoBase 
@@ -15,7 +15,7 @@ art_make( BASENAME_ONLY
                         ${ROOT_BASIC_LIB_LIST}
 			${Boost_SYSTEM_LIBRARY}
           MODULE_LIBRARIES
-     uboonecore_DQMTools
+			uboonecode_DQMTools
                         lardataobj_RecoBase
 			lardataobj_MCBase
                         larcorealg_Geometry
