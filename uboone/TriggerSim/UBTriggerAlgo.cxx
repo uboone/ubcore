@@ -12,7 +12,7 @@
 #include <TString.h>
 #include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
-#include "ubooneobj/UBTriggerTypes.h"
+#include "ubooneobj/Trigger/UBTriggerTypes.h"
 #include "UBTriggerAlgo.h"
 
 namespace trigger{
