@@ -23,7 +23,7 @@
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "lardataobj/RawData/TriggerData.h"
 #include "lardataobj/RawData/OpDetWaveform.h"
-#include "ubooneobj/UBTriggerTypes.h"
+#include "ubooneobj/Trigger/UBTriggerTypes.h"
 
 #include "TH1F.h"
 
