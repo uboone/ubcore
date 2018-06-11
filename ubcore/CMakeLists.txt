@@ -1,0 +1,7 @@
+add_subdirectory(BurstNoiseMetrics)
+add_subdirectory(DLFilters)
+add_subdirectory(DQMTools)
+add_subdirectory(EventGenerator)
+add_subdirectory(Geometry)
+add_subdirectory(QuietEventFilter)
+add_subdirectory(TriggerSim)
