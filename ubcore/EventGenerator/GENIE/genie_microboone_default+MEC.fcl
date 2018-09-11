@@ -17,7 +17,7 @@ microboone_genie_hist.BeamRadius:    4.
 
 microboone_genie_simple:                   @local::microboone_genie
 microboone_genie_simple.FluxType:          "simple_flux"
-microboone_genie_simple.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_07.11.2017_470/"
+microboone_genie_simple.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.05.2018_463/"
 microboone_genie_simple.FluxFiles:         ["converted_beammc_*.root"]
 microboone_genie_simple.EventsPerSpill:    0
 microboone_genie_simple.POTPerSpill:       5e12
@@ -56,7 +56,7 @@ microboone_genie_uniform_flux_cc.GeomScan:      "flux: 10000 1.1"
 
 microboone_genie_simple_dirt:                   @local::microboone_genie
 microboone_genie_simple_dirt.FluxType:          "simple_flux"
-microboone_genie_simple_dirt.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_07.11.2017_470_dirt/"
+microboone_genie_simple_dirt.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.05.2018_463_dirt/"
 microboone_genie_simple_dirt.FluxFiles:         ["converted_beammc_dirt_*.root"]
 microboone_genie_simple_dirt.EventsPerSpill:    0
 microboone_genie_simple_dirt.POTPerSpill:       5e12
