@@ -174,7 +174,9 @@ namespace hsngen
     tTree->Branch("InvariantMass",&InvariantMass);
 
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine("gen");
+    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
+                                                     moduleDescription().moduleLabel(),
+                                                     "gen");
     CompressSettings(gSett);
     FillModel(gEngine, gChan, gModelParams, gSett);
     gFlux = FluxFile(fFluxFile, fSterileMass);
@@ -232,7 +234,9 @@ namespace hsngen
     double neutrinoTime = -1;
     Observables obs;
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine("gen");
+    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
+                                                     moduleDescription().moduleLabel(),
+                                                     "gen");
 
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
     {
