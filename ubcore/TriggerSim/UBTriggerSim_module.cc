@@ -83,11 +83,11 @@ namespace trigger {
     std::string fOpticalFEMMod;
 
     //-- ElecClock for user-defined trigger times --//
-    std::vector<detinfo::ElecClock> fTriggerCalib; ///< user-defined calibration trigger (per-event)
-    std::vector<detinfo::ElecClock> fTriggerPC;    ///< user-defined PC trigger (per-event)
-    std::vector<detinfo::ElecClock> fTriggerExt;   ///< user-defined Ext trigger (per-event)
-    std::vector<detinfo::ElecClock> fTriggerBNB;   ///< user-defined BNB trigger (per-event)
-    std::vector<detinfo::ElecClock> fTriggerNuMI;  ///< user-defined NuMI trigger (per-event)
+    std::vector<double> fTriggerCalib; ///< user-defined calibration trigger in G4 ns (per-event)
+    std::vector<double> fTriggerPC;    ///< user-defined PC trigger in G4 ns (per-event)
+    std::vector<double> fTriggerExt;   ///< user-defined Ext trigger in G4 ns (per-event)
+    std::vector<double> fTriggerBNB;   ///< user-defined BNB trigger in G4 ns (per-event)
+    std::vector<double> fTriggerNuMI;  ///< user-defined NuMI trigger in G4 ns (per-event)
 
   };
 
@@ -132,69 +132,14 @@ namespace trigger {
 			 pset.get< unsigned short        > ("NuMICosmicEnd"   ) );
 
     // Get user-defined trigger timings
-    std::vector<double> trig_calib ( pset.get< std::vector<double> > ("CalibTrigger",
-								      std::vector<double>()) 
-				     );
-    std::vector<double> trig_ext   ( pset.get< std::vector<double> > ("ExtTrigger",
-								      std::vector<double>()) 
-				     );
-    std::vector<double> trig_pc    ( pset.get< std::vector<double> > ("PCTrigger",
-								      std::vector<double>()) 
-				     );
-    std::vector<double> trig_bnb   ( pset.get< std::vector<double> > ("BNBTrigger",
-								      std::vector<double>()) 
-				     );
-    std::vector<double> trig_numi  ( pset.get< std::vector<double> > ("NuMITrigger",
-								      std::vector<double>()) 
-				     );
+    fTriggerCalib = pset.get< std::vector<double> > ("CalibTrigger",std::vector<double>());
+    fTriggerExt   = pset.get< std::vector<double> > ("ExtTrigger",std::vector<double>());
+    fTriggerPC    = pset.get< std::vector<double> > ("PCTrigger",std::vector<double>());
+    fTriggerBNB   = pset.get< std::vector<double> > ("BNBTrigger",std::vector<double>());
+    fTriggerNuMI  = pset.get< std::vector<double> > ("NuMITrigger",std::vector<double>());
 
     fBNBFireTime  = pset.get<double>("BNBFireTime");
     fNuMIFireTime = pset.get<double>("NuMIFireTime");
-
-    // Store user-defined trigger timings to the attributes
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    auto clock = ts->OpticalClock();
-
-    fTriggerCalib.clear();
-    fTriggerExt.clear();
-    fTriggerPC.clear();
-    fTriggerBNB.clear();
-    fTriggerNuMI.clear();
-
-    fTriggerCalib.reserve(trig_calib.size());
-    for(auto const t : trig_calib) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerCalib.push_back(clock);
-    }
-
-    fTriggerExt.reserve(trig_ext.size());
-    for(auto const t : trig_ext) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerExt.push_back(clock);
-    }
-
-    fTriggerPC.reserve(trig_pc.size());
-    for(auto const t : trig_pc) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerPC.push_back(clock);
-    }
-
-    fTriggerBNB.reserve(trig_bnb.size());
-    for(auto const t : trig_bnb) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerBNB.push_back(clock);
-    }
-
-    fTriggerNuMI.reserve(trig_numi.size());
-    for(auto const t : trig_numi) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerNuMI.push_back(clock);
-    }
 
     // Produces raw::Trigger data product
     produces< std::vector<raw::Trigger> >();
@@ -215,12 +160,36 @@ namespace trigger {
     fAlg.ClearInputTriggers();
     auto clock = ts->OpticalClock();
 
-    // Register user-defined triggers
-    for( auto const &t : fTriggerCalib ) fAlg.AddTriggerCalib (t);
-    for( auto const &t : fTriggerExt   ) fAlg.AddTriggerExt   (t);
-    for( auto const &t : fTriggerPC    ) fAlg.AddTriggerPC    (t);
-    for( auto const &t : fTriggerBNB   ) fAlg.AddTriggerBNB   (t);
-    for( auto const &t : fTriggerNuMI  ) fAlg.AddTriggerNuMI  (t);
+    // Register triggers
+    for(auto const t : fTriggerCalib) {
+      auto const elec_time = ts->G4ToElecTime(t);
+      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
+      fAlg.AddTriggerCalib(clock);
+    }
+
+    for(auto const t : fTriggerExt) {
+      auto const elec_time = ts->G4ToElecTime(t);
+      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
+      fAlg.AddTriggerExt(clock);
+    }
+
+    for(auto const t : fTriggerPC) {
+      auto const elec_time = ts->G4ToElecTime(t);
+      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
+      fAlg.AddTriggerPC(clock);
+    }
+
+    for(auto const t : fTriggerBNB) {
+      auto const elec_time = ts->G4ToElecTime(t);
+      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
+      fAlg.AddTriggerBNB(clock);
+    }
+
+    for(auto const t : fTriggerNuMI) {
+      auto const elec_time = ts->G4ToElecTime(t);
+      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
+      fAlg.AddTriggerNuMI(clock);
+    }
 
     // Register input BNB/NuMI beam trigger
     for(auto const &name : fBeamModName) {
