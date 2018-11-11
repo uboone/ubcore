@@ -12,9 +12,9 @@ microboone_geo:
  SurfaceY:        6.9e2                           #in cm, vertical distance to the surface
  # NOTE: When changing these fields, the corresponding fields in microboone_crt_geo.fcl
  #       will also need to be changed.
- Name:            "microboonev11"
- GDML:            "microboonev11.gdml"
- ROOT:            "microboonev11.gdml"
+ Name:            "microboonev12"
+ GDML:            "microboonev12.gdml"
+ ROOT:            "microboonev12.gdml"
  DisableWiresInG4: true                           # Whether to use wirefree geometry in LArG4
                                                   #  As per Brians request, wire free file is specified by
                                                   #  [GDMLFileName]_nowires.gdml
