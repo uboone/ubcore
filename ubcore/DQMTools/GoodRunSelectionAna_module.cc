@@ -843,18 +843,7 @@
   // Length of reconstructed track, trajectory by trajectory.
   double GoodRunSelectionAna::length(const recob::Track& track)
   {
-    double result = 0.;
-    TVector3 disp = track.LocationAtPoint(0);
-    int n = track.NumberTrajectoryPoints();
-
-    for(int i = 1; i < n; ++i) 
-    {
-      const TVector3& pos = track.LocationAtPoint(i);
-      disp -= pos;
-      result += disp.Mag();
-      disp = pos;
-    }
-    return result;
+    return track.Length();
   } 
  //========================================================================	
 
