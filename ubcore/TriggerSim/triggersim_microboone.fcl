@@ -69,7 +69,7 @@ ubtrigger_dark_bnb.Mask:  [0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x10]
 # NUMI Beam trigger w/o optical simulation
 #
 ubtrigger_dark_numi:       @local::ubtrigger_standard
-ubtrigger_dark_numi.NUMITrigger: [-54.8675]
+ubtrigger_dark_numi.NuMITrigger: [-54.8675]
 ubtrigger_dark_numi.Mask:  [0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x20]
 
 trigger_timing_standard:
