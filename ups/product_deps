@@ -33,7 +33,7 @@ table_fragment_end
 product                 version
 ubobj                   v08_00_00_02
 lardata                 v08_00_00
-cetbuildtools	        v7_06_04	-	only_for_build
+cetbuildtools	        v7_06_03	-	only_for_build
 end_product_list
 
 qualifier      ubobj          lardata        
