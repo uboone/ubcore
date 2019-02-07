@@ -140,8 +140,8 @@ namespace hsngen
     fGeneratedTimeWindow(p.get<std::vector<double>>("GeneratedTimeWindow")),
     // create a default random engine; obtain the random seed from NuRandomService,
     // unless overridden in configuration with key "Seed"
-    fEngine{art::ServiceHandle<rndm::NuRandomService>()
-            ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" })}
+    fEngine(art::ServiceHandle<rndm::NuRandomService>()
+            ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
   {
     produces< std::vector<simb::MCTruth> >();
     produces< sumdata::RunData, art::InRun >(); 
