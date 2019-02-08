@@ -13,8 +13,6 @@
 ///
 /// \author  salvatore.porzio@postgrad.manchester.ac.uk
 ////////////////////////////////////////////////////////////////////////
-#ifndef EVGEN_HSNGen_H
-#define EVGEN_HSNGen_H
 
 // ROOT includes
 #include "TRandom3.h"
@@ -82,14 +80,14 @@ namespace hsngen
   {
   public:
     explicit HSNGen(fhicl::ParameterSet const& pset);
-    virtual ~HSNGen();                       
+
+  private:
     void produce(art::Event& evt);  
     void beginJob();
     void endJob();
     void beginRun(art::Run& run);
-    void reconfigure(fhicl::ParameterSet const& p);
     void ClearData();
-  private:
+
     // Fcl settings
     bool fPrintHepEvt;
     double fSterileMass;
@@ -116,6 +114,7 @@ namespace hsngen
     std::vector<int> pdgCode;
     std::vector<double> Vx, Vy, Vz, T, Px, Py, Pz, E, P, Pt;
     double OpeningAngle, InvariantMass;
+    CLHEP::HepRandomEngine& fEngine;
 
     // Auxiliary functions
     void CompressSettings(Settings &set);
@@ -132,25 +131,14 @@ namespace hsngen
     fBoundariesX(p.get<std::vector<double>>("BoundariesX")),
     fBoundariesY(p.get<std::vector<double>>("BoundariesY")),
     fBoundariesZ(p.get<std::vector<double>>("BoundariesZ")),
-    fGeneratedTimeWindow(p.get<std::vector<double>>("GeneratedTimeWindow"))
-  {
+    fGeneratedTimeWindow(p.get<std::vector<double>>("GeneratedTimeWindow")),
     // create a default random engine; obtain the random seed from NuRandomService,
     // unless overridden in configuration with key "Seed"
-    art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
-    this->reconfigure(p);
-
+    fEngine(art::ServiceHandle<rndm::NuRandomService>()
+            ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
+  {
     produces< std::vector<simb::MCTruth> >();
     produces< sumdata::RunData, art::InRun >(); 
-    return;
-  }
-  
-  HSNGen::~HSNGen()
-  {}
-
-  void HSNGen::reconfigure(fhicl::ParameterSet const& p)
-  {
-
-    return;
   }
 
   void HSNGen::beginJob()
@@ -173,31 +161,21 @@ namespace hsngen
     tTree->Branch("OpeningAngle",&OpeningAngle);
     tTree->Branch("InvariantMass",&InvariantMass);
 
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
     CompressSettings(gSett);
-    FillModel(gEngine, gChan, gModelParams, gSett);
+    FillModel(fEngine, gChan, gModelParams, gSett);
     gFlux = FluxFile(fFluxFile, fSterileMass);
     gFakeRunNumber = 0; // Used for the Hepevt format output
-    return;
   }
 
   void HSNGen::endJob()
   {
     delete gChan;
-    return;
   }
-
 
   void HSNGen::beginRun(art::Run& run)
   {
-    // grab the geometry object to see what geometry we are using
     art::ServiceHandle<geo::Geometry> geo;
-    std::unique_ptr<sumdata::RunData> runcol(new sumdata::RunData(geo->DetectorName()));
-    run.put(std::move(runcol));
-    return;
+    run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
   }
 
   void HSNGen::ClearData()
@@ -233,14 +211,9 @@ namespace hsngen
     // Generate observables characterizing the event
     double neutrinoTime = -1;
     Observables obs;
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
-
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
     {
-      GenerateObservables(gEngine, gChan, gFlux, gSett, obs);
+      GenerateObservables(fEngine, gChan, gFlux, gSett, obs);
       neutrinoTime = obs.time;
     }
 
@@ -288,7 +261,6 @@ namespace hsngen
     tTree->Fill();
 
     gFakeRunNumber++;
-    return;
   } // END function produce
 
   // Compress fcl settings to a struct in order to make it easier
@@ -306,11 +278,8 @@ namespace hsngen
     set.boundariesY = fBoundariesY;
     set.boundariesZ = fBoundariesZ;
     set.generatedTimeWindow = fGeneratedTimeWindow;
-    return;
   }
 
   DEFINE_ART_MODULE(HSNGen)
 
 } // END namespace hsngen
-
-#endif
