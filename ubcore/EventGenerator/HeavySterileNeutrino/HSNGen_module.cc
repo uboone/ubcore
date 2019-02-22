@@ -148,7 +148,7 @@ namespace hsngen
   {
     // Create a default random engine; obtain the random seed from NuRandomService,
     // Unless overridden in configuration with key "Seed"
-    art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
+    (void)art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
     this->reconfigure(p);
 
     // Create larsoft products that will be added to the event
