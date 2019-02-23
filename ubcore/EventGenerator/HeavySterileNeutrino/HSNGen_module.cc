@@ -228,7 +228,7 @@ namespace hsngen
     }
 
     // Flat random provider
-    CLHEP::RandFlat flat(gEngine);
+    CLHEP::RandFlat flat(fEngine);
     // Determine the right charge for the decay products based on the fcl settings
     int pdg1 = 0;
     int pdg2 = 0;
