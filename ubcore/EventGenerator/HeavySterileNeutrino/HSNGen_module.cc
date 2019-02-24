@@ -1,21 +1,18 @@
-// +----------------------------------------------------------------------------+
-// |                              HSNGen_module.cc                              |
-// +----------------------------------------------------------------------------+
-// | Generator for heavy sterile neutrinos decays in MicroBooNE on              |
-// | pre-generated HSN fluxes. The code is largely based on InFlight generator, |
-// | an event generator for sterile decays at SBN facilities independent of     |
-// | LArSoft, written by Mark Ross-Lonergan and Peter Ballett.                  |
-// | Credit for the code goes to the two original authors.                      |
-// |                                                                            |
-// | Any malfunction, instability or bug is to be attributed solely to          |
-// | Salvatore Davide Porzio, responsible for re-writing the code in its        |
-// | current form and porting it to the LArSoft code.                           |
-// +----------------------------------------------------------------------------+
-// | Author:  salvatore.porzio@postgrad.manchester.ac.uk                        |
-// +----------------------------------------------------------------------------+
-
-#ifndef EVGEN_HSNGen_H
-#define EVGEN_HSNGen_H
+////////////////////////////////////////////////////////////////////////
+/// \file  HSNGen_module.cc
+/// \brief Generator for heavy sterile neutrinos based on pre-generated HSN fluxes.
+///
+/// Generator for heavy sterile neutrino decays inside the MicroBooNE detector.
+/// The code is largely based on InFlight generator, an event generator for sterile decays at
+/// SBL facilities independent of LArSoft, written by Mark Ross-Lonergan and Peter Ballett.
+/// Credit for the code goes to the two original authors.
+///
+/// Any malfunction, instability or bug is to be attributed solely to
+/// Salvatore Davide Porzio, responsible for re-writing the code in its current form
+/// and porting it to the LArSoft code.
+///
+/// \author  salvatore.porzio@postgrad.manchester.ac.uk
+////////////////////////////////////////////////////////////////////////
 
 // ROOT includes
 #include "TRandom3.h"
@@ -84,14 +81,14 @@ namespace hsngen
   {
   public:
     explicit HSNGen(fhicl::ParameterSet const& pset);
-    virtual ~HSNGen();                       
+
+  private:
     void produce(art::Event& evt);  
     void beginJob();
     void endJob();
     void beginRun(art::Run& run);
-    void reconfigure(fhicl::ParameterSet const& p);
     void ClearData();
-  private:
+
     // Fcl settings
     bool fPrintHepEvt;
     double fSterileMass;
@@ -123,6 +120,7 @@ namespace hsngen
     std::vector<int> pdgCode;
     std::vector<double> Vx, Vy, Vz, T, Px, Py, Pz, E, P, mass, Pt;
     double OpeningAngle, InvariantMass;
+    CLHEP::HepRandomEngine& fEngine;
 
     // Auxiliary functions
     void CompressSettings(Settings &set);
@@ -140,30 +138,13 @@ namespace hsngen
     fBoundariesY(p.get<std::vector<double>>("BoundariesY")),
     fBoundariesZ(p.get<std::vector<double>>("BoundariesZ")),
     fGeneratedTimeWindow(p.get<std::vector<double>>("GeneratedTimeWindow")),
-    fMajoranaNeutrino(p.get<bool>("MajoranaNeutrino")),
-    fNonMajorana_NeutrinoDecays(p.get<bool>("NonMajorana_NeutrinoDecays")),
-    fNonMajorana_AntiNeutrinoDecays(p.get<bool>("NonMajorana_AntiNeutrinoDecays")),
-    fGenerateSingleParticle(p.get<bool>("GenerateSingleParticle")),
-    fSingleParticlePdgCode(p.get<int>("SingleParticlePdgCode"))
+    // create a default random engine; obtain the random seed from NuRandomService,
+    // unless overridden in configuration with key "Seed"
+    fEngine(art::ServiceHandle<rndm::NuRandomService>()
+            ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
   {
-    // Create a default random engine; obtain the random seed from NuRandomService,
-    // Unless overridden in configuration with key "Seed"
-    (void)art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
-    this->reconfigure(p);
-
-    // Create larsoft products that will be added to the event
     produces< std::vector<simb::MCTruth> >();
-    produces< sumdata::RunData, art::InRun >();
-    return;
-  }
-  
-  HSNGen::~HSNGen()
-  {}
-
-  void HSNGen::reconfigure(fhicl::ParameterSet const& p)
-  {
-
-    return;
+    produces< sumdata::RunData, art::InRun >(); 
   }
 
   void HSNGen::beginJob()
@@ -188,31 +169,21 @@ namespace hsngen
     tTree->Branch("OpeningAngle",&OpeningAngle);
     tTree->Branch("InvariantMass",&InvariantMass);
 
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
     CompressSettings(gSett);
-    FillModel(gEngine, gChan, gModelParams, gSett);
+    FillModel(fEngine, gChan, gModelParams, gSett);
     gFlux = FluxFile(fFluxFile, fSterileMass);
     gFakeRunNumber = 0; // Used for the Hepevt format output
-    return;
   }
 
   void HSNGen::endJob()
   {
     delete gChan;
-    return;
   }
-
 
   void HSNGen::beginRun(art::Run& run)
   {
-    // grab the geometry object to see what geometry we are using
     art::ServiceHandle<geo::Geometry> geo;
-    std::unique_ptr<sumdata::RunData> runcol(new sumdata::RunData(geo->DetectorName()));
-    run.put(std::move(runcol));
-    return;
+    run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
   }
 
   void HSNGen::ClearData()
@@ -249,20 +220,15 @@ namespace hsngen
     // Generate observables characterizing the event
     double neutrinoTime = -1;
     Observables obs;
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
 
-    // Keep MC generating event until the neutrino time is in the defined timing window
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
     {
-      GenerateObservables(gEngine, gChan, gFlux, gSett, obs);
+      GenerateObservables(fEngine, gChan, gFlux, gSett, obs);
       neutrinoTime = obs.time;
     }
 
     // Flat random provider
-    CLHEP::RandFlat flat(gEngine);
+    CLHEP::RandFlat flat(fEngine);
     // Determine the right charge for the decay products based on the fcl settings
     int pdg1 = 0;
     int pdg2 = 0;
@@ -361,7 +327,6 @@ namespace hsngen
     tTree->Fill();
 
     gFakeRunNumber++;
-    return;
   } // END function produce
 
   // Compress fcl settings to a struct in order to make it easier
@@ -380,33 +345,8 @@ namespace hsngen
     set.boundariesZ = fBoundariesZ;
     set.generatedTimeWindow = fGeneratedTimeWindow;
 
-    // Make checks to make sure that arguments provided are consistent
-    if (fMajoranaNeutrino)
-    {
-      printf("Generating Majorana neutrino decays.\nFor channels allowing it, the decays will be split 50/50 into neutrino decays and antineutrino decays.\nOptions for non-majorana neutrino will be ignored.\n");
-      set.sterileType = 0;
-    }
-    else
-    {
-      if (fNonMajorana_NeutrinoDecays & fNonMajorana_AntiNeutrinoDecays)
-      {
-        printf("You have selected non-Majorana neutrinos and BOTH type of decays. Are you sure that's what you want to do?\nPlease select either neutrino decays or antineutrino decays.\n");
-        std::exit(1);
-      }
-      if (!fNonMajorana_NeutrinoDecays & !fNonMajorana_AntiNeutrinoDecays)
-      {
-        printf("You have selected non-Majorana neutrinos and NEITHER type of decay. Are you sure that's what you want to do?\nPlease select either neutrino decays or antineutrino decays.\n");
-        std::exit(1);
-      }
-      if (fNonMajorana_NeutrinoDecays) set.sterileType = 1;
-      if (fNonMajorana_AntiNeutrinoDecays) set.sterileType = 2;
-    }
-
-    return;
   }
 
   DEFINE_ART_MODULE(HSNGen)
 
 } // END namespace hsngen
-
-#endif
