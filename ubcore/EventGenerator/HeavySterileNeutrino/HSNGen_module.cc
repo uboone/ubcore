@@ -123,6 +123,7 @@ namespace hsngen
     std::vector<int> pdgCode;
     std::vector<double> Vx, Vy, Vz, T, Px, Py, Pz, E, P, mass, Pt;
     double OpeningAngle, InvariantMass;
+    CLHEP::HepRandomEngine& fEngine;
 
     // Auxiliary functions
     void CompressSettings(Settings &set);
@@ -144,11 +145,15 @@ namespace hsngen
     fNonMajorana_NeutrinoDecays(p.get<bool>("NonMajorana_NeutrinoDecays")),
     fNonMajorana_AntiNeutrinoDecays(p.get<bool>("NonMajorana_AntiNeutrinoDecays")),
     fGenerateSingleParticle(p.get<bool>("GenerateSingleParticle")),
-    fSingleParticlePdgCode(p.get<int>("SingleParticlePdgCode"))
+    fSingleParticlePdgCode(p.get<int>("SingleParticlePdgCode")),
+    // create a default random engine; obtain the random seed from NuRandomService,
+    // unless overridden in configuration with key "Seed"
+    fEngine(art::ServiceHandle<rndm::NuRandomService>()
+      ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
   {
     // Create a default random engine; obtain the random seed from NuRandomService,
     // Unless overridden in configuration with key "Seed"
-    art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
+    //art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" });
     this->reconfigure(p);
 
     // Create larsoft products that will be added to the event
@@ -188,12 +193,12 @@ namespace hsngen
     tTree->Branch("OpeningAngle",&OpeningAngle);
     tTree->Branch("InvariantMass",&InvariantMass);
 
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
+    //art::ServiceHandle<art::RandomNumberGenerator> rng;
+    // CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
+    //                                                moduleDescription().moduleLabel(),
+    //                                                "gen");
     CompressSettings(gSett);
-    FillModel(gEngine, gChan, gModelParams, gSett);
+    FillModel(fEngine, gChan, gModelParams, gSett);
     gFlux = FluxFile(fFluxFile, fSterileMass);
     gFakeRunNumber = 0; // Used for the Hepevt format output
     return;
@@ -257,7 +262,7 @@ namespace hsngen
     // Keep MC generating event until the neutrino time is in the defined timing window
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
     {
-      GenerateObservables(gEngine, gChan, gFlux, gSett, obs);
+      GenerateObservables(fEngine, gChan, gFlux, gSett, obs);
       neutrinoTime = obs.time;
     }
 
