@@ -254,10 +254,10 @@ namespace hsngen
     // Generate observables characterizing the event
     double neutrinoTime = -1;
     Observables obs;
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
-                                                     moduleDescription().moduleLabel(),
-                                                     "gen");
+    //art::ServiceHandle<art::RandomNumberGenerator> rng;
+    //CLHEP::HepRandomEngine &gEngine = rng->getEngine(art::ScheduleID::first(),
+    //                                                moduleDescription().moduleLabel(),
+    //                                                "gen");
 
     // Keep MC generating event until the neutrino time is in the defined timing window
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
