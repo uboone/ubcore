@@ -121,7 +121,7 @@ namespace hsngen
   }; // END class HSNGen
 
   HSNGen::HSNGen(fhicl::ParameterSet const& p)
-  : fPrintHepEvt(p.get<bool>("PrintHepEvt")),
+  : EDProducer{p}, fPrintHepEvt(p.get<bool>("PrintHepEvt")),
     fSterileMass(p.get<double>("SterileMass")),
     fDecayChannel(p.get<double>("DecayChannel")),
     fFluxFile(p.get<std::string>("FluxFile")),

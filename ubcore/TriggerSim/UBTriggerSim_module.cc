@@ -106,7 +106,7 @@ namespace trigger {
 namespace trigger {
 
   //#########################################################
-  UBTriggerSim::UBTriggerSim(fhicl::ParameterSet const& pset)
+  UBTriggerSim::UBTriggerSim(fhicl::ParameterSet const& pset) : EDProducer{pset}
   //#########################################################
   {
     /// Get beam event generator label
