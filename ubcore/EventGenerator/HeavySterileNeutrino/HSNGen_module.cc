@@ -28,8 +28,8 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/TFileService.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileService.h"
+#include "art_root_io/TFileDirectory.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 
@@ -121,7 +121,7 @@ namespace hsngen
   }; // END class HSNGen
 
   HSNGen::HSNGen(fhicl::ParameterSet const& p)
-  : fPrintHepEvt(p.get<bool>("PrintHepEvt")),
+  : EDProducer{p}, fPrintHepEvt(p.get<bool>("PrintHepEvt")),
     fSterileMass(p.get<double>("SterileMass")),
     fDecayChannel(p.get<double>("DecayChannel")),
     fFluxFile(p.get<std::string>("FluxFile")),

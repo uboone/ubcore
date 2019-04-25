@@ -50,7 +50,7 @@ private:
 
 
 GeneratorPositionFilter::GeneratorPositionFilter(fhicl::ParameterSet const & p)
-  :genInputTag(p.get<art::InputTag>("genInputTag")),
+  : EDFilter{p},genInputTag(p.get<art::InputTag>("genInputTag")),
    minx(p.get<double>("minX")),
    maxx(p.get<double>("maxX")),
    miny(p.get<double>("minY")),
