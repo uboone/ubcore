@@ -81,7 +81,7 @@ private:
 };
 
 
-BurstNoiseMetrics::BurstNoiseMetrics(fhicl::ParameterSet const & p)
+BurstNoiseMetrics::BurstNoiseMetrics(fhicl::ParameterSet const & p) : EDProducer{p}
 
 // Initialize member data here.
 {
