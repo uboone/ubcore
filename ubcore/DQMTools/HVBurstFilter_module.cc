@@ -51,7 +51,7 @@ private:
 
 
 dqm::HVBurstFilter::HVBurstFilter(fhicl::ParameterSet const & p)
-// :
+  : EDFilter{p}
 // Initialize member data here.
 {
   this->reconfigure(p);
