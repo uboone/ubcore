@@ -14,7 +14,7 @@ art_make( BASENAME_ONLY
 		   lardataobj_MCBase
 		   larcoreobj_SummaryData
 		   nusimdata_SimulationBase
-		   nutools_RandomUtils_NuRandomService_service
+		   nurandom_RandomUtils_NuRandomService_service
 		   ${LARDATA_LIB}
 		   ${ART_FRAMEWORK_CORE}
 		   ${ART_FRAMEWORK_PRINCIPAL}
