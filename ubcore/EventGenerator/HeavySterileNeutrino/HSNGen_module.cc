@@ -34,7 +34,7 @@
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 
 // art extensions
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 // larsoft includes
 #include "nusimdata/SimulationBase/MCTruth.h"
