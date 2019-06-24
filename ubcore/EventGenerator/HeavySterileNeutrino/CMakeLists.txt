@@ -24,7 +24,6 @@ art_make(
             ${ROOT_BASIC_LIB_LIST}
             ${SQLITE3}
             ${ROOT_EG}
-            ${IFDH}
             )
 
 add_subdirectory(Helpers)

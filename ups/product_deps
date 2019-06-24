@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-parent ubcore v08_22_00
+parent ubcore v08_23_00
 
 defaultqual e17
 
@@ -32,20 +32,22 @@ table_fragment_end
 
 product                 version
 ubobj                   v08_22_00
-lardata                 v08_05_03
+nutools                 v3_00_00
+nurandom		v1_00_00
+lardata                 v08_06_00
 cetbuildtools	        v7_12_01	-	only_for_build
 end_product_list
 
-qualifier      ubobj          lardata        
-c2:debug       c2:debug       c2:debug       
-c2:opt         c2:opt         c2:opt         
-c2:prof        c2:prof        c2:prof        
-e15:debug      e15:debug      e15:debug      
-e15:opt        e15:opt        e15:opt        
-e15:prof       e15:prof       e15:prof       
-e17:debug      e17:debug      e17:debug
-e17:opt        e17:opt        e17:opt
-e17:prof       e17:prof       e17:prof
+qualifier      ubobj          lardata        nutools	    nurandom
+c2:debug       c2:debug       c2:debug	     c2:debug	    c2:debug
+c2:opt         c2:opt         c2:opt         c2:opt	    c2:opt
+c2:prof        c2:prof        c2:prof        c2:prof	    c2:prof
+e15:debug      e15:debug      e15:debug      e15:debug	    e15:debug
+e15:opt        e15:opt        e15:opt        e15:opt	    e15:opt
+e15:prof       e15:prof       e15:prof       e15:prof	    e15:prof
+e17:debug      e17:debug      e17:debug	     e17:debug	    e17:debug
+e17:opt        e17:opt        e17:opt	     e17:opt	    e17:opt
+e17:prof       e17:prof       e17:prof	     e17:prof       e17:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
