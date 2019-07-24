@@ -8,7 +8,7 @@ art_make( BASENAME_ONLY
 		   larcorealg_Geometry
 		   ubcore_Geometry
 		   larcore_Geometry_Geometry_service
-		   nutools_ParticleNavigation lardataobj_Simulation
+		   nug4_ParticleNavigation lardataobj_Simulation
 		   nusimdata_SimulationBase
 		   lardata_Utilities
 		   lardataobj_MCBase
