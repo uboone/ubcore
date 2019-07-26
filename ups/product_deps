@@ -33,21 +33,22 @@ table_fragment_end
 product                 version
 ubobj                   v08_27_00
 nutools                 v3_02_00
+nug4			v1_00_00
 nurandom		v1_00_01
 lardata                 v08_07_01
 cetbuildtools	        v7_12_01	-	only_for_build
 end_product_list
 
-qualifier      ubobj          lardata        nutools	    nurandom
-c2:debug       c2:debug       c2:debug	     c2:debug	    c2:debug
-c2:opt         c2:opt         c2:opt         c2:opt	    c2:opt
-c2:prof        c2:prof        c2:prof        c2:prof	    c2:prof
-e15:debug      e15:debug      e15:debug      e15:debug	    e15:debug
-e15:opt        e15:opt        e15:opt        e15:opt	    e15:opt
-e15:prof       e15:prof       e15:prof       e15:prof	    e15:prof
-e17:debug      e17:debug      e17:debug	     e17:debug	    e17:debug
-e17:opt        e17:opt        e17:opt	     e17:opt	    e17:opt
-e17:prof       e17:prof       e17:prof	     e17:prof       e17:prof
+qualifier      ubobj          lardata        nutools        nug4	    nurandom
+c2:debug       c2:debug       c2:debug	     c2:debug	    c2:debug	    c2:debug
+c2:opt         c2:opt         c2:opt         c2:opt	    c2:opt	    c2:opt
+c2:prof        c2:prof        c2:prof        c2:prof	    c2:prof	    c2:prof
+e15:debug      e15:debug      e15:debug      e15:debug	    e15:debug	    e15:debug
+e15:opt        e15:opt        e15:opt        e15:opt	    e15:opt	    e15:opt
+e15:prof       e15:prof       e15:prof       e15:prof	    e15:prof	    e15:prof
+e17:debug      e17:debug      e17:debug	     e17:debug	    e17:debug	    e17:debug
+e17:opt        e17:opt        e17:opt	     e17:opt	    e17:opt	    e17:opt
+e17:prof       e17:prof       e17:prof	     e17:prof       e17:prof        e17:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
