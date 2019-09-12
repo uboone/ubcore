@@ -33,7 +33,7 @@ table_fragment_end
 product                 version
 ubobj                   v08_30_01
 nutools                 v3_04_01
-nug4			v1_00_03
+nug4			v1_01_00
 nurandom		v1_01_00
 lardata                 v08_07_06
 cetbuildtools	        v7_12_01	-	only_for_build
