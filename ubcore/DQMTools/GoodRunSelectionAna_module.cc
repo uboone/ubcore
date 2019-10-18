@@ -128,7 +128,7 @@
     
     int numevent = 0; //number of event counter
 
-    int Run=-999;
+    unsigned int Run=0;
     static const int n = 20000;
         
     int    Nentries[n]={0};
@@ -656,7 +656,8 @@
    //-----------------------------------------------------------------------
    void GoodRunSelectionAna::beginRun(const art::Run& run)
   {
- _run                               = new TH1F("_run","run number",20000,0,20000);  
+ //_run                               = new TH1F("_run","run number",20000,0,20000);  
+ _run                               = new TH1F("_run","run number",1,1,-1);
  _ntrack_pmtrack                    = new TH1F("_ntrack_pmtrack","Number of tracks (pmtrack) per event",100,0,100);
  _ntrack_pandoraNu                  = new TH1F("_ntrack_pandoraNu","Number of tracks (pandoraNu) per event",100,0,100);
  _ntrack_pandoraNuPMA               = new TH1F("_ntrack_pandoraNuPMA","Number of tracks (pandoraNu) per event",100,0,100);
@@ -712,12 +713,16 @@
    //-----------------------------------------------------------------------
    void GoodRunSelectionAna::endRun(const art::Run& run)
   {
-        Run                    =_run->GetMean(1);
+        //Run                    =_run->GetMean(1);
+        // Run is now the entry in the vectors; m_Run is the run number
+        const int m_Run                    =_run->GetMean(1)+0.4;
 	Nevts[Run]             += numevent;
 	numevent = 0; //resetting value
 	Nentries[Run]            +=1;
-	Nrun[Run]                +=Run;	
-        std::cout<<"\n"<<"\n"<<"run num: "<<Run<<" number of events: "<<Nevts[Run]<<"\n"<<"\n";
+	//Nrun[Run]                +=Run;	
+        //std::cout<<"\n"<<"\n"<<"run num: "<<Run<<" number of events: "<<Nevts[Run]<<"\n"<<"\n";
+	Nrun[Run]                +=m_Run;	
+        std::cout<<"\n"<<"\n"<<"run num: "<<m_Run<<" number of events: "<<Nevts[Run]<<"\n"<<"\n";
 	Ntrack_pmtrack[Run]          +=_ntrack_pmtrack->GetMean(1);
 	NtrackRMS_pmtrack[Run]       +=_ntrack_pmtrack->GetRMS(1);
 	Ntrack_panNu[Run]       +=_ntrack_pandoraNu->GetMean(1);
@@ -819,7 +824,64 @@
 	Nvtx_panCos[Run]         +=_nvrtx_pandoraCosmic->GetMean(1);
 	NvtxRMS_panCos[Run]         +=_nvrtx_pandoraCosmic->GetRMS(1);
 
-  
+        delete _run;
+        delete _ntrack_pmtrack;
+        delete _ntrack_pandoraNu;
+        delete _ntrack_pandoraNuPMA;
+        delete _ntrack_pandoraCosmic;
+        delete _trklen_pmtrack;
+        delete _trklen_pandoraNu;
+        delete _trklen_pandoraNuPMA;
+        delete _trklen_pandoraCosmic;
+        delete _nhit;
+        delete _nhitU;
+        delete _nhitV;
+        delete _nhitY;
+        delete _hit_ph;
+        delete _hit_phU;
+        delete _hit_phV;
+        delete _hit_phY;
+        delete _hit_charge;
+        delete _hit_chargeU;
+        delete _hit_chargeV;
+        delete _hit_chargeY;
+        delete _nflash_opFlashSat;
+        delete _nflash50_opFlashSat;
+        delete _nflash20_opFlashSat;
+        delete _nflash0_20_opFlashSat;
+        delete _nflash_simpleFlashBeam;
+        delete _nflash50_simpleFlashBeam;
+        delete _nflash20_simpleFlashBeam;
+        delete _nflash0_20_simpleFlashBeam;
+        delete _flash_ycenter_opFlashSat;
+        delete _flash_ycenter50_opFlashSat;
+        delete _flash_ycenter20_opFlashSat;
+        delete _flash_ycenter0_20_opFlashSat;
+        delete _flash_zcenter_opFlashSat;
+        delete _flash_zcenter50_opFlashSat;
+        delete _flash_zcenter20_opFlashSat;
+        delete _flash_zcenter0_20_opFlashSat;
+        delete _flash_ycenter_simpleFlashBeam;
+        delete _flash_ycenter50_simpleFlashBeam;
+        delete _flash_ycenter20_simpleFlashBeam;
+        delete _flash_ycenter0_20_simpleFlashBeam;
+        delete _flash_zcenter_simpleFlashBeam;
+        delete _flash_zcenter50_simpleFlashBeam;
+        delete _flash_zcenter20_simpleFlashBeam;
+        delete _flash_zcenter0_20_simpleFlashBeam;
+        delete _flash_pe_opFlashSat;
+        delete _flash_pe_simpleFlashBeam;
+        delete _nvrtx_pmtrack;
+        delete _nvrtx_pandoraNu;
+        delete _nvrtx_pandoraNuPMA;
+        delete _nvrtx_pandoraCosmic;
+
+        Run++;
+        if(Run >= n) {
+          throw cet::exception("GoodRunSelectionAna::endRun") << "There are more than " << n 
+            << " subruns to analyze, and there is not enough memory to cope with that" << std::endl;
+        }
+
   }  
     //-----------------------------------------------------------------------
    void GoodRunSelectionAna::reconfigure(fhicl::ParameterSet const& pset)
