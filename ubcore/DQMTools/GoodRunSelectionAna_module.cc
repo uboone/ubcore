@@ -92,6 +92,8 @@
   #include <TStyle.h>
   #include <TCanvas.h>
   
+  static const int MAX_RUNS = 20000;
+
   namespace GoodRunSelectionAna {  
    
     class GoodRunSelectionAna : public art::EDAnalyzer
@@ -129,111 +131,110 @@
     int numevent = 0; //number of event counter
 
     unsigned int Run=0;
-    static const int n = 20000;
         
-    int    Nentries[n]={0};
-    int    Nevts[n]={0};
-    float  Nrun[n]={0};
-    float  Ntrack_pmtrack[n]={0};
-    float  NtrackRMS_pmtrack[n]={0};
-    float  Ntrack_panCos[n]={0};
-    float  NtrackRMS_panCos[n]={0};
-    float  Ntrack_panNu[n]={0};
-    float  NtrackRMS_panNu[n]={0};
-    float  Ntrack_panNuPMA[n]={0};
-    float  NtrackRMS_panNuPMA[n]={0};
-    float  Ntrklen_pmtrack[n]={0};
-    float  NtrklenRMS_pmtrack[n]={0};
-    float  Ntrklen_panCos[n]={0};
-    float  NtrklenRMS_panCos[n]={0};
-    float  Ntrklen_panNu[n]={0};
-    float  NtrklenRMS_panNu[n]={0};
-    float  Ntrklen_panNuPMA[n]={0};
-    float  NtrklenRMS_panNuPMA[n]={0};
-    float  Nhit[n]={0};
-    float  NhitRMS[n]={0};
-    float  NhitU[n]={0};
-    float  NhitURMS[n]={0};
-    float  NhitV[n]={0};
-    float  NhitVRMS[n]={0};
-    float  NhitY[n]={0};
-    float  NhitYRMS[n]={0}; 
-    float  Nhitph[n]={0};
-    float  NhitphRMS[n]={0};
-    float  NhitphU[n]={0};
-    float  NhitphURMS[n]={0};
-    float  NhitphV[n]={0};
-    float  NhitphVRMS[n]={0};
-    float  NhitphY[n]={0};
-    float  NhitphYRMS[n]={0};
-    float  Nhitcharge[n]={0};
-    float  NhitchargeRMS[n]={0};
-    float  NhitchargeU[n]={0};
-    float  NhitchargeURMS[n]={0};
-    float  NhitchargeV[n]={0};
-    float  NhitchargeVRMS[n]={0};
-    float  NhitchargeY[n]={0};
-    float  NhitchargeYRMS[n]={0};
-    float  Nflash_opFlashSat[n]={0};
-    float  NflashRMS_opFlashSat[n]={0};
-    float  Nflash50_opFlashSat[n]={0};
-    float  Nflash50RMS_opFlashSat[n]={0};
-    float  Nflash20_opFlashSat[n]={0};
-    float  Nflash20RMS_opFlashSat[n]={0};
-    float  Nflash0_20_opFlashSat[n]={0};
-    float  Nflash0_20RMS_opFlashSat[n]={0};
-    float  Nflashy_opFlashSat[n]={0};
-    float  NflashyRMS_opFlashSat[n]={0};
-    float  Nflashy50_opFlashSat[n]={0};
-    float  Nflashy50RMS_opFlashSat[n]={0};
-    float  Nflashy20_opFlashSat[n]={0};
-    float  Nflashy20RMS_opFlashSat[n]={0};
-    float  Nflashy0_20_opFlashSat[n]={0};
-    float  Nflashy0_20RMS_opFlashSat[n]={0};
-    float  Nflashz_opFlashSat[n]={0};
-    float  NflashzRMS_opFlashSat[n]={0};
-    float  Nflashz50_opFlashSat[n]={0};
-    float  Nflashz50RMS_opFlashSat[n]={0};
-    float  Nflashz20_opFlashSat[n]={0};
-    float  Nflashz20RMS_opFlashSat[n]={0};
-    float  Nflashz0_20_opFlashSat[n]={0};
-    float  Nflashz0_20RMS_opFlashSat[n]={0};
-    float  Nflashpe_opFlashSat[n]={0};
-    float  NflashpeRMS_opFlashSat[n]={0};
-    float  Nflash_simpleFlashBeam[n]={0};
-    float  NflashRMS_simpleFlashBeam[n]={0};
-    float  Nflash50_simpleFlashBeam[n]={0};
-    float  Nflash50RMS_simpleFlashBeam[n]={0};
-    float  Nflash20_simpleFlashBeam[n]={0};
-    float  Nflash20RMS_simpleFlashBeam[n]={0};
-    float  Nflash0_20_simpleFlashBeam[n]={0};
-    float  Nflash0_20RMS_simpleFlashBeam[n]={0};
-    float  Nflashy_simpleFlashBeam[n]={0};
-    float  NflashyRMS_simpleFlashBeam[n]={0};
-    float  Nflashy50_simpleFlashBeam[n]={0};
-    float  Nflashy50RMS_simpleFlashBeam[n]={0};
-    float  Nflashy20_simpleFlashBeam[n]={0};
-    float  Nflashy20RMS_simpleFlashBeam[n]={0};
-    float  Nflashy0_20_simpleFlashBeam[n]={0};
-    float  Nflashy0_20RMS_simpleFlashBeam[n]={0};
-    float  Nflashz_simpleFlashBeam[n]={0};
-    float  NflashzRMS_simpleFlashBeam[n]={0};
-    float  Nflashz50_simpleFlashBeam[n]={0};
-    float  Nflashz50RMS_simpleFlashBeam[n]={0};
-    float  Nflashz20_simpleFlashBeam[n]={0};
-    float  Nflashz20RMS_simpleFlashBeam[n]={0};
-    float  Nflashz0_20_simpleFlashBeam[n]={0};
-    float  Nflashz0_20RMS_simpleFlashBeam[n]={0};
-    float  Nflashpe_simpleFlashBeam[n]={0};
-    float  NflashpeRMS_simpleFlashBeam[n]={0};
-    float  Nvtx_pmtrk[n]={0};
-    float  NvtxRMS_pmtrk[n]={0};
-    float  Nvtx_panCos[n]={0};
-    float  NvtxRMS_panCos[n]={0};
-    float  Nvtx_panNu[n]={0};
-    float  NvtxRMS_panNu[n]={0};
-    float  Nvtx_panNuPMA[n]={0};
-    float  NvtxRMS_panNuPMA[n]={0};
+    int    Nentries[MAX_RUNS]={0};
+    int    Nevts[MAX_RUNS]={0};
+    float  Nrun[MAX_RUNS]={0};
+    float  Ntrack_pmtrack[MAX_RUNS]={0};
+    float  NtrackRMS_pmtrack[MAX_RUNS]={0};
+    float  Ntrack_panCos[MAX_RUNS]={0};
+    float  NtrackRMS_panCos[MAX_RUNS]={0};
+    float  Ntrack_panNu[MAX_RUNS]={0};
+    float  NtrackRMS_panNu[MAX_RUNS]={0};
+    float  Ntrack_panNuPMA[MAX_RUNS]={0};
+    float  NtrackRMS_panNuPMA[MAX_RUNS]={0};
+    float  Ntrklen_pmtrack[MAX_RUNS]={0};
+    float  NtrklenRMS_pmtrack[MAX_RUNS]={0};
+    float  Ntrklen_panCos[MAX_RUNS]={0};
+    float  NtrklenRMS_panCos[MAX_RUNS]={0};
+    float  Ntrklen_panNu[MAX_RUNS]={0};
+    float  NtrklenRMS_panNu[MAX_RUNS]={0};
+    float  Ntrklen_panNuPMA[MAX_RUNS]={0};
+    float  NtrklenRMS_panNuPMA[MAX_RUNS]={0};
+    float  Nhit[MAX_RUNS]={0};
+    float  NhitRMS[MAX_RUNS]={0};
+    float  NhitU[MAX_RUNS]={0};
+    float  NhitURMS[MAX_RUNS]={0};
+    float  NhitV[MAX_RUNS]={0};
+    float  NhitVRMS[MAX_RUNS]={0};
+    float  NhitY[MAX_RUNS]={0};
+    float  NhitYRMS[MAX_RUNS]={0}; 
+    float  Nhitph[MAX_RUNS]={0};
+    float  NhitphRMS[MAX_RUNS]={0};
+    float  NhitphU[MAX_RUNS]={0};
+    float  NhitphURMS[MAX_RUNS]={0};
+    float  NhitphV[MAX_RUNS]={0};
+    float  NhitphVRMS[MAX_RUNS]={0};
+    float  NhitphY[MAX_RUNS]={0};
+    float  NhitphYRMS[MAX_RUNS]={0};
+    float  Nhitcharge[MAX_RUNS]={0};
+    float  NhitchargeRMS[MAX_RUNS]={0};
+    float  NhitchargeU[MAX_RUNS]={0};
+    float  NhitchargeURMS[MAX_RUNS]={0};
+    float  NhitchargeV[MAX_RUNS]={0};
+    float  NhitchargeVRMS[MAX_RUNS]={0};
+    float  NhitchargeY[MAX_RUNS]={0};
+    float  NhitchargeYRMS[MAX_RUNS]={0};
+    float  Nflash_opFlashSat[MAX_RUNS]={0};
+    float  NflashRMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflash50_opFlashSat[MAX_RUNS]={0};
+    float  Nflash50RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflash20_opFlashSat[MAX_RUNS]={0};
+    float  Nflash20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflash0_20_opFlashSat[MAX_RUNS]={0};
+    float  Nflash0_20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy_opFlashSat[MAX_RUNS]={0};
+    float  NflashyRMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy50_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy50RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy20_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy0_20_opFlashSat[MAX_RUNS]={0};
+    float  Nflashy0_20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz_opFlashSat[MAX_RUNS]={0};
+    float  NflashzRMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz50_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz50RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz20_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz0_20_opFlashSat[MAX_RUNS]={0};
+    float  Nflashz0_20RMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflashpe_opFlashSat[MAX_RUNS]={0};
+    float  NflashpeRMS_opFlashSat[MAX_RUNS]={0};
+    float  Nflash_simpleFlashBeam[MAX_RUNS]={0};
+    float  NflashRMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash50_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash50RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash0_20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflash0_20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy_simpleFlashBeam[MAX_RUNS]={0};
+    float  NflashyRMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy50_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy50RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy0_20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashy0_20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz_simpleFlashBeam[MAX_RUNS]={0};
+    float  NflashzRMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz50_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz50RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz0_20_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashz0_20RMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nflashpe_simpleFlashBeam[MAX_RUNS]={0};
+    float  NflashpeRMS_simpleFlashBeam[MAX_RUNS]={0};
+    float  Nvtx_pmtrk[MAX_RUNS]={0};
+    float  NvtxRMS_pmtrk[MAX_RUNS]={0};
+    float  Nvtx_panCos[MAX_RUNS]={0};
+    float  NvtxRMS_panCos[MAX_RUNS]={0};
+    float  Nvtx_panNu[MAX_RUNS]={0};
+    float  NvtxRMS_panNu[MAX_RUNS]={0};
+    float  Nvtx_panNuPMA[MAX_RUNS]={0};
+    float  NvtxRMS_panNuPMA[MAX_RUNS]={0};
     
     float _frun;
     float _fnumevent; 
@@ -539,7 +540,7 @@
    //-----------------------------------------------------------------------
    void GoodRunSelectionAna::endJob()
   {
-  for(int i=0;i<n;i++)
+  for(int i=0;i<MAX_RUNS;i++)
   {
     if(Nentries[i]!=0 && Nrun[i]!=0)
     {
@@ -877,8 +878,8 @@
         delete _nvrtx_pandoraCosmic;
 
         Run++;
-        if(Run >= n) {
-          throw cet::exception("GoodRunSelectionAna::endRun") << "There are more than " << n 
+        if(Run >= MAX_RUNS) {
+          throw cet::exception("GoodRunSelectionAna::endRun") << "There are more than " << MAX_RUNS 
             << " subruns to analyze, and there is not enough memory to cope with that" << std::endl;
         }
 
