@@ -159,7 +159,7 @@ void BurstNoiseMetrics::produce(art::Event & e)
 /////////////////////////////////////////////////
   double *UChanADCval = new double[allrawdigits_vec.at(1).Samples()];
   U_median = 0.;
-  for(int k = 0; k < allrawdigits_vec.at(1).Samples(); k++){	//UberWaveform Calculations
+  for(unsigned int k = 0; k < allrawdigits_vec.at(1).Samples(); k++){	//UberWaveform Calculations
     for (size_t i_ar = 0, size_allrawdigits = rawdigit_handle->size(); i_ar != size_allrawdigits; ++i_ar){
         if(allrawdigits_vec.at(i_ar).Channel() < 2400){
           UChanADCval[k] += allrawdigits_vec.at(i_ar).ADC(k);
