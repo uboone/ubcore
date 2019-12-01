@@ -1,0 +1,13 @@
+
+unsetenv_ CETPKG_NAME
+unsetenv_ CETPKG_VERSION
+unsetenv_ CETPKG_QUAL
+unsetenv_ CETPKG_TYPE
+unsetenv_ CETPKG_CC
+unsetenv_ CETPKG_CXX
+unsetenv_ CETPKG_FC
+echo "ERROR: "
+echo "ERROR: directories not specified"
+echo "ERROR: USAGE: setup_products <input-directory> <build-directory>"
+echo "ERROR: "
+return 1
