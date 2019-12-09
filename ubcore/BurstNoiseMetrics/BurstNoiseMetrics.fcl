@@ -1,5 +1,19 @@
 BEGIN_PROLOG
 
+burstnoisemetricsfilter: {
+module_type	  : "BurstNoiseMetricsFilter"
+FlashLabel        : "simpleFlashCosmic"
+RawDigitLabel     : "daq"
+Win_start         : -1600
+Win_end           : 3200 
+IntWinFFTsum      : 10
+IntWinNF          : 500
+useAsFilter       : true
+FFT_FiltThreshold : 60000
+nf_FiltThreshold  : 50
+Debug             : true
+}
+
 burstnoisemetrics: {
 
 module_type	  : "BurstNoiseMetrics"
