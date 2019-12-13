@@ -134,9 +134,7 @@ private:
   std::vector<std::string> fSelectedFiles;   ///< flux files selected after wildcard expansion and subset selection
   std::string              fFileCopyMethod;  ///< "DIRECT" = old direct access method, otherwise = ifdh approach schema ("" okay)
   
-  std::string    fInputFileName;    ///< Name of text file containing events to simulate (to be set)
   double         fEventsPerPOT;     ///< Number of events per POT (to be set)
-
   int            fEventsPerSubRun;  ///< Keeps track of the number of processed events per subrun
 
   ifdh_ns::ifdh* fIFDH;             ///< (optional) flux file handling
@@ -149,7 +147,6 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
   , fFileSearchPaths{p.get<std::string>("FileSearchPaths")}
   , fFilePatterns{p.get<std::vector<std::string>>("FilePatterns")}
   , fFileCopyMethod{p.get<std::string>("FluxCopyMethod","DIRECT")}
-  , fInputFileName{p.get<std::string>("InputFileName")}
   , fEventsPerPOT{p.get<double>("EventsPerPOT", -1.)}
   , fEventsPerSubRun(0)
 
@@ -164,13 +161,6 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::beginJob()
 {
-  // fInputFile = new std::ifstream(fInputFileName.c_str(), std::fstream::in);
-
-  // // check that the file is a good one
-  // if( !fInputFile->good() )
-  //   throw cet::exception("HepMCFileGen") << "input text file "
-		// 			<< fInputFileName
-		// 			<< " cannot be read.\n";
 
   if (fFileCopyMethod == "DIRECT")       ExpandInputFilePatternsDirect();
   else if (fFileCopyMethod == "IFDH")    ExpandInputFilePatternsIFDH();
