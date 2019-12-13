@@ -1,0 +1,14 @@
+BEGIN_PROLOG
+
+standard_hepmcfilegen:
+{
+  module_type:   "HepMCFileGen"
+  InputFileName: "input.txt"   #name of file containing events in hepevt format to
+                              #put into simb::MCTruth objects for use in LArSoft	
+
+  FileSearchPaths: "/pnfs/uboone/persistent/users/mdeltutt/nuwro_events_18.02.1_bnb_nu_geomv12_cryo/eventsout_hepmc/"
+  FilePatterns:    ["eventsout.root_*.hepmc"]
+  FluxCopyMethod: "IFDH"
+}
+
+END_PROLOG 
