@@ -8,7 +8,7 @@ standard_hepmcfilegen:
   FilePatterns:    ["eventsout.root_*.hepmc"]
   EventsPerPOT:    8.188584502865836e-17
 
-  FluxCopyMethod: "DIRECT"
+  FluxCopyMethod:  "DIRECT"
 }
 
 END_PROLOG 

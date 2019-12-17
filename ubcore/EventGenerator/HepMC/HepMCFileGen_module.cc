@@ -51,6 +51,8 @@
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  here the first particle is the initial state neutrino (status code 0, meaning initial state, 
  *  not to be prooagated by GEANT). The other particles are the initial state particles.
+ *  For the neutrino, write ccnc in place of 1st daugther, and mode (qe, res, ...) 
+ *  in place of 2nd daugther.
  *
  *  There are some assumptions that go into using this format that may not
  *  be obvious.  The first is that only particles with status code = 1
@@ -271,8 +273,8 @@ void evgen::HepMCFileGen::produce(art::Event & e)
 
     if (abs(pdg) == 14 || abs(pdg) == 12) {
       set_neutrino = true;
-      ccnc = 0;
-      mode = simb::kQE;
+      ccnc = firstDaughter; // for the neutrino we write ccnc in place of 1st daugther
+      mode = secondDaughter; // for the neutrino we write mode in place of 2nd daugther
       itype = -1;
       target = nucleon = quark = w = x = y = qsqr = -1;
     } 

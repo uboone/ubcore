@@ -2,7 +2,7 @@
 #include "services_microboone.fcl"
 #include "hepmcfilegen.fcl"
 
-process_name: Redacted
+process_name: HepMCNuWro
 
 services:
 {
