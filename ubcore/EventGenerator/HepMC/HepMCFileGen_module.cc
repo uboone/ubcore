@@ -128,6 +128,7 @@ public:
 private:
   void ExpandInputFilePatternsDirect();
   void ExpandInputFilePatternsIFDH();
+  void open_file();
 
   std::ifstream* fInputFile;
 
@@ -161,16 +162,8 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
 }
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::beginJob()
+void evgen::HepMCFileGen::open_file()
 {
-
-  if (fFileCopyMethod == "DIRECT")       ExpandInputFilePatternsDirect();
-  else if (fFileCopyMethod == "IFDH")    ExpandInputFilePatternsIFDH();
-  else {
-    throw cet::exception("HepMCFileGen") << "FluxCopyMethod "
-          << fFileCopyMethod
-          << " not supported.\n";
-  }
 
   int random_file_index = rand() / double(RAND_MAX) * fSelectedFiles.size(); 
 
@@ -184,6 +177,22 @@ void evgen::HepMCFileGen::beginJob()
     throw cet::exception("HepMCFileGen") << "input text file "
           << fSelectedFiles.at(random_file_index)
           << " cannot be read.\n";
+}
+
+
+//------------------------------------------------------------------------------
+void evgen::HepMCFileGen::beginJob()
+{
+
+  if (fFileCopyMethod == "DIRECT")       ExpandInputFilePatternsDirect();
+  else if (fFileCopyMethod == "IFDH")    ExpandInputFilePatternsIFDH();
+  else {
+    throw cet::exception("HepMCFileGen") << "FluxCopyMethod "
+          << fFileCopyMethod
+          << " not supported.\n";
+  }
+
+  open_file();
   
 }
 
@@ -211,9 +220,14 @@ void evgen::HepMCFileGen::produce(art::Event & e)
 {
 
   // check that the file is still good
-  if( !fInputFile->good() )
+  if( !fInputFile->good() ) {
+    open_file();
+  }
+
+  if( !fInputFile->good() ) {
     throw cet::exception("HepMCFileGen") << "input text file "
 					<< " cannot be read in produce().\n";
+  }
 
 
   std::unique_ptr< std::vector<simb::MCTruth> > truthcol(new std::vector<simb::MCTruth>);
