@@ -1,0 +1,13 @@
+BEGIN_PROLOG
+
+microboone_pmtdoublereadoutfilter:
+{
+  module_type: "PMTDoubleReadoutFilter"
+  
+  triggerLabel: "daq"
+  waveformLabel: "pmtreadout:OpdetBeamHighGain"
+  numberOfChannelsToExpect: 36
+  timestampDiffTolerance: 1.1 # nanosecond difference allowed between trigger timestamp and pmt timestamp. 1 is too small
+}
+
+END_PROLOG
