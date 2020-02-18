@@ -92,7 +92,7 @@ void pdrf::PMTDoubleReadoutFilter::produce(art::Event& e)
     for(auto const& wf : *wfHandle) {
       // we want to select only the waveforms with their timestamp at the trigger time
       if(std::abs(TriggerTime - wf.TimeStamp()) < fTimestampDiffTolerance) {
-        if(wf.ChannelNumber() >= 0 && wf.ChannelNumber() < fNumOfChannelsExpected) {
+        if(wf.ChannelNumber() < fNumOfChannelsExpected) {
           seen[wf.ChannelNumber()] ++;
         }
         else throw art::Exception(art::errors::DataCorruption) << "PMT channel seen with bad channel ID "<<wf.ChannelNumber()<<".\n";
