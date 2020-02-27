@@ -16,41 +16,20 @@
 // Geometry --> ubcore/Geometry for the two below
 #include "ubcore/Geometry/ChannelMapUBooNEAlg.h"
 
-#include "TString.h"
+namespace uboone {
 
-
-namespace uboone
-{
-
-  UBooNEGeometryHelper::UBooNEGeometryHelper( fhicl::ParameterSet const & pset, art::ActivityRegistry & reg )
-  :  fPset( pset )
-     //fReg( reg )
+  UBooNEGeometryHelper::UBooNEGeometryHelper(fhicl::ParameterSet const& pset)
+    : fPset(pset)
   {}
 
-  UBooNEGeometryHelper::~UBooNEGeometryHelper() throw()
-  {}  
-  
-  void UBooNEGeometryHelper::doConfigureChannelMapAlg( fhicl::ParameterSet const & sortingParameters, geo::GeometryCore* geom ) 
+  std::unique_ptr<geo::ChannelMapAlg>
+  UBooNEGeometryHelper::doConfigureChannelMapAlg(fhicl::ParameterSet const& sortingParameters,
+                                                 std::string const& detectorName) const
   {
-    fChannelMap.reset();
-    std::string const detectorName = geom->DetectorName();
-
     if ( detectorName.find("microboone") == std::string::npos ) {
       std::cout << __PRETTY_FUNCTION__ << ": WARNING USING CHANNEL MAP ALG WITH NON-MICROBOONE GEO!" << std::endl;
     }
-
-    fChannelMap = std::make_shared<geo::ChannelMapUBooNEAlg>( fPset, sortingParameters );
-
-    if ( fChannelMap )
-      {
-        geom->ApplyChannelMap(fChannelMap); // calls Initialize(fGeoData) for us
-      }
-
-  }
-  
-  std::shared_ptr<const geo::ChannelMapAlg> UBooNEGeometryHelper::doGetChannelMapAlg() const
-  {
-    return fChannelMap;
+    return std::make_unique<geo::ChannelMapUBooNEAlg>(fPset, sortingParameters);
   }
 
 }
