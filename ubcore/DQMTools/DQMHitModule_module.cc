@@ -34,6 +34,7 @@
 #include <vector>
 #include <string>
 
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "lardataobj/RecoBase/Wire.h"
 #include "lardataobj/RecoBase/Hit.h"
 #include "lardataobj/MCBase/MCHitCollection.h"
