@@ -1,0 +1,48 @@
+#include "services_microboone.fcl"
+
+process_name: HiggsPortalGen
+
+uboone_hpgen: {
+  module_type: "HiggsPortalGen"
+  InputFileName: "ms_0.1007_gs_2em4_decayprod_booster-1M_k0l.txt"
+  DecayPDG: 11
+  KaonPDG: 130
+}
+
+services: {
+  scheduler: { defaultExceptions: false }
+  TimeTracker: {}
+  MemoryTracker: {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata: @local::art_file_catalog_mc
+  @table::microboone_gen_services
+}
+
+source: {
+  module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
+  maxEvents: 10000
+  firstRun: 1
+  firstEvent: 1
+}
+
+physics: {
+  producers: {
+    rns: { module_type: "RandomNumberSaver" }
+    generator: @local::uboone_hpgen
+  }
+  simulate: [ rns, generator ]
+  stream1: [ out1 ]
+  trigger_paths: [ simulate ]
+  end_paths: [ stream1 ]
+}
+
+outputs: {
+  out1: {
+    module_type: RootOutput
+    fileName: "prodhp_uboone_%tc_gen.root"
+    dataTier: "generated"
+    compressionLevel: 1
+  }
+}
+
