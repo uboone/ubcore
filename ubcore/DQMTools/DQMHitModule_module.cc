@@ -189,9 +189,6 @@ void dqm::DQMHitModule::analyze(art::Event const & e)
 
   analysisAlg.ClearHitModules();
 
-  //get time service
-  const detinfo::DetectorClocks* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-
   //get the wire data
   art::Handle< std::vector<recob::Wire> > wireHandle;
   e.getByLabel(fWireModuleLabel,wireHandle);
@@ -259,7 +256,7 @@ void dqm::DQMHitModule::analyze(art::Event const & e)
   }
 
   //run the analzyer alg
-  analysisAlg.AnalyzeWires(wireVector,/*mcHitVector,WireMCHitAssocVector,*/ts,eventNumber,runNumber, RunNumber, NHits_Plane0, NHits_Plane1, NHits_Plane2, HitTimeMean_Plane0, HitTimeMean_Plane1, HitTimeMean_Plane2, HitTimeVar_Plane0,  HitTimeVar_Plane1, HitTimeVar_Plane2, HitTimeSkew_Plane0, HitTimeSkew_Plane1, HitTimeSkew_Plane2, HitChargeMean_Plane0, HitChargeMean_Plane1, HitChargeMean_Plane2, HitChargeVar_Plane0, HitChargeVar_Plane1, HitChargeVar_Plane2, HitChargeSkew_Plane0, HitChargeSkew_Plane1, HitChargeSkew_Plane2);
+  analysisAlg.AnalyzeWires(wireVector,/*mcHitVector,WireMCHitAssocVector,*/eventNumber,runNumber, RunNumber, NHits_Plane0, NHits_Plane1, NHits_Plane2, HitTimeMean_Plane0, HitTimeMean_Plane1, HitTimeMean_Plane2, HitTimeVar_Plane0,  HitTimeVar_Plane1, HitTimeVar_Plane2, HitTimeSkew_Plane0, HitTimeSkew_Plane1, HitTimeSkew_Plane2, HitChargeMean_Plane0, HitChargeMean_Plane1, HitChargeMean_Plane2, HitChargeVar_Plane0, HitChargeVar_Plane1, HitChargeVar_Plane2, HitChargeSkew_Plane0, HitChargeSkew_Plane1, HitChargeSkew_Plane2);
   //analysisAlg.AnalyzeFlashes(flashVector, NFlashes, MeanFlashLight);
 }
 

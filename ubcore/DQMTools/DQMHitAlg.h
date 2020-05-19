@@ -8,7 +8,6 @@
 //#include "lardata/MCBase/MCHitCollection.h"
 #include "lardataobj/RecoBase/Hit.h"
 #include "lardataobj/RecoBase/Wire.h"
-#include "lardata/DetectorInfoServices/DetectorClocksService.h"
 
 //#include "lardataobj/RecoBase/OpFlash.h"
 
@@ -103,7 +102,6 @@ namespace dqm{
     void AnalyzeWires(std::vector<recob::Wire> const&,
 		      //std::vector<sim::MCHitCollection> const&,
 		      //std::vector< std::vector<int> > const&,
-		      const detinfo::DetectorClocks *,
 		      unsigned int,
 		      unsigned int,
         TH1F *runnumber,
@@ -137,7 +135,6 @@ namespace dqm{
 		      int,
 		      //std::vector<sim::MCHitCollection> const&,
 		      //std::vector<int> const&,
-		      const detinfo::DetectorClocks *,
         int &hitno,
         TH1F* charge_hist,
         TH1F *time_hist);
@@ -145,7 +142,6 @@ namespace dqm{
     void ProcessROI(lar::sparse_vector<float>::datarange_t const&, int,
 		    //std::vector<sim::MCHitCollection> const&,
 		    //std::vector<int> const&,
-		    const detinfo::DetectorClocks *,
       int &hitno,
       TH1F* charge_hist,
       TH1F *time_hist);
