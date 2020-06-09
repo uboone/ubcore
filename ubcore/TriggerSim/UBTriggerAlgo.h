@@ -22,6 +22,9 @@
 #include "lardataobj/RawData/TriggerData.h"
 #include "lardataalg/DetectorInfo/ElecClock.h"
 #include "UBTrigException.h"
+namespace detinfo {
+  class DetectorClocksData;
+}
 
 namespace trigger
 {
@@ -44,7 +47,7 @@ namespace trigger
   public:
 
     /// Default constructor with fhicl parameters
-    UBTriggerAlgo();
+    UBTriggerAlgo(const detinfo::DetectorClocksData& clockData);
 
     /// Default destructor
     ~UBTriggerAlgo(){}
@@ -53,7 +56,7 @@ namespace trigger
     void ReportConfig() const;
 
     /// Method to clear input trigger information
-    void ClearInputTriggers();
+    void ClearInputTriggers(detinfo::DetectorClocksData const& clockData);
 
     /// Function to process algorithm
     void ProcessTrigger(std::vector<raw::Trigger> &triggers);
@@ -62,10 +65,12 @@ namespace trigger
     void ShowCandidateTriggers() const;
 
     /// Given trigger time, return BNB beam gate window start time
-    detinfo::ElecClock BNBStartTime(const detinfo::ElecClock& time) const;
+    detinfo::ElecClock BNBStartTime(const detinfo::DetectorClocksData& clockData,
+                                    const detinfo::ElecClock& time) const;
 
     /// Given trigger time, return NuMI beam gate window start time
-    detinfo::ElecClock NuMIStartTime(const detinfo::ElecClock& time) const;
+    detinfo::ElecClock NuMIStartTime(const detinfo::DetectorClocksData& clockData,
+                                     const detinfo::ElecClock& time) const;
     
   public:
 
@@ -102,25 +107,32 @@ namespace trigger
 		       unsigned short cosmic_max);
     
     /// Function to add calibration trigger with G4 time input
-    void AddTriggerCalib(const detinfo::ElecClock& time);
+    void AddTriggerCalib(const detinfo::DetectorClocksData& clockData,
+                         const detinfo::ElecClock& time);
 
     /// Function to add External trigger with G4 time input
-    void AddTriggerExt(const detinfo::ElecClock& time);
+    void AddTriggerExt(const detinfo::DetectorClocksData& clockData,
+                       const detinfo::ElecClock& time);
 
     /// Function to add PC trigger with G4 time input
-    void AddTriggerPC(const detinfo::ElecClock& time);
+    void AddTriggerPC(const detinfo::DetectorClocksData& clockData,
+                      const detinfo::ElecClock& time);
 
     /// Functon to add BNB beam gate input
-    void AddTriggerBNB(const detinfo::ElecClock& time);
+    void AddTriggerBNB(const detinfo::DetectorClocksData& clockData,
+                       const detinfo::ElecClock& time);
 
     /// Function to add NuMI beam gate input
-    void AddTriggerNuMI(const detinfo::ElecClock& time);
+    void AddTriggerNuMI(const detinfo::DetectorClocksData& clockData,
+                        const detinfo::ElecClock& time);
 
     /// Function to add PMT trigger input from G4 time
-    void AddTriggerPMTCosmic(const detinfo::ElecClock& time);
+    void AddTriggerPMTCosmic(const detinfo::DetectorClocksData& clockData,
+                             const detinfo::ElecClock& time);
 
     /// Function to add PMT trigger input from G4 time
-    void AddTriggerPMTBeam(const detinfo::ElecClock& time);
+    void AddTriggerPMTBeam(const detinfo::DetectorClocksData& clockData,
+                           const detinfo::ElecClock& time);
 
   protected:
     
@@ -128,10 +140,12 @@ namespace trigger
     void Report(const std::string &msg) const;
 
     /// Function to append new trigger candidate to _candidates
-    void AddTrigger(const raw::Trigger &new_trigger);
+    void AddTrigger(detinfo::DetectorClocksData const& clockData,
+                    const raw::Trigger &new_trigger);
 
     /// Function to combine two trigger objects
-    const raw::Trigger CombineTriggers(const raw::Trigger &trigger1, 
+    const raw::Trigger CombineTriggers(const detinfo::DetectorClocksData& clockData,
+                                       const raw::Trigger &trigger1,
 				       const raw::Trigger &trigger2);
 
     /**

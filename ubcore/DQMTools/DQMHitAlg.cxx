@@ -86,7 +86,6 @@ void dqm::DQMHitAlg::LoadHitAssocPair( std::vector<recob::Hit> const& HitVector,
 }
 
 void dqm::DQMHitAlg::AnalyzeWires(std::vector<recob::Wire> const& WireVector,
-				  const detinfo::DetectorClocks *ts,
 				  unsigned int event, unsigned int run,
       TH1F *runnumber,
       TH1F *nhits_plane0, TH1F *nhits_plane1, TH1F *nhits_plane2,
@@ -113,11 +112,11 @@ void dqm::DQMHitAlg::AnalyzeWires(std::vector<recob::Wire> const& WireVector,
   for(size_t iwire=0 ; iwire < WireVector.size(); iwire++)
   {
     if (WireVector[iwire].View() == 0)
-      FillWireInfo(WireVector[iwire], iwire, ts, plane0_hitno, plane0_charge, plane0_time);
+      FillWireInfo(WireVector[iwire], iwire, plane0_hitno, plane0_charge, plane0_time);
     if (WireVector[iwire].View() == 1)
-      FillWireInfo(WireVector[iwire], iwire, ts, plane1_hitno, plane1_charge, plane1_time);
+      FillWireInfo(WireVector[iwire], iwire, plane1_hitno, plane1_charge, plane1_time);
     if (WireVector[iwire].View() == 2)
-      FillWireInfo(WireVector[iwire], iwire, ts, plane2_hitno, plane2_charge, plane2_time);
+      FillWireInfo(WireVector[iwire], iwire, plane2_hitno, plane2_charge, plane2_time);
   }
 
   runnumber->Fill(run);
@@ -198,7 +197,6 @@ void dqm::DQMHitAlg::ClearWireDataHitInfo(){
 
 void dqm::DQMHitAlg::FillWireInfo(recob::Wire const& wire, 
 				  int WireIndex,
-				  const detinfo::DetectorClocks *ts,
       int &hitno,
       TH1F* charge_hist,
       TH1F* time_hist){
@@ -215,7 +213,7 @@ void dqm::DQMHitAlg::FillWireInfo(recob::Wire const& wire,
 
     ClearWireDataHitInfo();
 
-    ProcessROI(range, WireIndex, ts, hitno, charge_hist, time_hist);
+    ProcessROI(range, WireIndex, hitno, charge_hist, time_hist);
     range_index++;
 
   }//end loop over roi ranges
@@ -244,7 +242,6 @@ void dqm::DQMHitAlg::ROIInfo(lar::sparse_vector<float>::datarange_t const& range
 
 void dqm::DQMHitAlg::ProcessROI(lar::sparse_vector<float>::datarange_t const& range, 
 				int WireIndex,
-				const detinfo::DetectorClocks *ts,
     int &hitno,
     TH1F* charge_hist,
     TH1F* time_hist){

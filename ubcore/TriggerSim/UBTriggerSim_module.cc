@@ -106,7 +106,9 @@ namespace trigger {
 namespace trigger {
 
   //#########################################################
-  UBTriggerSim::UBTriggerSim(fhicl::ParameterSet const& pset) : EDProducer{pset}
+  UBTriggerSim::UBTriggerSim(fhicl::ParameterSet const& pset) :
+    EDProducer{pset},
+    fAlg{art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob()}
   //#########################################################
   {
     /// Get beam event generator label
@@ -152,8 +154,8 @@ namespace trigger {
     fNuMIFireTime = pset.get<double>("NuMIFireTime");
 
     // Store user-defined trigger timings to the attributes
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    auto clock = ts->OpticalClock();
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
+    auto clock = clockData.OpticalClock();
 
     fTriggerCalib.clear();
     fTriggerExt.clear();
@@ -161,39 +163,35 @@ namespace trigger {
     fTriggerBNB.clear();
     fTriggerNuMI.clear();
 
+    auto clock_with_time = [&clockData, &clock](auto const g4_time) {
+                             auto const elec_time = clockData.G4ToElecTime(g4_time);
+                             auto const clock_time = clock.Time(clock.Sample(elec_time), clock.Frame(elec_time));
+                             return clock.WithTime(clock_time);
+                           };
+
     fTriggerCalib.reserve(trig_calib.size());
     for(auto const t : trig_calib) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerCalib.push_back(clock);
+      fTriggerCalib.push_back(clock_with_time(t));
     }
 
     fTriggerExt.reserve(trig_ext.size());
     for(auto const t : trig_ext) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerExt.push_back(clock);
+      fTriggerExt.push_back(clock_with_time(t));
     }
 
     fTriggerPC.reserve(trig_pc.size());
     for(auto const t : trig_pc) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerPC.push_back(clock);
+      fTriggerPC.push_back(clock_with_time(t));
     }
 
     fTriggerBNB.reserve(trig_bnb.size());
     for(auto const t : trig_bnb) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerBNB.push_back(clock);
+      fTriggerBNB.push_back(clock_with_time(t));
     }
 
     fTriggerNuMI.reserve(trig_numi.size());
     for(auto const t : trig_numi) {
-      auto const elec_time = ts->G4ToElecTime(t);
-      clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-      fTriggerNuMI.push_back(clock);
+      fTriggerNuMI.push_back(clock_with_time(t));
     }
 
     // Produces raw::Trigger data product
@@ -210,17 +208,23 @@ namespace trigger {
   //#########################################
   {
     // Initialize
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
     std::unique_ptr< std::vector<raw::Trigger>   >  triggers(new std::vector<raw::Trigger>);
-    fAlg.ClearInputTriggers();
-    auto clock = ts->OpticalClock();
+    fAlg.ClearInputTriggers(clockData);
+    auto clock = clockData.OpticalClock();
 
     // Register user-defined triggers
-    for( auto const &t : fTriggerCalib ) fAlg.AddTriggerCalib (t);
-    for( auto const &t : fTriggerExt   ) fAlg.AddTriggerExt   (t);
-    for( auto const &t : fTriggerPC    ) fAlg.AddTriggerPC    (t);
-    for( auto const &t : fTriggerBNB   ) fAlg.AddTriggerBNB   (t);
-    for( auto const &t : fTriggerNuMI  ) fAlg.AddTriggerNuMI  (t);
+    for( auto const &t : fTriggerCalib ) fAlg.AddTriggerCalib (clockData, t);
+    for( auto const &t : fTriggerExt   ) fAlg.AddTriggerExt   (clockData, t);
+    for( auto const &t : fTriggerPC    ) fAlg.AddTriggerPC    (clockData, t);
+    for( auto const &t : fTriggerBNB   ) fAlg.AddTriggerBNB   (clockData, t);
+    for( auto const &t : fTriggerNuMI  ) fAlg.AddTriggerNuMI  (clockData, t);
+
+    auto clock_with_time = [&clockData, &clock](auto const g4_time) {
+                             auto const elec_time = clockData.G4ToElecTime(g4_time);
+                             auto const clock_time = clock.Time(clock.Sample(elec_time), clock.Frame(elec_time));
+                             return clock.WithTime(clock_time);
+                           };
 
     // Register input BNB/NuMI beam trigger
     for(auto const &name : fBeamModName) {
@@ -230,16 +234,10 @@ namespace trigger {
       for(size_t i=0; i<beamArray->size(); ++i) {
 	art::Ptr<sim::BeamGateInfo> beam_ptr (beamArray,i);
 	if(beam_ptr->BeamType() == sim::kBNB) {
-	  //auto const elec_time = ts->G4ToElecTime(beam_ptr->Start());
-	  auto const elec_time = ts->G4ToElecTime(fBNBFireTime);
-	  clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-	  fAlg.AddTriggerBNB(clock);
+          fAlg.AddTriggerBNB(clockData, clock_with_time(fBNBFireTime));
 	}
 	else if(beam_ptr->BeamType() == sim::kNuMI) {
-	  //auto const elec_time = ts->G4ToElecTime(beam_ptr->Start());
-	  auto const elec_time = ts->G4ToElecTime(fNuMIFireTime);
-	  clock.SetTime(clock.Sample(elec_time),clock.Frame(elec_time));
-	  fAlg.AddTriggerNuMI(clock);
+          fAlg.AddTriggerNuMI(clockData, clock_with_time(fNuMIFireTime));
 	}
 	else
 	  throw UBTrigException(Form("Beam type %d not supported!",beam_ptr->BeamType()));
@@ -253,20 +251,18 @@ namespace trigger {
       evt.getByLabel(fOpticalFEMMod,pmtArray);
       if(pmtArray.isValid()) {
 
-	for(size_t i=0; i<pmtArray->size(); ++i) {
-
-	  art::Ptr<optdata::PMTTrigger> pmt_ptr (pmtArray,i);
-	  clock.SetTime( pmt_ptr->TimeSlice(), pmt_ptr->Frame() );
-	  switch(pmt_ptr->Category()) {
+        for(auto const& pmt_trigger : *pmtArray) {
+          auto const clock_time = clock.Time(pmt_trigger.TimeSlice(), pmt_trigger.Frame());
+          auto const new_clock = clock.WithTime(clock_time);
+          switch(pmt_trigger.Category()) {
 	  case optdata::kCosmicPMTTrigger:
-	    fAlg.AddTriggerPMTCosmic(clock);
+            fAlg.AddTriggerPMTCosmic(clockData, new_clock);
 	    break;
 	  case optdata::kBeamPMTTrigger:
-	    fAlg.AddTriggerPMTBeam(clock);
+            fAlg.AddTriggerPMTBeam(clockData, new_clock);
 	    break;
 	  default:
-	    throw UBTrigException(Form("Unexpected OpticalCategory (%d) found from PMTTrigger",pmt_ptr->Category()));
-	    return;
+            throw UBTrigException(Form("Unexpected OpticalCategory (%d) found from PMTTrigger",pmt_trigger.Category()));
 	  }
 	}
       }
