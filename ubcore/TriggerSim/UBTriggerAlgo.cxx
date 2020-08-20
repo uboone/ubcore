@@ -18,15 +18,14 @@
 namespace trigger{
 
   //##############################################################
-  UBTriggerAlgo::UBTriggerAlgo() : _mask(9,0),
+  UBTriggerAlgo::UBTriggerAlgo(detinfo::DetectorClocksData const& clockData) :
+    _tpc_clock{clockData.TPCClock()},
+    _pmt_clock{clockData.OpticalClock()},
+    _trig_clock{clockData.TriggerClock()},
+    _mask(9,0),
 				   _prescale(9,false)
   //##############################################################
   {
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    _trig_clock = ts->TriggerClock();
-    _pmt_clock  = ts->OpticalClock();
-    _tpc_clock  = ts->TPCClock();
-						
     // LArLight version constructor
     SetDeadtime(4);
     SetBNBParams(102,256,0,0);
@@ -120,91 +119,82 @@ namespace trigger{
   }
 
   //######################################
-  void UBTriggerAlgo::ClearInputTriggers()
+  void UBTriggerAlgo::ClearInputTriggers(detinfo::DetectorClocksData const& clockData)
   //######################################
   {
     _candidates.clear();
 
-    for( auto const t : _bnb_timings ) AddTriggerBNB(t);
+    for( auto const t : _bnb_timings ) AddTriggerBNB(clockData, t);
 
-    for( auto const t : _numi_timings ) AddTriggerNuMI(t);
+    for( auto const t : _numi_timings ) AddTriggerNuMI(clockData, t);
 
-    for( auto const t : _calib_timings ) AddTriggerCalib(t);
+    for( auto const t : _calib_timings ) AddTriggerCalib(clockData, t);
 
-    for( auto const t : _ext_timings ) AddTriggerExt(t);
+    for( auto const t : _ext_timings ) AddTriggerExt(clockData, t);
 
-    for( auto const t : _pc_timings ) AddTriggerPC(t);
+    for( auto const t : _pc_timings ) AddTriggerPC(clockData, t);
 
   }
 
   //############################################################################
-  detinfo::ElecClock UBTriggerAlgo::BNBStartTime(const detinfo::ElecClock& time) const
+  detinfo::ElecClock UBTriggerAlgo::BNBStartTime(const detinfo::DetectorClocksData& clockData,
+                                                 const detinfo::ElecClock& time) const
   //############################################################################
   {
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    auto clock = ts->OpticalClock(_pmt_clock.Time(time.Time()));
-    //auto clock = detinfo::DetectorClocksService::GetME().OpticalClock(_pmt_clock.Time(time.Time()));
-
-    clock += _bnb_delay;
-    //clock -= _bnb_delay;
-
-    return clock;
+    return clockData.OpticalClock().WithTime(_pmt_clock.Time(time.Time())).AdvanceTimeBy(_bnb_delay);
   }
 
   //#############################################################################
-  detinfo::ElecClock UBTriggerAlgo::NuMIStartTime(const detinfo::ElecClock& time) const
+  detinfo::ElecClock UBTriggerAlgo::NuMIStartTime(const detinfo::DetectorClocksData& clockData,
+                                                  const detinfo::ElecClock& time) const
   //#############################################################################
   {
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    auto clock = ts->OpticalClock(_pmt_clock.Time(time.Time()));
-    //auto clock = detinfo::DetectorClocksService::GetME().OpticalClock(_pmt_clock.Time(time.Time()));
-
-    clock += _numi_delay;
-    //clock -= _numi_delay;
-
-    return clock;
+    return clockData.OpticalClock().WithTime(_pmt_clock.Time(time.Time())).AdvanceTimeBy(_numi_delay);
   }
 
   //##############################################################
-  void UBTriggerAlgo::AddTriggerCalib(const detinfo::ElecClock &time)
+  void UBTriggerAlgo::AddTriggerCalib(const detinfo::DetectorClocksData& clockData,
+                                      const detinfo::ElecClock &time)
   //##############################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     // Calibration triggers
-    AddTrigger(raw::Trigger(0,
+    AddTrigger(clockData, raw::Trigger(0,
 			    _pmt_clock.Time(),
 			    _pmt_clock.Time(),
 			    ( (0x1) << trigger::kTriggerCalib )) 
 	       );
-    _pmt_clock.SetTime(0);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //############################################################
-  void UBTriggerAlgo::AddTriggerExt(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerExt(const detinfo::DetectorClocksData& clockData,
+                                    const detinfo::ElecClock& time)
   //############################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     // EXT triggers
-    AddTrigger(raw::Trigger(0,
+    AddTrigger(clockData, raw::Trigger(0,
 			    _pmt_clock.Time(),
 			    _pmt_clock.Time(),
 			    ( (0x1) << trigger::kTriggerEXT ))
 	       );
-    _pmt_clock.SetTime(0);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //###########################################################
-  void UBTriggerAlgo::AddTriggerPC(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerPC(const detinfo::DetectorClocksData& clockData,
+                                   const detinfo::ElecClock& time)
   //###########################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     // PC triggers
-    AddTrigger(raw::Trigger(0,
+    AddTrigger(clockData, raw::Trigger(0,
 			    _pmt_clock.Time(),
 			    _pmt_clock.Time(),
 			    ( (0x1) << trigger::kTriggerPC ))
 	       );
-    _pmt_clock.SetTime(0);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //#######################################
@@ -251,7 +241,8 @@ namespace trigger{
   }
 
   //#######################################################################################
-  const raw::Trigger UBTriggerAlgo::CombineTriggers(const raw::Trigger &trigger1, 
+  const raw::Trigger UBTriggerAlgo::CombineTriggers(const detinfo::DetectorClocksData& clockData,
+                                                    const raw::Trigger &trigger1,
 						    const raw::Trigger &trigger2)
   //#######################################################################################
   {
@@ -337,9 +328,9 @@ namespace trigger{
 	  if(_debug_mode) Report(Form("    Combined bit %d ... now %d",i,res_bits));
 	}
     }
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    auto trig_time = ts->OpticalClock( res_sample,  res_frame  );
-    auto beam_time = ts->OpticalClock( beam_sample, beam_frame );
+    auto const& clock = clockData.OpticalClock();
+    auto trig_time = clock.WithTime(clock.Time(res_sample,  res_frame));
+    auto beam_time = clock.WithTime(clock.Time(beam_sample, beam_frame));
     return raw::Trigger(res_number,
 			trig_time.Time(),
 			beam_time.Time(),
@@ -348,7 +339,8 @@ namespace trigger{
   }
 
   //##################################################################
-  void UBTriggerAlgo::AddTrigger(const raw::Trigger &new_trigger)
+  void UBTriggerAlgo::AddTrigger(detinfo::DetectorClocksData const& clockData,
+                                 const raw::Trigger &new_trigger)
   //##################################################################
   {
     auto frame  = _trig_clock.Frame(new_trigger.TriggerTime());
@@ -362,7 +354,6 @@ namespace trigger{
 
     if( frame_iter == _candidates.end() ) {
 
-      _candidates[frame] = std::map<unsigned int,raw::Trigger>();
       _candidates[frame].insert(std::pair<unsigned int,raw::Trigger>(sample,new_trigger));
       
     }else{
@@ -375,7 +366,7 @@ namespace trigger{
       
       else {
 
-	raw::Trigger combined_trigger = CombineTriggers(new_trigger, (*sample_iter).second);
+        raw::Trigger combined_trigger = CombineTriggers(clockData, new_trigger, (*sample_iter).second);
 
 	_candidates[frame][sample]=combined_trigger;
 
@@ -384,10 +375,11 @@ namespace trigger{
   }
 
   //##################################################################
-  void UBTriggerAlgo::AddTriggerPMTCosmic(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerPMTCosmic(const detinfo::DetectorClocksData& clockData,
+                                          const detinfo::ElecClock& time)
   //##################################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     // Trigger bits
     unsigned int trig_bits=0x0;
     trig_bits += ( (0x1) << kPMTTriggerCosmic );
@@ -400,15 +392,16 @@ namespace trigger{
 				trig_bits);
     
     // Add this trigger candidate
-    AddTrigger(trig_candidate);
-    _pmt_clock.SetTime(0);
+    AddTrigger(clockData, trig_candidate);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //################################################################
-  void UBTriggerAlgo::AddTriggerPMTBeam(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerPMTBeam(const detinfo::DetectorClocksData& clockData,
+                                        const detinfo::ElecClock& time)
   //################################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
    // Trigger bits
     unsigned int trig_bits=0x0;
     trig_bits += ( (0x1) << kPMTTriggerBeam );
@@ -421,44 +414,46 @@ namespace trigger{
 				trig_bits);
     
     // Add this trigger candidate
-    AddTrigger(trig_candidate);
-    _pmt_clock.SetTime(0);
+    AddTrigger(clockData, trig_candidate);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //############################################################
-  void UBTriggerAlgo::AddTriggerBNB(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerBNB(const detinfo::DetectorClocksData& clockData,
+                                    const detinfo::ElecClock& time)
   //############################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     uint32_t trig_bits = ( (0x1) << trigger::kTriggerBNB );
  
     // Create this trigger candidate object
     raw::Trigger trig_candidate(0,
 				_pmt_clock.Time(),
-				BNBStartTime(_pmt_clock).Time(),
+                                BNBStartTime(clockData, _pmt_clock).Time(),
 				trig_bits);
     
     // Add this trigger candidate
-    AddTrigger(trig_candidate);
-    _pmt_clock.SetTime(0);
+    AddTrigger(clockData, trig_candidate);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
 
   //#############################################################
-  void UBTriggerAlgo::AddTriggerNuMI(const detinfo::ElecClock& time)
+  void UBTriggerAlgo::AddTriggerNuMI(const detinfo::DetectorClocksData& clockData,
+                                     const detinfo::ElecClock& time)
   //#############################################################
   {
-    _pmt_clock.SetTime(_pmt_clock.Time(time.Time()));
+    _pmt_clock = _pmt_clock.WithTime(_pmt_clock.Time(time.Time()));
     uint32_t trig_bits = ( (0x1) << trigger::kTriggerNuMI );
 
     // Create this trigger candidate object
     raw::Trigger trig_candidate(0,
 				_pmt_clock.Time(),
-				NuMIStartTime(_pmt_clock).Time(),
+                                NuMIStartTime(clockData, _pmt_clock).Time(),
 				trig_bits);
 
     // Add this trigger candidate
-    AddTrigger(trig_candidate);
-    _pmt_clock.SetTime(0);
+    AddTrigger(clockData, trig_candidate);
+    _pmt_clock = _pmt_clock.WithTime(0);
   }
   
   //###############################################
@@ -540,7 +535,7 @@ namespace trigger{
       ShowCandidateTriggers();
 
     // Just make sure trigger clock is only used for sample/frame getter (i.e. no time used)
-    _trig_clock.SetTime(::detinfo::kTIME_MAX);
+    _trig_clock = _trig_clock.WithTime(::detinfo::kTIME_MAX);
     detinfo::ElecClock trig_time = _trig_clock;
 
     time_window_t bnb_active  (_trig_clock,_trig_clock);
@@ -549,7 +544,7 @@ namespace trigger{
     time_window_t numi_gate   (_trig_clock,_trig_clock);
     time_window_t deadtime    (_trig_clock,_trig_clock);
 
-    _trig_clock.SetTime(0);
+    _trig_clock = _trig_clock.WithTime(0);
 
     auto const mask0 = _mask.at(0);
     auto const mask1 = _mask.at(1);
@@ -579,7 +574,7 @@ namespace trigger{
 				    (*sample_iter).first,
 				    (*frame_iter).first));
 
-	trig_time.SetTime(_trig_clock.Time((*sample_iter).first,(*frame_iter).first));
+        trig_time = trig_time.WithTime(_trig_clock.Time((*sample_iter).first,(*frame_iter).first));
 
 	// If in deadtime, continue
 	if( InWindow(trig_time, deadtime) ) {
@@ -615,12 +610,16 @@ namespace trigger{
 
 	// If BNB or NuMI, open new beam trigger gate
 	if(bnb) {
-	  bnb_gate.first.SetTime((*sample_iter).first, (*frame_iter).first);
-	  bnb_gate.second.SetTime(bnb_gate.first.Time() + _trig_clock.Time(_bnb_gate_width));
+          auto& [min, max] = bnb_gate;
+          auto new_min_time = min.Time((*sample_iter).first, (*frame_iter).first);
+          min = min.WithTime(new_min_time);
+          max = max.WithTime((bnb_gate.first.Time() + _trig_clock.Time(_bnb_gate_width)));
 	}
 	if(numi) {
-	  numi_gate.first.SetTime((*sample_iter).first, (*frame_iter).first);
-	  numi_gate.second.SetTime(numi_gate.first.Time() + _trig_clock.Time(_numi_gate_width));
+          auto& [min, max] = numi_gate;
+          auto new_min_time = min.Time((*sample_iter).first, (*frame_iter).first);
+          min = min.WithTime(new_min_time);
+          max = max.WithTime(numi_gate.first.Time() + _trig_clock.Time(_numi_gate_width));
 	}
 	
 	auto const bnb_gate_active  = InWindow(trig_time, bnb_gate);  // true = this trigger is within bnb gate
@@ -684,16 +683,15 @@ namespace trigger{
 	// Ask OR condition of p0, p1, and p8
 	if( p0 || p1 || p8 ) {
 	  // New trigger found. 
-
-	  deadtime.first.SetTime(trig_time.Time());
-	  deadtime.second.SetTime(trig_time.Time());
-	  deadtime.second += (int)(_deadtime * _trig_clock.FrameTicks() - 1);
+          auto& [min, max] = deadtime;
+          min = min.WithTime(trig_time.Time());
+          max = max.WithTime(trig_time.Time()).AdvanceTimeBy((int)(_deadtime * _trig_clock.FrameTicks() - 1));
 	  if(_debug_mode) {
 	    std::cout<<Form("    Dead time set: (%d,%d) => (%d,%d) with trigger @ (%d,%d)",
-			    deadtime.first.Sample(),
-			    deadtime.first.Frame(),
-			    deadtime.second.Sample(),
-			    deadtime.second.Frame(),
+                            min.Sample(),
+                            min.Frame(),
+                            max.Sample(),
+                            max.Frame(),
 			    trig_time.Sample(),
 			    trig_time.Frame()
 			    )
@@ -702,16 +700,14 @@ namespace trigger{
 
 	  // Assign active window for bnb/numi
 	  if(bnb) {
-	    bnb_active.first.SetTime(trig_time.Time());
-	    bnb_active.first  += (int)(_bnb_cosmic_allow_min);
-	    bnb_active.second.SetTime(trig_time.Time());
-	    bnb_active.second += (int)(_bnb_cosmic_allow_max);
+            auto& [min, max] = bnb_active;
+            min = min.WithTime(trig_time.Time()).AdvanceTimeBy((int)(_bnb_cosmic_allow_min));
+            max = max.WithTime(trig_time.Time()).AdvanceTimeBy((int)(_bnb_cosmic_allow_max));
 	  }
 	  if(numi) {
-	    numi_active.first.SetTime(trig_time.Time());
-	    numi_active.first  += (int)(_numi_cosmic_allow_min);
-	    numi_active.second.SetTime(trig_time.Time());
-	    numi_active.second += (int)(_numi_cosmic_allow_max);
+            auto& [min, max] = numi_active;
+            min = min.WithTime(trig_time.Time()).AdvanceTimeBy((int)(_numi_cosmic_allow_min));
+            max = max.WithTime(trig_time.Time()).AdvanceTimeBy((int)(_numi_cosmic_allow_max));
 	  }
 	  
 	  // Store trigger object
