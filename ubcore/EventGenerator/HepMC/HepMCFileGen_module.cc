@@ -132,6 +132,10 @@ private:
 
   std::ifstream* fInputFile;
 
+  //added by C Thorpe - metadata file
+//  std::ifstream* fMetaDataFile;
+  
+
   std::string              fFileSearchPaths; ///< colon separated set of path stems (to be set)
   std::vector<std::string> fFilePatterns;    ///< wildcard patterns files containing histograms or ntuples, or txt (to be set)
   std::vector<std::string> fSelectedFiles;   ///< flux files selected after wildcard expansion and subset selection
@@ -212,12 +216,22 @@ void evgen::HepMCFileGen::endSubRun(art::SubRun& sr)
     p->totpot     = fEventsPerSubRun * fEventsPerPOT;
     p->totgoodpot = fEventsPerSubRun * fEventsPerPOT;
     sr.put(std::move(p));
+
+   //C Thorpe - read events per POT from metadata file
+   
+//   fMetaDataFile = new std::ifstream(, std::fstream::in);
+ 
+
+
+
+
     return;
   }
 
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::produce(art::Event & e)
 {
+
 
   // check that the file is still good
   if( !fInputFile->good() ) {
@@ -285,7 +299,8 @@ void evgen::HepMCFileGen::produce(art::Event & e)
     simb::MCParticle part(i, pdg, "primary", firstMother, mass, status);
     part.AddTrajectoryPoint(pos, mom);
 
-    if (abs(pdg) == 14 || abs(pdg) == 12) {
+    //initial neutrino will always have status code 0
+    if ( (abs(pdg) == 14 || abs(pdg) == 12) && status == 0 ) {
       set_neutrino = true;
       ccnc = firstDaughter; // for the neutrino we write ccnc in place of 1st daugther
       mode = secondDaughter; // for the neutrino we write mode in place of 2nd daugther

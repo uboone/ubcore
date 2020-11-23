@@ -73,7 +73,12 @@ outputs:
 services.DetectorClocksService.InheritClockConfig: false
 
 #reduce file name length
-outputs.out1.fileName: "%ifb_gen.root"
+#outputs.out1.fileName: "%ifb_gen.root"
 
 physics.producers.generator.FluxCopyMethod: "IFDH"
+
+physics.producers.generator.FilePatterns:["nuwro_input.hepmc"]
+physics.producers.generator.FileSearchPaths:""
+
+physics.producers.generator.EventsPerPOT: 1.8484e-19
 

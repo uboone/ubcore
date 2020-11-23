@@ -1,3 +1,4 @@
+add_subdirectory(HyperonProduction)
 add_subdirectory(BurstNoiseMetrics)
 add_subdirectory(DLFilters)
 add_subdirectory(DQMTools)
