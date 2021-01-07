@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<!-- Generate sample of hyperons and propage through recostruction chain -->
+
+<!DOCTYPE project [
+<!ENTITY release "v08_00_00_28">
+<!ENTITY file_type "overlay">
+<!ENTITY run_type "physics">
+<!ENTITY username "cthorpe">
+<!ENTITY name "convert_events_uboone_numi_fhc_ultrapure_TEST">
+<!ENTITY tag "nuwro_test">
+<!ENTITY projectout   "/pnfs/uboone/scratch/users/cthorpe/v08_00_00_28/work">
+<!ENTITY logout       "/pnfs/uboone/scratch/users/cthorpe/v08_00_00_28">
+]>
+
+
+<job>
+
+
+<project name="&name;">
+
+<numevents>200</numevents>
+
+<os>SL7</os>
+
+<resource>DEDICATED,OPPORTUNISTIC</resource>
+
+<larsoft>
+<tag>&release;</tag>
+<qual>e17:prof</qual>
+<local>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter_V2/nuwro_converter.tar</local>
+</larsoft>
+
+  <version>prod_&release;</version>
+  <check>0</check>
+
+<stage name="gen">
+<inputdef>prod_extunbiased_swizzle_inclusive_v3_goodruns_mcc9_run1_high_lifetime</inputdef>
+<startscript>condor_start_project_crt_merge_v06_26_01_26.sh</startscript>
+<initsource>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter/nuwro_script.sh</initsource>
+<fcl>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter/prodhepmc_overlay_uboone.fcl</fcl>
+<outdir>&logout;/&name;_all/out/&release;</outdir>
+<logdir>&logout;/&name;_all/log/&release;</logdir>
+<workdir>&projectout;</workdir>
+<numjobs>5</numjobs>
+<maxfilesperjob>1</maxfilesperjob>
+<filelistdef>1</filelistdef>
+<datafiletypes>root</datafiletypes>
+<datatier>generated</datatier>
+<jobsub> --disk=5GB --expected-lifetime=4h 
+-f /pnfs/uboone/persistent/users/cthorpe/hyperon/hepmc_files/uboone_numi_fhc_ultrapure/hepmc_files.list 
+-f /pnfs/uboone/persistent/users/cthorpe/hyperon/hepmc_files/uboone_numi_fhc_ultrapure/hepmc_metadata.meta
+</jobsub>
+<defname>&name;_gen</defname>
+<memory>4000</memory>
+</stage>
+
+  <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
+
+
+</job>

@@ -1,0 +1,38 @@
+#include "HyperonConfig.fcl"
+
+
+process_name: HyperonGoodRecoFilter
+
+services:
+{
+  scheduler:    { defaultExceptions: false }    # Make all uncaught exceptions fatal.
+}
+
+
+outputs: {
+  out: {
+    module_type: RootOutput
+    fileName: "%ifb_%tc_hyperonrecofilter.root"
+    dataTier: "generated"  
+    compressionLevel: 1
+    SelectEvents: [ hyperon_path ]
+  }
+}
+
+physics:
+{
+
+ filters: {
+   hyperoneventfilter: @local::HyperonConfig
+ }
+
+ hyperon_path: [ hyperoneventfilter ]
+ out_stream: [ out ]
+
+ trigger_paths: [ hyperon_path ]
+ end_paths: [ out_stream ]
+}
+
+
+physics.filters.hyperoneventfilter.module_type: HyperonGoodRecoFilter
+

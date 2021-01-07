@@ -78,7 +78,10 @@ services.DetectorClocksService.InheritClockConfig: false
 physics.producers.generator.FluxCopyMethod: "IFDH"
 
 physics.producers.generator.FilePatterns:["nuwro_input.hepmc"]
-physics.producers.generator.FileSearchPaths:""
+
+#seach working dir by default
+physics.producers.generator.FileSearchPaths:"."
 
 physics.producers.generator.EventsPerPOT: 1.8484e-19
+
 

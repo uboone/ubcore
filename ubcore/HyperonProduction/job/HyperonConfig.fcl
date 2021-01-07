@@ -1,0 +1,32 @@
+BEGIN_PROLOG
+
+HyperonConfig:
+
+{
+module_type: HyperonGoodRecoFilter
+
+GenieGenModuleLabel: "generator"
+GeantLabel: "largeant"
+
+PFParticleLabel: "pandora"
+TrackLabel: "pandora"
+VertexLabel: "pandora"
+ShowerLabel: "pandora"
+MetadataLabel: "pandora" 
+
+PIDLabel: "pandorapid"
+CaloLabel: "pandoracali"
+HitLabel: "gaushit"
+TrackHitAssnLabel: "pandora" 
+ShowerHitAssnLabel: "pandora"
+HitTruthAssnLabel: "gaushitTruthMatch"
+
+Print: true
+}
+
+END_PROLOG
+
+
+
+
+

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       HyperonSignal
+// Class:       HyperonSignalTruthFilter
 // Plugin Type: filter (art v3_01_02)
-// File:        HyperonSignal_module.cc
+// File:        HyperonSignalTruthFilter_module.cc
 //
 // Generated at Mon Nov 23 05:39:28 2020 by Christopher Thorpe using cetskelgen
 // from cetlib version v3_05_01.
@@ -31,21 +31,21 @@
 
 
 namespace hyperon {
-	class HyperonSignal;
+	class HyperonSignalTruthFilter;
 }
 
 
-class hyperon::HyperonSignal : public art::EDFilter {
+class hyperon::HyperonSignalTruthFilter : public art::EDFilter {
 	public:
-		explicit HyperonSignal(fhicl::ParameterSet const& p);
+		explicit HyperonSignalTruthFilter(fhicl::ParameterSet const& p);
 		// The compiler-generated destructor is fine for non-base
 		// classes without bare pointers or other resource use.
 
 		// Plugins should not be copied or assigned.
-		HyperonSignal(HyperonSignal const&) = delete;
-		HyperonSignal(HyperonSignal&&) = delete;
-		HyperonSignal& operator=(HyperonSignal const&) = delete;
-		HyperonSignal& operator=(HyperonSignal&&) = delete;
+		HyperonSignalTruthFilter(HyperonSignalTruthFilter const&) = delete;
+		HyperonSignalTruthFilter(HyperonSignalTruthFilter&&) = delete;
+		HyperonSignalTruthFilter& operator=(HyperonSignalTruthFilter const&) = delete;
+		HyperonSignalTruthFilter& operator=(HyperonSignalTruthFilter&&) = delete;
 
 		// Required functions.
 		bool filter(art::Event& e) override;
@@ -77,12 +77,18 @@ class hyperon::HyperonSignal : public art::EDFilter {
 		std::string fGenieGenModuleLabel;
 		std::string fGeantModuleLabel;
 
+		//////////////////////////////
+		//      Misc Parameters     //
+		//////////////////////////////
+
+		bool fPrint;
+
 
 
 };
 
 
-hyperon::HyperonSignal::HyperonSignal(fhicl::ParameterSet const& p)
+hyperon::HyperonSignalTruthFilter::HyperonSignalTruthFilter(fhicl::ParameterSet const& p)
 	: EDFilter{p}  // ,
 	// More initializers here.
 {
@@ -91,16 +97,17 @@ hyperon::HyperonSignal::HyperonSignal(fhicl::ParameterSet const& p)
 
 	fGenieGenModuleLabel = p.get<std::string>("GenieGenModuleLabel");
 	fGeantModuleLabel = p.get<std::string>("GeantLabel");
-
+	fPrint = p.get<bool>("Print",false);
+	
 
 
 }
 
-bool hyperon::HyperonSignal::filter(art::Event& e)
+bool hyperon::HyperonSignalTruthFilter::filter(art::Event& e)
 {
-	// Implementation of required member function here.
 
-	std::cout << "New Event" << std::endl;
+
+	if(fPrint) std::cout << std::endl << "New Event" << std::endl;
 
 	bool IsLambda=false;
 	bool IsNuMuBar=false;
@@ -108,12 +115,48 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 	TVector3 PrimaryVertex;
 	TVector3 DecayVertex;
 
+	/*
+	//Get event generator information
+
+	art::Handle<std::vector<simb::MCTruth>> genMCTruthHandle;
+	std::vector<art::Ptr<simb::MCTruth>> genMCTruthVect;
+	genMCTruthVect.clear();
+	
+	std::vector<int> genie_primary_IDs;
+
+	
+	if(e.getByLabel(fGenieGenModuleLabel,genMCTruthHandle)) art::fill_ptr_vector(genMCTruthVect,genMCTruthHandle);
+	else {	std::cout << "No MC Truth Object in event!" << std::endl; return false; }
+
+
+	if( genMCTruthVect.size() != 1 ){ std::cout << "N MC Truths != 1" << std::endl; return false; }
+
+	for(const art::Ptr<simb::MCTruth> &mct : genMCTruthVect){
+
+	//get list of mc particles in MC Truth
+
+                for(int k_particle=0;k_particle<mct->NParticles();k_particle++){
+
+
+                        simb::MCParticle Part = mct->GetParticle(k_particle);
+
+			if(Part.StatusCode() == 1){ genie_primary_IDs.push_back(Part.TrackId()); std::cout << Part.TrackId() << " " << Part.PdgCode() << std::endl; }
+	
+		}
+
+
+
+	}
+	
+*/
 
 	//Get Geant 4 information
 
 	art::Handle<std::vector<simb::MCParticle>>g4particleHandle;
 	std::vector< art::Ptr<simb::MCParticle>>g4particleVect;
 	g4particleVect.clear();
+
+
 
 	if(e.getByLabel(fGeantModuleLabel,g4particleHandle)) art::fill_ptr_vector(g4particleVect,g4particleHandle);
 	else
@@ -131,11 +174,14 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 	//map between particle ID numbers (g4p->TrackId()) and pointers to simb::MCParticle 
 	partByID.clear();
 
+
 	for(const art::Ptr<simb::MCParticle> &g4p : g4particleVect){
 
 		if(g4p->Mother() == 0){
 
 			primary_IDs.push_back(g4p->TrackId());
+
+		
 
 			if(g4p->PdgCode() == 3122 && g4p->EndProcess() == "Decay"){
 				IsLambda = true;
@@ -163,7 +209,7 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 
 
 	//if there is no lambda in final state, reject event
-	if(!IsLambda) return false;
+	if(!IsLambda){ if(fPrint) std::cout << "Event does not contain Lambda in final state" << std::endl; return false; }
 
 	//search list of primary IDs for antimuon
 
@@ -186,11 +232,13 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 	}
 
 
+
 	//check fiducial volume
-	if(!inActiveTPC(PrimaryVertex)) return false;
+	if(!inActiveTPC(PrimaryVertex)){ if(fPrint) std::cout << "Outside fiducial volume" << std::endl; return false; }
+
 
 	//check event is muon antineutrino
-	if(!IsNuMuBar) return false;
+	if(!IsNuMuBar){ std::cout << "Not a NuMuBar event" << std::endl; return false; }
 
 	//check decay products
 	bool GotProton=false;
@@ -219,7 +267,9 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 
 }
 
-	std::cout << nProducts << std::endl;
+	if(nProducts != 2 && fPrint) std::cout << "Num decay products != 2" << std::endl;
+	if(!GotProton  && fPrint) std::cout << "No true decay proton found" << std::endl;
+	if(!GotPion  && fPrint) std::cout << "No true decay pi minus found" << std::endl;
 
 	if(nProducts != 2 || !GotProton || !GotPion) return false;
 
@@ -227,14 +277,14 @@ bool hyperon::HyperonSignal::filter(art::Event& e)
 	return true;
 }
 
-void hyperon::HyperonSignal::beginJob()
+void hyperon::HyperonSignalTruthFilter::beginJob()
 {
 	// Implementation of optional member function here.
 }
 
-void hyperon::HyperonSignal::endJob()
+void hyperon::HyperonSignalTruthFilter::endJob()
 {
 	// Implementation of optional member function here.
 }
 
-DEFINE_ART_MODULE(hyperon::HyperonSignal)
+DEFINE_ART_MODULE(hyperon::HyperonSignalTruthFilter)

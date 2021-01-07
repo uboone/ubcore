@@ -11,6 +11,12 @@ art_make(
                 ${MF_MESSAGELOGGER}
 		
 		nusimdata_SimulationBase
+                lardataobj_RecoBase
+
+		${LARRECO_LIB}
+		${LARDATA_LIB}
+
+
 
                 art_Persistency_Common canvas
                 art_Persistency_Provenance canvas

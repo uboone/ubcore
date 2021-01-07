@@ -133,8 +133,9 @@ private:
   std::ifstream* fInputFile;
 
   //added by C Thorpe - metadata file
-//  std::ifstream* fMetaDataFile;
-  
+  std::ifstream* fMetadataFile;
+  std::string fMetadataFileName; //File Containing metadata  
+  bool UseMetadataFile;
 
   std::string              fFileSearchPaths; ///< colon separated set of path stems (to be set)
   std::vector<std::string> fFilePatterns;    ///< wildcard patterns files containing histograms or ntuples, or txt (to be set)
@@ -151,6 +152,7 @@ private:
 evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
   : EDProducer{p}
   , fInputFile(0)
+  , fMetadataFileName{p.get<std::string>("MetadataFileName","")} //if no metadata file name given, revert to fhicl EventsPerPOT 
   , fFileSearchPaths{p.get<std::string>("FileSearchPaths")}
   , fFilePatterns{p.get<std::vector<std::string>>("FilePatterns")}
   , fFileCopyMethod{p.get<std::string>("FluxCopyMethod","DIRECT")}
@@ -160,9 +162,13 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
 {
   srand (time(0));
 
+  if(fMetadataFileName != "") UseMetadataFile = true;
+  else UseMetadataFile = false;
+
   produces< std::vector<simb::MCTruth>   >();
   produces< sumdata::RunData, art::InRun >();
   produces< sumdata::POTSummary, art::InSubRun >();
+//  std::cout << "Metadata file name is: " << fMetadataFileName << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -198,6 +204,32 @@ void evgen::HepMCFileGen::beginJob()
 
   open_file();
   
+  //open metadata file
+  if( UseMetadataFile ){
+
+	  std::cout << "Metadata file is: " << fFileSearchPaths + "/" + fMetadataFileName << std::endl;
+	  std::string MetadataFileFullName = fFileSearchPaths + "/" + fMetadataFileName;
+	  fMetadataFile = new std::ifstream(MetadataFileFullName, std::fstream::in); 
+
+	  //check metadata file is ok
+	  if( !fMetadataFile->good() ) throw cet::exception("HepMCFileGen") << "Metadata file cannot be read in produce" << std::endl;
+
+	  double POT_Per_Event=-1;
+	  std::string line;
+	  while(getline(*fMetadataFile,line)){
+
+		if(line.find("POT_Per_Event=") != std::string::npos){
+                          std::size_t equalspos = line.find("=");
+                          POT_Per_Event = atof(line.substr(equalspos+1).c_str());
+                  }
+	  }
+
+	if(POT_Per_Event == -1) throw cet::exception("HepMCFileGen") << "Metadata file " << MetadataFileFullName << " does not contain any line POT_Per_Event=" << std::endl;
+
+  fEventsPerPOT = 1.0/POT_Per_Event;
+
+  }
+
 }
 
 //------------------------------------------------------------------------------
@@ -212,18 +244,13 @@ void evgen::HepMCFileGen::beginRun(art::Run& run)
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::endSubRun(art::SubRun& sr)
   {
-    auto p = std::make_unique<sumdata::POTSummary>();
-    p->totpot     = fEventsPerSubRun * fEventsPerPOT;
-    p->totgoodpot = fEventsPerSubRun * fEventsPerPOT;
-    sr.put(std::move(p));
-
-   //C Thorpe - read events per POT from metadata file
-   
-//   fMetaDataFile = new std::ifstream(, std::fstream::in);
+  
+   std::cout << "Using EventsPerPOT = " << fEventsPerPOT << std::endl;
  
-
-
-
+    auto p = std::make_unique<sumdata::POTSummary>();
+    p->totpot     = fEventsPerSubRun / fEventsPerPOT;
+    p->totgoodpot = fEventsPerSubRun / fEventsPerPOT;
+    sr.put(std::move(p));
 
     return;
   }
@@ -231,8 +258,6 @@ void evgen::HepMCFileGen::endSubRun(art::SubRun& sr)
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::produce(art::Event & e)
 {
-
-
   // check that the file is still good
   if( !fInputFile->good() ) {
     open_file();

@@ -68,3 +68,9 @@ outputs:
 }
 
 
+physics.producers.generator.FilePatterns:["nuwro_input.hepmc"]
+
+#seach working dir by default
+physics.producers.generator.FileSearchPaths:"."
+
+physics.producers.generator.EventsPerPOT: 1.8484e-19
