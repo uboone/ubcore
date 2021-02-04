@@ -35,7 +35,7 @@ ubobj                   v09_15_00
 nutools                 v3_09_02
 nug4			v1_06_02
 nurandom		v1_05_02
-lardata                 v09_20_00_rc0
+lardata                 v09_02_00
 cetbuildtools	        v7_17_01	-	only_for_build
 end_product_list
 
