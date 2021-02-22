@@ -71,6 +71,7 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/JamesRandom.h"
 #include "CLHEP/Random/RandPoissonQ.h"
+
 // #include "ifdh.h"  //to handle flux files
 
 namespace hsngen
@@ -100,6 +101,11 @@ namespace hsngen
     std::vector<double> fBoundariesY;
     std::vector<double> fBoundariesZ;
     std::vector<double> fGeneratedTimeWindow;
+    bool fMajoranaNeutrino;
+    bool fNonMajorana_NeutrinoDecays;
+    bool fNonMajorana_AntiNeutrinoDecays;
+    bool fGenerateSingleParticle;
+    int fSingleParticlePdgCode;
 
     // Analysis variables
     Settings gSett;
@@ -112,7 +118,7 @@ namespace hsngen
     TTree *tTree;
     int run, subrun, event;
     std::vector<int> pdgCode;
-    std::vector<double> Vx, Vy, Vz, T, Px, Py, Pz, E, P, Pt;
+    std::vector<double> Vx, Vy, Vz, T, Px, Py, Pz, E, P, mass, Pt;
     double OpeningAngle, InvariantMass;
     CLHEP::HepRandomEngine& fEngine;
 
@@ -121,7 +127,8 @@ namespace hsngen
   }; // END class HSNGen
 
   HSNGen::HSNGen(fhicl::ParameterSet const& p)
-  : EDProducer{p}, fPrintHepEvt(p.get<bool>("PrintHepEvt")),
+  : art::EDProducer{p},
+    fPrintHepEvt(p.get<bool>("PrintHepEvt")),
     fSterileMass(p.get<double>("SterileMass")),
     fDecayChannel(p.get<double>("DecayChannel")),
     fFluxFile(p.get<std::string>("FluxFile")),
@@ -132,11 +139,17 @@ namespace hsngen
     fBoundariesY(p.get<std::vector<double>>("BoundariesY")),
     fBoundariesZ(p.get<std::vector<double>>("BoundariesZ")),
     fGeneratedTimeWindow(p.get<std::vector<double>>("GeneratedTimeWindow")),
+    fMajoranaNeutrino(p.get<bool>("MajoranaNeutrino")),
+    fNonMajorana_NeutrinoDecays(p.get<bool>("NonMajorana_NeutrinoDecays")),
+    fNonMajorana_AntiNeutrinoDecays(p.get<bool>("NonMajorana_AntiNeutrinoDecays")),
+    fGenerateSingleParticle(p.get<bool>("GenerateSingleParticle")),
+    fSingleParticlePdgCode(p.get<int>("SingleParticlePdgCode")),
     // create a default random engine; obtain the random seed from NuRandomService,
     // unless overridden in configuration with key "Seed"
     fEngine(art::ServiceHandle<rndm::NuRandomService>()
             ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
   {
+    // Create larsoft products that will be added to the event
     produces< std::vector<simb::MCTruth> >();
     produces< sumdata::RunData, art::InRun >(); 
   }
@@ -148,6 +161,7 @@ namespace hsngen
     tTree->Branch("run",&run,"run/I");
     tTree->Branch("subrun",&subrun,"subrun/I");
     tTree->Branch("event",&event,"event/I");
+    tTree->Branch("PdgCode",&pdgCode);
     tTree->Branch("Vx",&Vx);
     tTree->Branch("Vy",&Vy);
     tTree->Branch("Vz",&Vz);
@@ -157,6 +171,7 @@ namespace hsngen
     tTree->Branch("Pz",&Pz);
     tTree->Branch("E",&E);
     tTree->Branch("P",&P);
+    tTree->Branch("Mass",&mass);
     tTree->Branch("Pt",&Pt);
     tTree->Branch("OpeningAngle",&OpeningAngle);
     tTree->Branch("InvariantMass",&InvariantMass);
@@ -195,6 +210,7 @@ namespace hsngen
     Pz.clear();
     E.clear();
     P.clear();
+    mass.clear();
     Pt.clear();
   } // END function ClearData
 
@@ -211,22 +227,73 @@ namespace hsngen
     // Generate observables characterizing the event
     double neutrinoTime = -1;
     Observables obs;
+
+    // Keep MC generating event until the neutrino time is in the defined timing window
     while (neutrinoTime <= fGeneratedTimeWindow[0] || neutrinoTime >=fGeneratedTimeWindow[1])
     {
       GenerateObservables(fEngine, gChan, gFlux, gSett, obs);
       neutrinoTime = obs.time;
     }
 
+    // Flat random provider
+    CLHEP::RandFlat flat(fEngine);
+    // Determine the right charge for the decay products based on the fcl settings
+    int pdg1 = 0;
+    int pdg2 = 0;
+    // Dirac sterile neutrinos
+    if (gSett.sterileType == 1)
+    {
+      pdg1 = obs.pdg1;
+      pdg2 = obs.pdg2;
+    }
+    // Dirac sterile antineutrinos
+    if (gSett.sterileType == 2)
+    {
+      pdg1 = -1*obs.pdg1;
+      pdg2 = -1*obs.pdg2;
+    }
+    // Majorana sterile neutrinos
+    if (gSett.sterileType == 0)
+    {
+      double rr = flat();
+      if (rr<0.5)
+      {
+        pdg1 = -1*obs.pdg1;
+        pdg2 = -1*obs.pdg2;
+      }
+      else
+      {
+        pdg1 = obs.pdg1;
+        pdg2 = obs.pdg2;
+      }
+    }
+
     // Generate MCParts from observables
-    simb::MCParticle p1(0,obs.pdg1,"primary",-1,obs.mass1,1);
-    simb::MCParticle p2(1,obs.pdg2,"primary",-1,obs.mass2,1);
+    simb::MCParticle p1(0,pdg1,"primary",-1,obs.mass1,1);
+    simb::MCParticle p2(1,pdg2,"primary",-1,obs.mass2,1);
     TLorentzVector pos(obs.xPos, obs.yPos, obs.zPos, obs.time);
     TLorentzVector mom1(obs.P1[0],obs.P1[1],obs.P1[2],obs.E1);
     TLorentzVector mom2(obs.P2[0],obs.P2[1],obs.P2[2],obs.E2);
     p1.AddTrajectoryPoint(pos,mom1);
     p2.AddTrajectoryPoint(pos,mom2);
-    truth.Add(p1);
-    truth.Add(p2);
+    if(!fGenerateSingleParticle)
+    {
+      truth.Add(p1);
+      truth.Add(p2);
+    }
+    else
+    {
+      printf("p1 PDG: %i\n", int(p1.PdgCode()));
+      if((p1.PdgCode()==fSingleParticlePdgCode) || (p1.PdgCode()== -1*fSingleParticlePdgCode))
+      {
+        truth.Add(p1);
+      } 
+      printf("p2 PDG: %i\n", int(p2.PdgCode()));
+      if((p2.PdgCode()==fSingleParticlePdgCode) || (p2.PdgCode()== -1*fSingleParticlePdgCode))
+      {
+        truth.Add(p2);
+      }
+    }
     truthcol->push_back(truth);
     evt.put(std::move(truthcol));
 
@@ -241,6 +308,7 @@ namespace hsngen
     Pz.push_back(p1.Pz());
     E.push_back(p1.E());
     P.push_back(p1.P());
+    mass.push_back(p1.Mass());
     Pt.push_back(p1.Pt());
     pdgCode.push_back(p2.PdgCode());
     Vx.push_back(p2.Vx());
@@ -252,12 +320,18 @@ namespace hsngen
     Pz.push_back(p2.Pz());
     E.push_back(p2.E());
     P.push_back(p2.P());
+    mass.push_back(p1.Mass());
     Pt.push_back(p2.Pt());
     double dotProduct = Px[0]*Px[1] + Py[0]*Py[1] + Pz[0]*Pz[1];
     OpeningAngle = dotProduct / float(P[0]*P[1]);
     double eTerm = pow((E[0] + E[1]),2.);
     double pTerm = pow(P[0],2.) + pow(P[1],2.) + 2.*dotProduct;
     InvariantMass = sqrt(eTerm - pTerm);
+
+    run = evt.run();
+    subrun = evt.subRun();
+    event = evt.event();
+
     tTree->Fill();
 
     gFakeRunNumber++;
@@ -278,6 +352,30 @@ namespace hsngen
     set.boundariesY = fBoundariesY;
     set.boundariesZ = fBoundariesZ;
     set.generatedTimeWindow = fGeneratedTimeWindow;
+
+    // Make checks to make sure that arguments provided are consistent
+    if (fMajoranaNeutrino)
+    {
+      printf("Generating Majorana neutrino decays.\nFor channels allowing it, the decays will be split 50/50 into neutrino decays and antineutrino decays.\nOptions for non-majorana neutrino will be ignored.\n");
+      set.sterileType = 0;
+    }
+    else
+    {
+      if (fNonMajorana_NeutrinoDecays & fNonMajorana_AntiNeutrinoDecays)
+      {
+        printf("You have selected non-Majorana neutrinos and BOTH type of decays. Are you sure that's what you want to do?\nPlease select either neutrino decays or antineutrino decays.\n");
+        std::exit(1);
+      }
+      if (!fNonMajorana_NeutrinoDecays & !fNonMajorana_AntiNeutrinoDecays)
+      {
+        printf("You have selected non-Majorana neutrinos and NEITHER type of decay. Are you sure that's what you want to do?\nPlease select either neutrino decays or antineutrino decays.\n");
+        std::exit(1);
+      }
+      if (fNonMajorana_NeutrinoDecays) set.sterileType = 1;
+      if (fNonMajorana_AntiNeutrinoDecays) set.sterileType = 2;
+    }
+
+    return;
   }
 
   DEFINE_ART_MODULE(HSNGen)
