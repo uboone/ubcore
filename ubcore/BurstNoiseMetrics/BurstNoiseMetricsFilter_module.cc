@@ -16,7 +16,7 @@
 #include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "art/Framework/Services/Optional/TFileService.h"
+#include "art_root_io/TFileService.h"
 #include <memory>
 #include <chrono>
 // data-products
@@ -97,7 +97,8 @@ void BurstNoiseMetricsFilter::BurstNoiseMetricsFilter::beginJob()
   FFT_U_uberwf = tfs->make<TH1D>("FFT_U_uberwf", "FFT of U_UberWF; ADCvals; Frequencies",9594, -0.5, 9593.5);
 }
 
-BurstNoiseMetricsFilter::BurstNoiseMetricsFilter(fhicl::ParameterSet const & p)
+BurstNoiseMetricsFilter::BurstNoiseMetricsFilter(fhicl::ParameterSet const & p) :
+  art::EDFilter(p)
 
 // Initialize member data here.
 {
@@ -160,7 +161,7 @@ bool BurstNoiseMetricsFilter::filter(art::Event & e)
   /////////////////////////////////////////////////
   double UChanADCval_temp = 0;
   U_median = 0.;
-  for(int k = 0; k < allrawdigits_vec.at(1).Samples(); k++){	
+  for(unsigned int k = 0; k < allrawdigits_vec.at(1).Samples(); k++){	
     //UberWaveform Calculations
     for (size_t i_ar = 0, size_allrawdigits = rawdigit_handle->size(); i_ar != size_allrawdigits; ++i_ar){
       if(allrawdigits_vec.at(i_ar).Channel() < 2400){
