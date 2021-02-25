@@ -123,6 +123,7 @@ public:
   void produce(art::Event & e)        override;
   void beginJob()               		  override;
   void beginRun(art::Run & run) 		  override;
+  void beginSubRun(art::SubRun& sr)     override;
   void endSubRun(art::SubRun& sr)     override;
 
 private:
@@ -168,7 +169,7 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
   produces< std::vector<simb::MCTruth>   >();
   produces< sumdata::RunData, art::InRun >();
   produces< sumdata::POTSummary, art::InSubRun >();
-//  std::cout << "Metadata file name is: " << fMetadataFileName << std::endl;
+  //std::cout << "Metadata file name is: " << fMetadataFileName << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -207,6 +208,7 @@ void evgen::HepMCFileGen::beginJob()
   //open metadata file
   if( UseMetadataFile ){
 
+	  //TODO: Add more robust way of locating this file
 	  std::cout << "Metadata file is: " << fFileSearchPaths + "/" + fMetadataFileName << std::endl;
 	  std::string MetadataFileFullName = fFileSearchPaths + "/" + fMetadataFileName;
 	  fMetadataFile = new std::ifstream(MetadataFileFullName, std::fstream::in); 
@@ -214,7 +216,9 @@ void evgen::HepMCFileGen::beginJob()
 	  //check metadata file is ok
 	  if( !fMetadataFile->good() ) throw cet::exception("HepMCFileGen") << "Metadata file cannot be read in produce" << std::endl;
 
+	  //set sentinel value
 	  double POT_Per_Event=-1;
+
 	  std::string line;
 	  while(getline(*fMetadataFile,line)){
 
@@ -235,18 +239,30 @@ void evgen::HepMCFileGen::beginJob()
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::beginRun(art::Run& run)
 {
-    fEventsPerSubRun = 0;
     art::ServiceHandle<geo::Geometry const> geo;
     run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
   }
 
+//------------------------------------------------------------------------------
+void evgen::HepMCFileGen::beginSubRun(art::SubRun& sr)
+  {
+
+	//reset event counter for this subrun
+	fEventsPerSubRun = 0;  
+
+    return;
+  }
 
 //------------------------------------------------------------------------------
 void evgen::HepMCFileGen::endSubRun(art::SubRun& sr)
   {
-  
-   std::cout << "Using EventsPerPOT = " << fEventsPerPOT << std::endl;
  
+   //generate the POT summary
+
+   //std::cout << "Using EventsPerPOT = " << fEventsPerPOT << std::endl;
+   //std::cout << "Events in this subrun = " <<  fEventsPerSubRun << std::endl;
+   std::cout << "Subrun POT = " << fEventsPerSubRun / fEventsPerPOT << std::endl;
+
     auto p = std::make_unique<sumdata::POTSummary>();
     p->totpot     = fEventsPerSubRun / fEventsPerPOT;
     p->totgoodpot = fEventsPerSubRun / fEventsPerPOT;

@@ -1,3 +1,4 @@
+add_subdirectory(job)
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 set( IFDH_AS_SERVICE_LIB_LIST

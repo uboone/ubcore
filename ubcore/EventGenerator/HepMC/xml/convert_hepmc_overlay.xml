@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
-<!-- Generate sample of hyperons and propage through recostruction chain -->
+<!-- Convert hepmc events into LArSoft format and overlay with offbeam data -->
 
 <!DOCTYPE project [
 <!ENTITY release "v08_00_00_28">
 <!ENTITY file_type "overlay">
 <!ENTITY run_type "physics">
 <!ENTITY username "cthorpe">
-<!ENTITY name "convert_events_uboone_numi_fhc_ultrapure_TEST">
+<!ENTITY name "convert_events_uboone_numi_TEST">
 <!ENTITY tag "nuwro_test">
 <!ENTITY projectout   "/pnfs/uboone/scratch/users/cthorpe/v08_00_00_28/work">
 <!ENTITY logout       "/pnfs/uboone/scratch/users/cthorpe/v08_00_00_28">
@@ -19,7 +19,7 @@
 
 <project name="&name;">
 
-<numevents>200</numevents>
+<numevents>250</numevents>
 
 <os>SL7</os>
 
@@ -28,15 +28,14 @@
 <larsoft>
 <tag>&release;</tag>
 <qual>e17:prof</qual>
-<local>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter_V2/nuwro_converter.tar</local>
+<local>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter/nuwro_converter.tar</local>
 </larsoft>
 
   <version>prod_&release;</version>
   <check>0</check>
 
-<stage name="gen">
+<stage name="convert">
 <inputdef>prod_extunbiased_swizzle_inclusive_v3_goodruns_mcc9_run1_high_lifetime</inputdef>
-<startscript>condor_start_project_crt_merge_v06_26_01_26.sh</startscript>
 <initsource>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter/nuwro_script.sh</initsource>
 <fcl>/pnfs/uboone/resilient/users/cthorpe/nuwro_converter/prodhepmc_overlay_uboone.fcl</fcl>
 <outdir>&logout;/&name;_all/out/&release;</outdir>
@@ -47,12 +46,14 @@
 <filelistdef>1</filelistdef>
 <datafiletypes>root</datafiletypes>
 <datatier>generated</datatier>
-<jobsub> --disk=5GB --expected-lifetime=4h 
--f /pnfs/uboone/persistent/users/cthorpe/hyperon/hepmc_files/uboone_numi_fhc_ultrapure/hepmc_files.list 
--f /pnfs/uboone/persistent/users/cthorpe/hyperon/hepmc_files/uboone_numi_fhc_ultrapure/hepmc_metadata.meta
+<jobsub> --disk=10GB --expected-lifetime=4h 
+<!-- List of hepmc files you want to use. NOTE: the file must be called hepmc_files.list (this is what the script searches) -->
+-f /pnfs/uboone/scratch/users/cthorpe/samples/uboone_numi_rhc_enriched_overlay_pt1/hepmc/hepmc_files.list
+<!-- Metadata file -->
+-f /pnfs/uboone/scratch/users/cthorpe/samples/uboone_numi_rhc_enriched_overlay_pt1/meta/hepmc_POT.meta
 </jobsub>
 <defname>&name;_gen</defname>
-<memory>4000</memory>
+<memory>6000</memory>
 </stage>
 
   <!-- file type -->
