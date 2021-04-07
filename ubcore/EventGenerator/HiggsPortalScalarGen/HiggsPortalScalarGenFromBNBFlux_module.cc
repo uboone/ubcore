@@ -220,10 +220,10 @@ hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::
   fEventTree->Branch("daughter1_mom_y",&fEventTree_daughter1_mom_y);
   fEventTree->Branch("daughter1_mom_z",&fEventTree_daughter1_mom_z);
   fEventTree->Branch("daughter1_energy",&fEventTree_daughter1_energy);
-  fEventTree->Branch("daughter1_mom_x",&fEventTree_daughter2_mom_x);
-  fEventTree->Branch("daughter1_mom_y",&fEventTree_daughter2_mom_y);
-  fEventTree->Branch("daughter1_mom_z",&fEventTree_daughter2_mom_z);
-  fEventTree->Branch("daughter1_energy",&fEventTree_daughter2_energy);
+  fEventTree->Branch("daughter2_mom_x",&fEventTree_daughter2_mom_x);
+  fEventTree->Branch("daughter2_mom_y",&fEventTree_daughter2_mom_y);
+  fEventTree->Branch("daughter2_mom_z",&fEventTree_daughter2_mom_z);
+  fEventTree->Branch("daughter2_energy",&fEventTree_daughter2_energy);
   fEventTree->Branch("weight",&fEventTree_weight);
   fEventTree->Branch("flux_weight",&fEventTree_flux_weight);
   fEventTree->Branch("decay_weight",&fEventTree_decay_weight);

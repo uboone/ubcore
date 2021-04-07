@@ -205,7 +205,7 @@ std::multimap<int,TLorentzVector> hpsgen::GenKinematics::gen_daughters(const TLo
   const double gammas[4] = {partial_gamma_lep(scalar_mass,consts.mass_elec(),model_theta),
     partial_gamma_lep(scalar_mass,consts.mass_muon(),model_theta),
     partial_gamma_pi(scalar_mass,consts.mass_pion_0(),model_theta),
-    partial_gamma_pi(scalar_mass,consts.mass_pion_pm(),model_theta)};
+    2*partial_gamma_pi(scalar_mass,consts.mass_pion_pm(),model_theta)};
   const double totgamma = gammas[0]+gammas[1]+gammas[2]+gammas[3];
   int pdg, anti_pdg;
   double md;
@@ -266,7 +266,7 @@ double hpsgen::GenKinematics::scalar_tau(const double scalar_mass, const double 
   const double gamma = partial_gamma_lep(scalar_mass,consts.mass_elec(),model_theta)
     + partial_gamma_lep(scalar_mass,consts.mass_muon(),model_theta)
     + partial_gamma_pi(scalar_mass,consts.mass_pion_0(),model_theta)
-    + partial_gamma_pi(scalar_mass,consts.mass_pion_pm(),model_theta);
+    + 2*partial_gamma_pi(scalar_mass,consts.mass_pion_pm(),model_theta);
   return consts.hbar() / gamma;
 }
 

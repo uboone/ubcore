@@ -45,9 +45,20 @@ bool hpsgen::FluxReaderNuMI::get_kaon_from_flux(TLorentzVector& kmom, TLorentzVe
     kmom.Print();
     throw cet::exception("LogicError")<<"Found a massless kaon! mass="<<kmass<<std::endl;
   }
-  weight = dk2nu->decay.nimpwt  / K2nu_branching_ratio(dk2nu->decay.ndecay);
-  return true;
-}
+
+    const double tot_K2nu_branching_ratio = (dk2nu->decay.ndecay < 5)
+    ?
+    K2nu_branching_ratio(1) + K2nu_branching_ratio(2) + K2nu_branching_ratio(3) + K2nu_branching_ratio(4)
+    :
+    K2nu_branching_ratio(5) + K2nu_branching_ratio(6) + K2nu_branching_ratio(7)
+    ;
+
+  weight = dk2nu->decay.nimpwt  / tot_K2nu_branching_ratio;//K2nu_branching_ratio(dk2nu->decay.ndecay);
+
+  return true; }
+
+
+
 
 
 // branching ratios taken from the GEANT4 version used by g4numi in MCC9,
