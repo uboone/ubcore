@@ -1,12 +1,13 @@
 /**
- * @file HepMCFileGen_module.cc
+ * @file HepMCFileGenWithPileup_module.cc
  * @brief Producer generating Monte Carlo truth record in LArSoft format from a text file in HepMC format
  * @date Dec 2019
  * @author Marco Del Tutto
  * @comment adapted from TxtFileGen by Brian Rebel
+ * @comment pileup simulation added by Chris Thorpe
  */
 /**
- * @class evgen::HepMCFileGen
+ * @class evgen::HepMCFileGenWithPileup
  *
  *  This module assumes that the input file has the hepevt format for
  *  each event to be simulated. In brief each event contains at least two
@@ -86,6 +87,7 @@
 #include "cetlib_except/exception.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
+#include "TRandom.h"
 #include "TLorentzVector.h"
 
 #include "larcore/Geometry/Geometry.h"
@@ -113,12 +115,12 @@
 // #endif
 
 namespace evgen {
-  class HepMCFileGen;
+  class HepMCFileGenWithPileup;
 }
 
-class evgen::HepMCFileGen : public art::EDProducer {
+class evgen::HepMCFileGenWithPileup : public art::EDProducer {
 public:
-  explicit HepMCFileGen(fhicl::ParameterSet const & p);
+  explicit HepMCFileGenWithPileup(fhicl::ParameterSet const & p);
 
   void produce(art::Event & e)        override;
   void beginJob()               		  override;
@@ -131,6 +133,9 @@ private:
   void ExpandInputFilePatternsIFDH();
   void open_file();
 
+
+  //Poisson RNG
+  TRandom * r;
 
   //kinematic variable calculators
 
@@ -160,11 +165,15 @@ private:
   std::vector<std::string> fFilePatterns;    ///< wildcard patterns files containing histograms or ntuples, or txt (to be set)
   std::vector<std::string> fSelectedFiles;   ///< flux files selected after wildcard expansion and subset selection
   std::string              fFileCopyMethod;  ///< "DIRECT" = old direct access method, otherwise = ifdh approach schema ("" okay)
-  
+
+ 
   double         fEventsPerPOT;     ///< Number of events per POT (to be set)
-  int            fEventsPerSubRun;  ///< Keeps track of the number of processed events per subrun
+  double fPOTPerSpill; 
+  double         fPOTPerSubRun;     ///< The amount of POT for each subrun
 
   ifdh_ns::ifdh* fIFDH;             ///< (optional) flux file handling
+
+  double fEventsPerSpill;
 
   int fMaxEvents;
   int fTotalEvents;
@@ -173,10 +182,12 @@ private:
   bool isNu(int pdg);
   bool isLepton(int pdg);
 
+  int SimulateSpills();
+
 };
 
 //------------------------------------------------------------------------------
-evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
+evgen::HepMCFileGenWithPileup::HepMCFileGenWithPileup(fhicl::ParameterSet const & p)
   : EDProducer{p}
   , fInputFile(0)
   , fMetadataFileName{p.get<std::string>("MetadataFileName","")} //if no metadata file name given, revert to fhicl EventsPerPOT 
@@ -184,9 +195,8 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
   , fFilePatterns{p.get<std::vector<std::string>>("FilePatterns")}
   , fFileCopyMethod{p.get<std::string>("FluxCopyMethod","DIRECT")}
   , fEventsPerPOT{p.get<double>("EventsPerPOT", -1.)}
-  , fEventsPerSubRun(0)
+  , fPOTPerSpill{p.get<double>("POTPerSpill")}
   , fMaxEvents{p.get<int>("MaxEvents",100)}
-
 {
   srand (time(0));
 
@@ -197,35 +207,40 @@ evgen::HepMCFileGen::HepMCFileGen(fhicl::ParameterSet const & p)
   produces< sumdata::RunData, art::InRun >();
   produces< sumdata::POTSummary, art::InSubRun >();
   //std::cout << "Metadata file name is: " << fMetadataFileName << std::endl;
+
+
+  // Setup RNG 
+  r = new TRandom(time(NULL));
+
 }
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::open_file()
+void evgen::HepMCFileGenWithPileup::open_file()
 {
 
   int random_file_index = rand() / double(RAND_MAX) * fSelectedFiles.size(); 
 
-  mf::LogInfo("HepMCFileGen")
+  mf::LogInfo("HepMCFileGenWithPileup")
       << "Opening file " << fSelectedFiles.at(random_file_index) << std::endl;;
 
   fInputFile = new std::ifstream(fSelectedFiles.at(random_file_index).c_str(), std::fstream::in);
 
   // check that the file is a good one
   if( !fInputFile->good() )
-    throw cet::exception("HepMCFileGen") << "input text file "
+    throw cet::exception("HepMCFileGenWithPileup") << "input text file "
           << fSelectedFiles.at(random_file_index)
           << " cannot be read.\n";
 }
 
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::beginJob()
+void evgen::HepMCFileGenWithPileup::beginJob()
 {
 
   if (fFileCopyMethod == "DIRECT")       ExpandInputFilePatternsDirect();
   else if (fFileCopyMethod == "IFDH")    ExpandInputFilePatternsIFDH();
   else {
-    throw cet::exception("HepMCFileGen") << "FluxCopyMethod "
+    throw cet::exception("HepMCFileGenWithPileup") << "FluxCopyMethod "
           << fFileCopyMethod
           << " not supported.\n";
   }
@@ -236,12 +251,12 @@ void evgen::HepMCFileGen::beginJob()
   if( UseMetadataFile ){
 
 	  //TODO: Add more robust way of locating this file
-	  std::cout << "Metadata file is: " << fFileSearchPaths + "/" + fMetadataFileName << std::endl;
+	  //std::cout << "Metadata file is: " << fFileSearchPaths + "/" + fMetadataFileName << std::endl;
 	  std::string MetadataFileFullName = fFileSearchPaths + "/" + fMetadataFileName;
 	  fMetadataFile = new std::ifstream(MetadataFileFullName, std::fstream::in); 
 
 	  //check metadata file is ok
-	  if( !fMetadataFile->good() ) throw cet::exception("HepMCFileGen") << "Metadata file cannot be read in produce" << std::endl;
+	  if( !fMetadataFile->good() ) throw cet::exception("HepMCFileGenWithPileup") << "Metadata file cannot be read in produce" << std::endl;
 
 	  //set sentinel value
 	  double POT_Per_Event=-1;
@@ -255,7 +270,7 @@ void evgen::HepMCFileGen::beginJob()
                   }
 	  }
 
-	if(POT_Per_Event == -1) throw cet::exception("HepMCFileGen") << "Metadata file " << MetadataFileFullName << " does not contain any line POT_Per_Event=" << std::endl;
+	if(POT_Per_Event == -1) throw cet::exception("HepMCFileGenWithPileup") << "Metadata file " << MetadataFileFullName << " does not contain any line POT_Per_Event=" << std::endl;
 
   fEventsPerPOT = 1.0/POT_Per_Event;
 
@@ -264,49 +279,68 @@ void evgen::HepMCFileGen::beginJob()
   //reset the total event counter
   fTotalEvents = 0;
 
+  fEventsPerSpill = fEventsPerPOT*fPOTPerSpill;
+  //std::cout << "Using events per POT = " << fEventsPerPOT << " , POT per spill = " << fPOTPerSpill << " , Events per spill = " << fEventsPerSpill << std::endl;
+
+
 }
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::beginRun(art::Run& run)
+void evgen::HepMCFileGenWithPileup::beginRun(art::Run& run)
 {
     art::ServiceHandle<geo::Geometry const> geo;
     run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
   }
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::beginSubRun(art::SubRun& sr)
+void evgen::HepMCFileGenWithPileup::beginSubRun(art::SubRun& sr)
   {
 
 	//reset event counter for this subrun
-	fEventsPerSubRun = 0;  
+        fPOTPerSubRun = 0.0;      
 
     return;
   }
 
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::endSubRun(art::SubRun& sr)
+void evgen::HepMCFileGenWithPileup::endSubRun(art::SubRun& sr)
   {
  
    //generate the POT summary
 
    //std::cout << "Using EventsPerPOT = " << fEventsPerPOT << std::endl;
-   //std::cout << "Events in this subrun = " <<  fEventsPerSubRun << std::endl;
-   std::cout << "Subrun POT = " << fEventsPerSubRun / fEventsPerPOT << std::endl;
+   //std::cout << "Subrun POT = " << fPOTPerSubRun << std::endl;
 
     auto p = std::make_unique<sumdata::POTSummary>();
-    p->totpot     = fEventsPerSubRun / fEventsPerPOT;
-    p->totgoodpot = fEventsPerSubRun / fEventsPerPOT;
+        // Use New POT Calculation
+      p->totpot = fPOTPerSubRun; 
+      p->totgoodpot = fPOTPerSubRun; 
+
     sr.put(std::move(p));
 
     return;
   }
 
+
+
 //------------------------------------------------------------------------------
-void evgen::HepMCFileGen::produce(art::Event & e)
+int evgen::HepMCFileGenWithPileup::SimulateSpills(){
+
+   int n=0;
+
+   while(n < 1){
+      fPOTPerSubRun += fPOTPerSpill;
+      n = r->Poisson(fEventsPerSpill);
+   }
+
+   return n;
+
+}
+
+//------------------------------------------------------------------------------
+void evgen::HepMCFileGenWithPileup::produce(art::Event & e)
 {
 
-  //throw exception if trying to process more events than limit
-  if(fTotalEvents >= fMaxEvents) throw cet::exception("HepMCFileGen") << "Limit of " << fMaxEvents << " events/job exceeded"  << std::endl;  
 
 
   // check that the file is still good
@@ -315,12 +349,22 @@ void evgen::HepMCFileGen::produce(art::Event & e)
   }
 
   if( !fInputFile->good() ) {
-    throw cet::exception("HepMCFileGen") << "input text file "
+    throw cet::exception("HepMCFileGenWithPileup") << "input text file "
 					<< " cannot be read in produce().\n";
   }
 
+  // Generate the number of interactions in this event
+  int NMCTruths = SimulateSpills();
+
+  std::cout << "Simulate " << NMCTruths << " MCTruths for this event" << std::endl;
 
   std::unique_ptr< std::vector<simb::MCTruth> > truthcol(new std::vector<simb::MCTruth>);
+
+  for(int i_tr=0;i_tr<NMCTruths;i_tr++){
+
+  //throw exception if trying to process more events than limit
+  if(fTotalEvents >= fMaxEvents) throw cet::exception("HepMCFileGenWithPileup") << "Limit of " << fMaxEvents << " events/job exceeded"  << std::endl;  
+
   simb::MCTruth truth;
 
   // declare the variables for reading in the event record
@@ -447,18 +491,19 @@ void evgen::HepMCFileGen::produce(art::Event & e)
 
   truthcol->push_back(truth);
 
+  fTotalEvents++;
+}
 
   e.put(std::move(truthcol));
 
-  fEventsPerSubRun++;
 
-  fTotalEvents++;
+
 
   return;
 }
 
 
-void evgen::HepMCFileGen::ExpandInputFilePatternsDirect() {
+void evgen::HepMCFileGenWithPileup::ExpandInputFilePatternsDirect() {
 
   std::vector<std::string> dirs;
   cet::split_path(fFileSearchPaths,dirs);
@@ -503,20 +548,20 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsDirect() {
       flisttext << "[" << std::setw(3) << i << "] "
                 << afile << "\n";
     }
-    mf::LogInfo("HepMCFileGen")
+    mf::LogInfo("HepMCFileGenWithPileup")
       << "ExpandFilePatternsDirect initially found " << nfiles
       << " files for user patterns:"
       << patterntext.str() << "\n  using FileSearchPaths of: "
       << dirstext.str() <<  "\n" << paretext.str();
       //<< "\"" << cet::getenv("FW_SEARCH_PATH") << "\"";
-    mf::LogDebug("HepMCFileGen") << "\n" << flisttext.str();
+    mf::LogDebug("HepMCFileGenWithPileup") << "\n" << flisttext.str();
     // done with glob list
     globfree(&g);
   }
 }
 
 
-void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
+void evgen::HepMCFileGenWithPileup::ExpandInputFilePatternsIFDH() {
 
 #ifdef NO_IFDH_LIB
     std::ostringstream fmesg;
@@ -541,7 +586,7 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
     std::string spaths = fFileSearchPaths;
     const char* ifdh_debug_env = std::getenv("IFDH_DEBUG_LEVEL");
     if ( ifdh_debug_env ) {
-      mf::LogInfo("HepMCFileGen") << "IFDH_DEBUG_LEVEL: " << ifdh_debug_env;
+      mf::LogInfo("HepMCFileGenWithPileup") << "IFDH_DEBUG_LEVEL: " << ifdh_debug_env;
       fIFDH->set_debug(ifdh_debug_env);
     }
     // filenames + size
@@ -574,9 +619,9 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
       partiallist.clear();
     }  // loop over user patterns
     size_t nfiles = fulllist.size();
-    mf::LogInfo("HepMCFileGen")
+    mf::LogInfo("HepMCFileGenWithPileup")
       << "ExpandFilePatternsIFDH initially found " << nfiles << " files";
-    mf::LogDebug("HepMCFileGen")
+    mf::LogDebug("HepMCFileGenWithPileup")
       << fulltext.str();
     if ( nfiles == 0 ) {
       selectedtext << "\n  expansion resulted in a null list for flux files";
@@ -586,7 +631,7 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
       selectedtext << "\n  list of files will be processed in order";
       selectedlist.insert(selectedlist.end(),fulllist.begin(),fulllist.end());
     } 
-    mf::LogInfo("HepMCFileGen") << "Fetching files." << std::endl;
+    mf::LogInfo("HepMCFileGenWithPileup") << "Fetching files." << std::endl;
     // have a selected list of remote files
     // get paths to local copies
   // #ifdef USE_IFDH_SERVICE
@@ -600,7 +645,7 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
         fSelectedFiles.push_back(litr->first);
         localtext << "\n\t[" << std::setw(3) << i << "]\t" << litr->first;
       }
-    mf::LogInfo("HepMCFileGen") << localtext.str();
+    mf::LogInfo("HepMCFileGenWithPileup") << localtext.str();
     // no null path allowed for at least these
 #endif  // 'else' code only if NO_IFDH_LIB not defined
   }
@@ -610,7 +655,7 @@ void evgen::HepMCFileGen::ExpandInputFilePatternsIFDH() {
 // Kinematic Variable Calculators 
 //------------------------------------------------------------------------------
 
-TLorentzVector evgen::HepMCFileGen::q(std::vector<simb::MCParticle> P_vect){
+TLorentzVector evgen::HepMCFileGenWithPileup::q(std::vector<simb::MCParticle> P_vect){
 
    std::vector<TLorentzVector> P4_nu; //neutrino 4 momentum
    std::vector<TLorentzVector> P4_lepton; //outgoing lepton
@@ -639,7 +684,7 @@ TLorentzVector evgen::HepMCFileGen::q(std::vector<simb::MCParticle> P_vect){
 
 // Squared 4 Momentum Transfer
 
-double evgen::HepMCFileGen::Theorist_Q2(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Theorist_Q2(std::vector<simb::MCParticle> P_vect){
 
 return (-1)*q(P_vect)*q(P_vect);
 
@@ -650,7 +695,7 @@ return (-1)*q(P_vect)*q(P_vect);
 
 // Hadronic invariant mass
 
-double evgen::HepMCFileGen::Theorist_W(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Theorist_W(std::vector<simb::MCParticle> P_vect){
 
    std::vector<TLorentzVector> P4_nu; //neutrino 4 momentum
    std::vector<TLorentzVector> P4_lepton; //outgoing lepton
@@ -688,7 +733,7 @@ double evgen::HepMCFileGen::Theorist_W(std::vector<simb::MCParticle> P_vect){
 
 // Bjorken x
 
-double evgen::HepMCFileGen::Theorist_X(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Theorist_X(std::vector<simb::MCParticle> P_vect){
 
    std::vector<TLorentzVector> P4_nucleon; //struck nucleon
 
@@ -716,7 +761,7 @@ double evgen::HepMCFileGen::Theorist_X(std::vector<simb::MCParticle> P_vect){
 
 // Bjorken y
 
-double evgen::HepMCFileGen::Theorist_Y(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Theorist_Y(std::vector<simb::MCParticle> P_vect){
 
    std::vector<TLorentzVector> P4_nu; //neutrino 4 momentum
    std::vector<TLorentzVector> P4_lepton; //outgoing lepton
@@ -750,7 +795,7 @@ double evgen::HepMCFileGen::Theorist_Y(std::vector<simb::MCParticle> P_vect){
 
 // Squared 4 Momentum Transfer
 
-double evgen::HepMCFileGen::Experimentalist_Q2(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Experimentalist_Q2(std::vector<simb::MCParticle> P_vect){
 
 return (-1)*q(P_vect)*q(P_vect);
 
@@ -761,7 +806,7 @@ return (-1)*q(P_vect)*q(P_vect);
 
 // Hadronic invariant mass
 
-double evgen::HepMCFileGen::Experimentalist_W(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Experimentalist_W(std::vector<simb::MCParticle> P_vect){
 
 return sqrt(M_n*M_n+2*M_n*q(P_vect).E()-Experimentalist_Q2(P_vect));
 
@@ -772,7 +817,7 @@ return sqrt(M_n*M_n+2*M_n*q(P_vect).E()-Experimentalist_Q2(P_vect));
 
 // Bjorken x
 
-double evgen::HepMCFileGen::Experimentalist_X(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Experimentalist_X(std::vector<simb::MCParticle> P_vect){
 
 
 return Experimentalist_Q2(P_vect)/(2*M_n*q(P_vect).E());
@@ -784,7 +829,7 @@ return Experimentalist_Q2(P_vect)/(2*M_n*q(P_vect).E());
 
 // Bjorken y
 
-double evgen::HepMCFileGen::Experimentalist_Y(std::vector<simb::MCParticle> P_vect){
+double evgen::HepMCFileGenWithPileup::Experimentalist_Y(std::vector<simb::MCParticle> P_vect){
 
    std::vector<TLorentzVector> P4_nu; //neutrino 4 momentum
    std::vector<TLorentzVector> P4_lepton; //outgoing lepton
@@ -816,19 +861,19 @@ double evgen::HepMCFileGen::Experimentalist_Y(std::vector<simb::MCParticle> P_ve
 // Miscellaneous 
 //------------------------------------------------------------------------------
 
-bool evgen::HepMCFileGen::isNu(int pdg){
+bool evgen::HepMCFileGenWithPileup::isNu(int pdg){
 
 return abs(pdg) == 12 || abs(pdg) == 14 || abs(pdg) == 16;
 
 }
 
-bool evgen::HepMCFileGen::isLepton(int pdg){
+bool evgen::HepMCFileGenWithPileup::isLepton(int pdg){
 
 return abs(pdg) == 11 || abs(pdg) == 13 || abs(pdg) == 15;
 
 }
 
-DEFINE_ART_MODULE(evgen::HepMCFileGen)
+DEFINE_ART_MODULE(evgen::HepMCFileGenWithPileup)
 
 
 

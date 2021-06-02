@@ -53,7 +53,7 @@ art_make(
                   ${CETLIB}
                   cetlib cetlib_except
                   ${ROOT_BASIC_LIB_LIST}
-                  
+                  ${CLHEP} 
 
       MODULE_LIBRARIES
                   larcorealg_Geometry
@@ -97,6 +97,7 @@ art_make(
                   ${CETLIB}
                   cetlib cetlib_except
                   ${ROOT_BASIC_LIB_LIST}
+                  ${CLHEP} 
 
 )     
 
