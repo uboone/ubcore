@@ -4,7 +4,7 @@ add_subdirectory(GENIE)
 add_subdirectory(HeavySterileNeutrino)
 
 art_make( BASENAME_ONLY
-          MODULE_LIBRARIES 	  		   
+          MODULE_LIBRARIES
 		   larcorealg_Geometry
 		   ubcore_Geometry
 		   larcore_Geometry_Geometry_service
@@ -23,19 +23,19 @@ art_make( BASENAME_ONLY
 		   ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
 		   ${ART_ROOT_IO_TFILESERVICE_SERVICE}
                    ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-		   art_Persistency_Common 
-		   art_Persistency_Provenance 
-		   art_Utilities 
+		   art_Persistency_Common
+		   art_Persistency_Provenance
+		   art_Utilities
 		   canvas
 		   ${MF_MESSAGELOGGER}
-		   
+
 		   ${FHICLCPP}
 		   ${CLHEP}
 		   ${CETLIB}
 		   ${ROOT_GEOM}
 		   ${ROOT_XMLIO}
 		   ${ROOT_GDML}
-		   ${ROOT_BASIC_LIB_LIST}
+
 		   ${ROOT_EG}
 		)
 

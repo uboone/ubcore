@@ -10,7 +10,6 @@ art_make(
                     ${ART_FRAMEWORK_CORE}
                     ${ART_FRAMEWORK_PRINCIPAL}
                     ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                    ${ART_FRAMEWORK_SERVICES_BASIC}
                     ${ART_FRAMEWORK_SERVICES_OPTIONAL}
                     #${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
 		    ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
@@ -24,8 +23,7 @@ art_make(
                     ${MF_MESSAGELOGGER}
                     ${FHICLCPP}
                     cetlib cetlib_except
-                    ${Boost_SYSTEM_LIBRARY}
-                    ${ROOT_BASIC_LIB_LIST}
+
           )
 
 install_headers()

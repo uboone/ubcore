@@ -21,7 +21,7 @@ art_make(
             ${MF_UTILITIES}
             ${FHICLCPP}
             ${CLHEP}
-            ${ROOT_BASIC_LIB_LIST}
+
             ${SQLITE3}
             ${ROOT_EG}
             )

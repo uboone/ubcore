@@ -3,7 +3,7 @@ art_make( BASENAME_ONLY
           LIBRARY_NAME uboonecode_DQMTools
           LIB_LIBRARIES
 			lardataobj_RawData
-			lardataobj_RecoBase 
+			lardataobj_RecoBase
                         larcorealg_Geometry
                         larcore_Geometry_Geometry_service
 			art_Persistency_Common canvas
@@ -12,8 +12,7 @@ art_make( BASENAME_ONLY
 			${MF_MESSAGELOGGER}
 	                ${FHICLCPP}
 			cetlib cetlib_except
-                        ${ROOT_BASIC_LIB_LIST}
-			${Boost_SYSTEM_LIBRARY}
+
           MODULE_LIBRARIES
 			uboonecode_DQMTools
                         lardataobj_RecoBase
@@ -26,16 +25,15 @@ art_make( BASENAME_ONLY
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
-			${ART_FRAMEWORK_SERVICES_BASIC}
 			${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
 			${ART_ROOT_IO_TFILESERVICE_SERVICE}
 			art_Persistency_Common canvas
 			art_Utilities canvas
 			${MF_MESSAGELOGGER}
-			
+
 	                ${FHICLCPP}
 			cetlib cetlib_except
-                        ${ROOT_BASIC_LIB_LIST}
+
          )
 
 install_headers()
