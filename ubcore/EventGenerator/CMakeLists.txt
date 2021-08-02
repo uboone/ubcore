@@ -18,7 +18,6 @@ art_make( BASENAME_ONLY
 		   ${LARDATA_LIB}
 		   ${ART_FRAMEWORK_CORE}
 		   ${ART_FRAMEWORK_PRINCIPAL}
-                   ${ART_FRAMEWORK_BASIC}
 		   ${ART_FRAMEWORK_SERVICES_REGISTRY}
 		   ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
 		   ${ART_ROOT_IO_TFILESERVICE_SERVICE}
@@ -28,14 +27,11 @@ art_make( BASENAME_ONLY
 		   art_Utilities
 		   canvas
 		   ${MF_MESSAGELOGGER}
-
 		   ${FHICLCPP}
 		   ${CLHEP}
 		   ${CETLIB}
 		   ${ROOT_GEOM}
 		   ${ROOT_XMLIO}
 		   ${ROOT_GDML}
-
 		   ${ROOT_EG}
 		)
-
