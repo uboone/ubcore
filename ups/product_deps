@@ -34,7 +34,7 @@ product                 version
 ubobj                   v09_28_02_01
 nutools                 v3_11_04
 nug4			v1_09_04
-nurandom		v1_07_04
+nurandom		v1_07_05
 lardata                 v09_02_08_01
 cetbuildtools	        v8_15_00	-	only_for_build
 end_product_list
