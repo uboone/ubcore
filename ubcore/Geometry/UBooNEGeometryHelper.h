@@ -16,6 +16,8 @@
 #include "larcorealg/Geometry/CryostatGeo.h"
 #include "larcorealg/Geometry/AuxDetGeo.h"
 
+#include "art/Framework/Services/Registry/ServiceDeclarationMacros.h"
+
 #include <memory>
 
 namespace geo

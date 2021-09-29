@@ -10,10 +10,9 @@ art_make( BASENAME_ONLY
 			art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-                        
+
 			cetlib cetlib_except
-                        ${Boost_SYSTEM_LIBRARY}
-                        ${ROOT_BASIC_LIB_LIST}
+
 	  MODULE_LIBRARIES
 			nug4_ParticleNavigation lardataobj_Simulation
 			lardataobj_RawData
@@ -29,10 +28,10 @@ art_make( BASENAME_ONLY
                         art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-                        
+
                         ${FHICLCPP}
                         cetlib cetlib_except
-			${ROOT_BASIC_LIB_LIST}
+
           SERVICE_LIBRARIES
                         ${ART_FRAMEWORK_CORE}
                         ${ART_FRAMEWORK_PRINCIPAL}
@@ -43,10 +42,10 @@ art_make( BASENAME_ONLY
                         art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-                        
+
                         ${FHICLCPP}
                         cetlib cetlib_except
-			${ROOT_BASIC_LIB_LIST}
+
         )
 
 install_headers()

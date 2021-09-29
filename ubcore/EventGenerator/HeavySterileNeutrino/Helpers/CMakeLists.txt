@@ -8,7 +8,7 @@ art_make(
             ${FHICLCPP}
             ${CETLIB}
             ${CLHEP}
-            ${ROOT_BASIC_LIB_LIST}
+
             ${G4_LIB_LIST}
       MODULE_LIBRARIES
             HSNGenDataObjects
@@ -33,7 +33,7 @@ art_make(
             ${FHICLCPP}
             cetlib cetlib_except
             ${CLHEP}
-            ${ROOT_BASIC_LIB_LIST}
+
             ${SQLITE3}
             ${ROOT_EG}
             ${IFDH}
