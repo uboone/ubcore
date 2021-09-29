@@ -1,15 +1,14 @@
 art_make(
       LIBRARY_NAME HSNGenDataObjects
-      LIB_LIBRARIES 
+      LIB_LIBRARIES
             ${SIMULATIONBASE}
             ${MF_MESSAGELOGGER}
             ${MF_UTILITIES}
             ${FHICLCPP}
             ${CETLIB}
-            ${CLHEP}
-            ${ROOT_BASIC_LIB_LIST}
+            CLHEP::CLHEP
             ${G4_LIB_LIST}
-      MODULE_LIBRARIES 
+      MODULE_LIBRARIES
             larcoreobj_SummaryData
             larcorealg_Geometry
             larcore_Geometry_Geometry_service
@@ -31,7 +30,6 @@ art_make(
             ${FHICLCPP}
             cetlib cetlib_except
             ${CLHEP}
-            ${ROOT_BASIC_LIB_LIST}
             ${SQLITE3}
             ${ROOT_EG}
             ${IFDH}
@@ -40,4 +38,3 @@ art_make(
 install_headers()
 install_fhicl()
 install_source()
-
