@@ -1,8 +1,8 @@
-# This @product_deps@ file defines dependencies for this package. 
+# This @product_deps@ file defines dependencies for this package.
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-parent ubcore v09_24_02
+parent ubcore
 
 defaultqual e20
 
@@ -10,7 +10,7 @@ defaultqual e20
 # be used only if your product does not conform to the defaults.
 # Format: directory_type directory_path directory_name
 #   where directory_type is one of incdir, libdir, or bindir
-#   where directory_path is one of product_dir, fq_dir and - 
+#   where directory_path is one of product_dir, fq_dir and -
 # Defaults:
 # incdir  product_dir  include
 # fcldir  product_dir  fcl
@@ -31,19 +31,17 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-ubobj                   v09_24_02
-nutools                 v3_09_03
-nug4			v1_07_01
-nurandom		v1_05_02
-lardata                 v09_02_04
-cetbuildtools	        v7_17_01	-	only_for_build
+ubobj                   v09_32_00
+nutools                 v3_11_04
+nug4			v1_09_04
+nurandom		v1_07_05
+lardata                 v09_03_01
+cetbuildtools	        v8_18_04	-	only_for_build
 end_product_list
 
 qualifier      ubobj          lardata        nutools        nug4	    nurandom
 c7:debug       c7:debug       c7:debug	     c7:debug	    c7:debug	    c7:debug
 c7:prof        c7:prof        c7:prof        c7:prof	    c7:prof	    c7:prof
-e19:debug      e19:debug      e19:debug	     e19:debug	    e19:debug	    e19:debug
-e19:prof       e19:prof       e19:prof	     e19:prof       e19:prof        e19:prof
 e20:debug      e20:debug      e20:debug	     e20:debug	    e20:debug	    e20:debug
 e20:prof       e20:prof       e20:prof	     e20:prof       e20:prof        e20:prof
 end_qualifier_list

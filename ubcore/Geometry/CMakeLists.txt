@@ -5,17 +5,17 @@ art_make( BASENAME_ONLY
                         ${MF_MESSAGELOGGER}
                         cetlib cetlib_except
                         ${FHICLCPP}
-                        ${ROOT_BASIC_LIB_LIST}
+
 	  SERVICE_LIBRARIES larcorealg_Geometry
 	  		ubcore_Geometry
-			
+
 	                ${FHICLCPP}
 			cetlib cetlib_except
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
                         ${ROOT_GDML}
-			${ROOT_BASIC_LIB_LIST}
-        )							   
+
+        )
 
 add_subdirectory(gdml)
 
