@@ -7,7 +7,7 @@ art_make(
             ${MF_UTILITIES}
             ${FHICLCPP}
             ${CETLIB}
-            ${CLHEP}
+            CLHEP::CLHEP
 
             ${G4_LIB_LIST}
       MODULE_LIBRARIES
@@ -32,7 +32,7 @@ art_make(
             ${MF_UTILITIES}
             ${FHICLCPP}
             cetlib cetlib_except
-            ${CLHEP}
+            CLHEP::CLHEP
 
             ${SQLITE3}
             ${ROOT_EG}

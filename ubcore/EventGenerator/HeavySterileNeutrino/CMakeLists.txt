@@ -20,7 +20,7 @@ art_make(
             ${MF_MESSAGELOGGER}
             ${MF_UTILITIES}
             ${FHICLCPP}
-            ${CLHEP}
+            CLHEP::CLHEP
 
             ${SQLITE3}
             ${ROOT_EG}

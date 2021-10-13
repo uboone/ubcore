@@ -29,7 +29,7 @@ art_make(
             ${MF_UTILITIES}
             ${FHICLCPP}
             cetlib cetlib_except
-            ${CLHEP}
+            CLHEP::CLHEP
             ${SQLITE3}
             ${ROOT_EG}
             ${IFDH}

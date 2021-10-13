@@ -29,7 +29,7 @@ art_make( BASENAME_ONLY
 		   canvas
 		   ${MF_MESSAGELOGGER}
 		   ${FHICLCPP}
-		   ${CLHEP}
+		   CLHEP::CLHEP
 		   ${CETLIB}
 		   ${ROOT_GEOM}
 		   ${ROOT_XMLIO}
