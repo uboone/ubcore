@@ -5,9 +5,9 @@ art_make(
             larcoreobj_SummaryData
             larcorealg_Geometry
             larcore_Geometry_Geometry_service
-            nurandom_RandomUtils_NuRandomService_service
+            nurandom::RandomUtils_NuRandomService_service
             lardataobj_Simulation
-            nusimdata_SimulationBase
+            nusimdata::SimulationBase
             ${ART_FRAMEWORK_CORE}
             ${ART_FRAMEWORK_PRINCIPAL}
             ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -21,9 +21,9 @@ art_make(
             ${MF_UTILITIES}
             ${FHICLCPP}
             ${CLHEP}
-
             ${SQLITE3}
             ${ROOT_EG}
+            ROOT::Tree
             )
 
 add_subdirectory(Helpers)

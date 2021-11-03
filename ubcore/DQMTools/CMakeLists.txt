@@ -20,8 +20,9 @@ art_make( BASENAME_ONLY
                         larcorealg_Geometry
                         larcore_Geometry_Geometry_service
                         lardata_Utilities
-                        nug4_ParticleNavigation lardataobj_Simulation nug4_ParticleNavigation lardataobj_Simulation
-                        nusimdata_SimulationBase
+                        nug4::ParticleNavigation
+                        lardataobj_Simulation
+                        nusimdata::SimulationBase
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -30,10 +31,9 @@ art_make( BASENAME_ONLY
 			art_Persistency_Common canvas
 			art_Utilities canvas
 			${MF_MESSAGELOGGER}
-
 	                ${FHICLCPP}
 			cetlib cetlib_except
-
+                        ROOT::Tree
          )
 
 install_headers()

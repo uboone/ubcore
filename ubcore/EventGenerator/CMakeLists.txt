@@ -8,12 +8,11 @@ art_make( BASENAME_ONLY
 		   larcorealg_Geometry
 		   ubcore_Geometry
 		   larcore_Geometry_Geometry_service
-		   nug4_ParticleNavigation lardataobj_Simulation
-		   nusimdata_SimulationBase
+		   nug4::ParticleNavigation lardataobj_Simulation
+		   nusimdata::SimulationBase
 		   lardata_Utilities
 		   lardataobj_MCBase
 		   larcoreobj_SummaryData
-		   nusimdata_SimulationBase
 		   nurandom_RandomUtils_NuRandomService_service
 		   ${LARDATA_LIB}
 		   ${ART_FRAMEWORK_CORE}
@@ -33,5 +32,5 @@ art_make( BASENAME_ONLY
 		   ${ROOT_GEOM}
 		   ${ROOT_XMLIO}
 		   ${ROOT_GDML}
-		   ${ROOT_EG}
+                   ROOT::EG
 		)

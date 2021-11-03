@@ -6,7 +6,7 @@ art_make(
           # Needed for the main module
           MODULE_LIBRARIES
                     larcoreobj_SummaryData
-                    nusimdata_SimulationBase
+                    nusimdata::SimulationBase
                     ${ART_FRAMEWORK_CORE}
                     ${ART_FRAMEWORK_PRINCIPAL}
                     ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -23,7 +23,7 @@ art_make(
                     ${MF_MESSAGELOGGER}
                     ${FHICLCPP}
                     cetlib cetlib_except
-
+                    ROOT::Tree
           )
 
 install_headers()

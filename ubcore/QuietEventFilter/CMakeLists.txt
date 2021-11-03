@@ -16,14 +16,14 @@ simple_plugin( QuietEventFilter "module"
                         art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-
                         ${FHICLCPP}
                         cetlib cetlib_except
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
                         ${ROOT_GDML}
-
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
+                        ROOT::Tree
+                        ROOT::Core
 			)
 
 simple_plugin( QuietEventAna "module"
@@ -42,14 +42,13 @@ simple_plugin( QuietEventAna "module"
                         art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-
                         ${FHICLCPP}
                         cetlib cetlib_except
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
                         ${ROOT_GDML}
-
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
+                        ROOT::Tree
 			)
 
 install_headers()
