@@ -1,4 +1,6 @@
 link_directories( $ENV{DK2NUDATA_LIB})
+link_directories( $ENV{GENIE_LIB})
+link_directories( $ENV{LOG4CPP_LIB})
 
 art_make(BASENAME_ONLY
           LIBRARY_NAME uboonecode_HiggsPortalScalarGen

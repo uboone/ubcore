@@ -52,6 +52,7 @@ find_ups_product( nug4 )
 find_ups_product( nurandom )
 find_ups_product( dk2nudata )
 find_ups_product(genie)
+find_ups_product( log4cpp )
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
