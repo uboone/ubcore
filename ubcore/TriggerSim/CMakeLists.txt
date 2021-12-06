@@ -3,48 +3,48 @@ art_make( BASENAME_ONLY
 	  LIBRARY_NAME  uboonecode_TriggerSim
 	  LIB_LIBRARIES lardataobj_RawData
 			lardata_Utilities
-                        ${ART_FRAMEWORK_CORE}
-                        ${ART_FRAMEWORK_PRINCIPAL}
-                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                        art_Persistency_Common canvas
-			art_Persistency_Provenance canvas
-                        art_Utilities canvas
-                        ${MF_MESSAGELOGGER}
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art::Persistency_Common canvas::canvas
+			art::Persistency_Provenance canvas::canvas
+                        art::Utilities canvas::canvas
+                        messagefacility::MF_MessageLogger
 
-			cetlib cetlib_except
+			cetlib::cetlib cetlib_except
 
 	  MODULE_LIBRARIES
-			nug4_ParticleNavigation lardataobj_Simulation
+			nug4::ParticleNavigation lardataobj_Simulation
 			lardataobj_RawData
 			lardataobj_OpticalDetectorData
 			lardata_Utilities
 			uboonecode_TriggerSim
-                        ${ART_FRAMEWORK_CORE}
-                        ${ART_FRAMEWORK_PRINCIPAL}
-                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-                        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
-                        ${MF_MESSAGELOGGER}
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Common canvas::canvas
+                        art::Persistency_Provenance canvas::canvas
+                        art::Utilities canvas::canvas
+                        messagefacility::MF_MessageLogger
 
-                        ${FHICLCPP}
-                        cetlib cetlib_except
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib cetlib_except
 
           SERVICE_LIBRARIES
-                        ${ART_FRAMEWORK_CORE}
-                        ${ART_FRAMEWORK_PRINCIPAL}
-                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-                        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
-                        ${MF_MESSAGELOGGER}
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support ROOT::Core
+                        art_root_io::TFileService_service
+                        art::Persistency_Common canvas::canvas
+                        art::Persistency_Provenance canvas::canvas
+                        art::Utilities canvas::canvas
+                        messagefacility::MF_MessageLogger
 
-                        ${FHICLCPP}
-                        cetlib cetlib_except
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib cetlib_except
 
         )
 
