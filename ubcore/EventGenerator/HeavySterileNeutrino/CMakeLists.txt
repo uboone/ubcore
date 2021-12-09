@@ -5,25 +5,25 @@ art_make(
             larcoreobj_SummaryData
             larcorealg_Geometry
             larcore_Geometry_Geometry_service
-            nurandom_RandomUtils_NuRandomService_service
+            nurandom::RandomUtils_NuRandomService_service
             lardataobj_Simulation
-            nusimdata_SimulationBase
-            ${ART_FRAMEWORK_CORE}
-            ${ART_FRAMEWORK_PRINCIPAL}
-            ${ART_FRAMEWORK_SERVICES_REGISTRY}
-            ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-            ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-            ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-            art_Persistency_Common
-            art_Persistency_Provenance
-            art_Utilities
-            ${MF_MESSAGELOGGER}
-            ${MF_UTILITIES}
-            ${FHICLCPP}
-            ${CLHEP}
-
-            ${SQLITE3}
-            ${ROOT_EG}
+            nusimdata::SimulationBase
+            art::Framework_Core
+            art::Framework_Principal
+            art::Framework_Services_Registry
+            art_root_io::tfile_support ROOT::Core
+            art_root_io::TFileService_service
+            art::Framework_Services_Optional_RandomNumberGenerator_service
+            art::Persistency_Common
+            art::Persistency_Provenance
+            art::Utilities
+            messagefacility::MF_MessageLogger
+            
+            fhiclcpp::fhiclcpp
+            CLHEP::CLHEP
+            SQLite::SQLite3
+            ROOT::EG
+            ROOT::Tree
             )
 
 add_subdirectory(Helpers)
