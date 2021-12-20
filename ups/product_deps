@@ -31,12 +31,12 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-ubobj                   v09_34_00
-nutools                 v3_11_06
-nug4			v1_11_01
-nurandom		v1_07_06
-lardata                 v09_04_01_01
-cetbuildtools	        v8_18_04	-	only_for_build
+ubobj                   v09_39_00
+nutools                 v3_12_01
+nug4			v1_12_01
+nurandom		v1_08_01
+lardata                 v09_06_00
+cetbuildtools	        v8_18_09	-	only_for_build
 end_product_list
 
 qualifier      ubobj          lardata        nutools        nug4	    nurandom

@@ -2,18 +2,18 @@
 art_make( BASENAME_ONLY
 	  LIBRARY_NAME ubcore_Geometry
 	  LIB_LIBRARIES larcorealg_Geometry
-                        ${MF_MESSAGELOGGER}
-                        cetlib cetlib_except
-                        ${FHICLCPP}
+                        messagefacility::MF_MessageLogger
+                        cetlib::cetlib cetlib_except
+                        fhiclcpp::fhiclcpp
 
 	  SERVICE_LIBRARIES larcorealg_Geometry
 	  		ubcore_Geometry
 
-	                ${FHICLCPP}
-			cetlib cetlib_except
-                        ${ROOT_GEOM}
-                        ${ROOT_XMLIO}
-                        ${ROOT_GDML}
+	                fhiclcpp::fhiclcpp
+			cetlib::cetlib cetlib_except
+                        ROOT::Geom
+                        ROOT::XMLIO
+                        ROOT::Gdml
 
         )
 
