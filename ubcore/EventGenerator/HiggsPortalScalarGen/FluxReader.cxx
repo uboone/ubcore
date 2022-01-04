@@ -11,7 +11,7 @@
 #include "CLHEP/Random/RandFlat.h"
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "IFDH_service.h"
+#include "ifdh_art/IFDHService/IFDH_service.h"
 
 hpsgen::FluxReader::FluxReader(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& fRNG,
     const char* tree_name, const char* pot_branch_name, const char* pot_tree) : 

@@ -29,7 +29,7 @@ art_make(BASENAME_ONLY
             ${SQLITE3}
             ${ROOT_EG}
             ${ROOT_GEOM}
-	    ifdh
+	    ifdh::ifdh
             ${Boost_SYSTEM_LIBRARY}
             dk2nuTree
             GFwMsg
@@ -60,7 +60,7 @@ art_make(BASENAME_ONLY
             ${SQLITE3}
             ${ROOT_EG}
             ${ROOT_GEOM}
-	    ifdh
+	    ifdh::ifdh
 	    dk2nuTree
             GFwMsg
 	    GFwParDat
