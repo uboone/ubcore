@@ -24,9 +24,9 @@ art_make(BASENAME_ONLY
             
             fhiclcpp::fhiclcpp
             CLHEP::CLHEP
-            ${ROOT_BASIC_LIB_LIST}
             SQLite::SQLite3
             ROOT::EG
+            ROOT::Tree
             ROOT::Geom
 	    ifdh::ifdh
             
@@ -55,7 +55,6 @@ art_make(BASENAME_ONLY
             
             fhiclcpp::fhiclcpp
             CLHEP::CLHEP
-            ${ROOT_BASIC_LIB_LIST}
             SQLite::SQLite3
             ROOT::EG
             ROOT::Geom
