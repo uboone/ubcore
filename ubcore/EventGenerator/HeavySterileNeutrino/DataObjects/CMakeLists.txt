@@ -1,7 +1,7 @@
 art_make(
       LIBRARY_NAME HSNGenDataObjects
       LIB_LIBRARIES
-            ${SIMULATIONBASE}
+            nusimdata::SimulationBase
             messagefacility::MF_MessageLogger
             
             fhiclcpp::fhiclcpp

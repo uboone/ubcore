@@ -15,7 +15,6 @@ art_make( BASENAME_ONLY
 		   lardataobj_MCBase
 		   larcoreobj_SummaryData
 		   nurandom::RandomUtils_NuRandomService_service
-		   ${LARDATA_LIB}
 		   art::Framework_Core
 		   art::Framework_Principal
 		   art::Framework_Services_Registry

@@ -13,7 +13,6 @@ art_make(
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase
 			lardata_Utilities
-			${LARDATA_LIB}
                         art::Framework_Core
 			art::Framework_Principal
 			art::Framework_Services_Registry
