@@ -1,4 +1,3 @@
-link_directories( $ENV{DK2NUDATA_LIB})
 link_directories( $ENV{GENIE_LIB})
 link_directories( $ENV{LOG4CPP_LIB})
 
@@ -32,7 +31,7 @@ art_make(BASENAME_ONLY
             ROOT::Geom
 	    ifdh::ifdh
             
-            dk2nuTree
+            dk2nu::Tree
             GFwMsg
 	    GFwParDat
 	    log4cpp
@@ -63,7 +62,7 @@ art_make(BASENAME_ONLY
             ROOT::EG
             ROOT::Geom
 	    ifdh::ifdh
-	    dk2nuTree
+	    dk2nu::Tree
             GFwMsg
 	    GFwParDat
 	    log4cpp
