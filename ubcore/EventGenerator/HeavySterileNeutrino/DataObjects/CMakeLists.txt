@@ -7,7 +7,6 @@ art_make(
             fhiclcpp::fhiclcpp
             cetlib::cetlib
             CLHEP::CLHEP
-            ${G4_LIB_LIST}
       MODULE_LIBRARIES
             larcoreobj_SummaryData
             larcorealg_Geometry

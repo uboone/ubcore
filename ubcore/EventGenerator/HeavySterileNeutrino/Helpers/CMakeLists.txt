@@ -8,8 +8,6 @@ art_make(
             fhiclcpp::fhiclcpp
             cetlib::cetlib
             CLHEP::CLHEP
-
-            ${G4_LIB_LIST}
       MODULE_LIBRARIES
             HSNGenDataObjects
             larcoreobj_SummaryData
