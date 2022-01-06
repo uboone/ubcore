@@ -11,7 +11,8 @@ art_make( BASENAME_ONLY
                         art::Utilities canvas::canvas
                         messagefacility::MF_MessageLogger
 
-			cetlib::cetlib cetlib_except
+			cetlib::cetlib
+                        cetlib_except::cetlib_except
 
 	  MODULE_LIBRARIES
 			nug4::ParticleNavigation lardataobj_Simulation
@@ -30,7 +31,8 @@ art_make( BASENAME_ONLY
                         messagefacility::MF_MessageLogger
 
                         fhiclcpp::fhiclcpp
-                        cetlib::cetlib cetlib_except
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
 
           SERVICE_LIBRARIES
                         art::Framework_Core
@@ -44,7 +46,8 @@ art_make( BASENAME_ONLY
                         messagefacility::MF_MessageLogger
 
                         fhiclcpp::fhiclcpp
-                        cetlib::cetlib cetlib_except
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
 
         )
 

@@ -29,7 +29,8 @@ art_make(
             messagefacility::MF_MessageLogger
             
             fhiclcpp::fhiclcpp
-            cetlib::cetlib cetlib_except
+            cetlib::cetlib
+            cetlib_except::cetlib_except
             CLHEP::CLHEP
 
             SQLite::SQLite3

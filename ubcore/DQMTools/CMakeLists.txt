@@ -11,7 +11,8 @@ art_make( BASENAME_ONLY
 			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 	                fhiclcpp::fhiclcpp
-			cetlib::cetlib cetlib_except
+			cetlib::cetlib
+                        cetlib_except::cetlib_except
 
           MODULE_LIBRARIES
 			uboonecode_DQMTools
@@ -32,7 +33,8 @@ art_make( BASENAME_ONLY
 			art::Utilities canvas::canvas
 			messagefacility::MF_MessageLogger
 	                fhiclcpp::fhiclcpp
-			cetlib::cetlib cetlib_except
+			cetlib::cetlib
+                        cetlib_except::cetlib_except
                         ROOT::Tree
          )
 
