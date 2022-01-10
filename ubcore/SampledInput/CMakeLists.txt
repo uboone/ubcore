@@ -6,7 +6,6 @@ art_make(
           # Needed for the main module
           MODULE_LIBRARIES
                     larcoreobj_SummaryData
-                    nusimdata::SimulationBase
                     art::Framework_Core
                     art::Framework_Principal
                     art::Framework_Services_Registry

@@ -23,8 +23,7 @@ simple_plugin( DLSignalSample "module"
                         ROOT::Geom
                         ROOT::XMLIO
                         ROOT::Gdml
-
-			nusimdata::SimulationBase
+                        nusimdata::SimulationBase
 			)
 
 
