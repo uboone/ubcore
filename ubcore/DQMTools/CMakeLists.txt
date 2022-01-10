@@ -22,9 +22,6 @@ art_make( BASENAME_ONLY
                         larcorealg_Geometry
                         larcore_Geometry_Geometry_service
                         lardata_Utilities
-                        nug4::ParticleNavigation
-                        lardataobj_Simulation
-                        nusimdata::SimulationBase
                         art::Framework_Core
 			art::Framework_Principal
 			art::Framework_Services_Registry

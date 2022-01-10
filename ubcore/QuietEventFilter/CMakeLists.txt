@@ -23,7 +23,6 @@ simple_plugin( QuietEventFilter "module"
                         ROOT::Geom
                         ROOT::XMLIO
                         ROOT::Gdml
-			nusimdata::SimulationBase
                         ROOT::Tree
                         ROOT::Core
 			)
@@ -51,7 +50,6 @@ simple_plugin( QuietEventAna "module"
                         ROOT::Geom
                         ROOT::XMLIO
                         ROOT::Gdml
-			nusimdata::SimulationBase
                         ROOT::Tree
 			)
 

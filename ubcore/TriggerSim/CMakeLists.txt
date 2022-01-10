@@ -16,7 +16,6 @@ art_make( BASENAME_ONLY
                         cetlib_except::cetlib_except
 
 	  MODULE_LIBRARIES
-			nug4::ParticleNavigation lardataobj_Simulation
 			lardataobj_RawData
 			lardataobj_OpticalDetectorData
 			lardata_Utilities
