@@ -78,13 +78,14 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
           rng& rand, std::multimap<int,TLorentzVector>& result) const {
   const double pimass = (pion_type == 0 ? consts.mass_pion_0() : consts.mass_pion_pm());
   TLorentzVector scalar4mom = gen_random_scalar_mom(scalar_mass, kaon_4mom.M(), pimass, kaon_4mom, rand);
+
+  
   double lambdas[2];
   if(!intersects_ray(kaon_decay_pos.Vect(), scalar4mom.Vect(), lambdas)) return false;
   double dk_weight = 0.;
   TLorentzVector scalar_dk_pos = gen_random_scalar_decay_pos(scalar4mom, kaon_decay_pos, scalar_tau(scalar_mass, model_theta),
       rand, lambdas, dk_weight);
   if(!pos_inside_detector(scalar_dk_pos)) return false;
-  
   const double br_weight = branching_ratio(kaon_4mom.M(), scalar_mass, model_theta, pion_type);
 
   const double weight = dk_weight * br_weight * flux_weight;
@@ -130,11 +131,14 @@ TLorentzVector hpsgen::GenKinematics::gen_random_scalar_mom(const double scalar_
 TLorentzVector hpsgen::GenKinematics::gen_random_scalar_decay_pos(const TLorentzVector& scalar4mom, const TLorentzVector& kaonpos,
     const double model_tau, rng& rand, const double* lambdas, double& weight) const {
   const double gamma = scalar4mom.Gamma();
+
+
   const double speed = scalar4mom.Beta() * consts.speed_light();
   const double a = std::min(lambdas[0],lambdas[1])/speed;
   const double b = std::max(lambdas[0],lambdas[1])/speed;
   const double probA =  std::exp(-a/gamma/model_tau);
   const double probB =  std::exp(-b/gamma/model_tau);
+
   weight = probA - probB; // integral along exponential;
   const double p0 = CLHEP::RandFlat::shoot(&rand);
   const double length = (a + b - gamma*model_tau*std::log(std::exp(b/gamma/model_tau)*(1-p0) + std::exp(a/gamma/model_tau)*p0))*speed;
@@ -207,6 +211,8 @@ std::multimap<int,TLorentzVector> hpsgen::GenKinematics::gen_daughters(const TLo
     partial_gamma_pi(scalar_mass,consts.mass_pion_0(),model_theta),
     2*partial_gamma_pi(scalar_mass,consts.mass_pion_pm(),model_theta)};
   const double totgamma = gammas[0]+gammas[1]+gammas[2]+gammas[3];
+
+ 
   int pdg, anti_pdg;
   double md;
   if(totgamma > gammas[0]) {
