@@ -1,2 +1,0 @@
-#include "prod_hnl_uboone_numi_fhc_kdar_HNL_mass_200.fcl"
-physics.producers.generator.flux_access_schema: ifdh
