@@ -32,7 +32,7 @@ table_fragment_end
 
 product                 version
 ubobj                   v09_47_00
-lardata                 v09_08_00
+lardata                 v09_08_01
 cetbuildtools	        v8_18_09	-	only_for_build
 end_product_list
 
