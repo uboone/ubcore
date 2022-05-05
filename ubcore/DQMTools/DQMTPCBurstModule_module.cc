@@ -19,6 +19,7 @@
 
 #include "art_root_io/TFileService.h"
 #include "larcore/Geometry/Geometry.h"
+#include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 
 #include "lardataobj/RawData/RawDigit.h"
 #include "lardataobj/RawData/raw.h"
