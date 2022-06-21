@@ -79,7 +79,7 @@ hpsgen::GenKinematics::~GenKinematics()
 
 
 bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const TLorentzVector& kaon_4mom, const int kaon_pdg, const double HNL_mass,
-          const double model_theta, const int fProdLepType, const int fDecayLepType ,const double flux_weight, const double max_weight,
+ const int fProdLepType, const int fDecayLepType ,const double flux_weight, const double max_weight,
           rng& rand, std::multimap<int,TLorentzVector>& result) const {
 
 
@@ -96,7 +96,7 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
   }
 
 
-  if(fProdLepType==2){
+  if(fDecayLepType==2){
     decay_lep_type = (CLHEP::RandFlat::shoot(&rand) > 0.5  ? 0 : 1); //0 mu 1 e, can change to diff prop later
     split_weight *= 2.; //we are going to split decay in half so account for that
   } 
@@ -119,11 +119,10 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
   double dk_weight = 0.;
  
   TLorentzVector scalar_dk_pos = gen_random_scalar_decay_pos_uniform(scalar4mom, kaon_decay_pos, rand, lambdas, dk_weight);
-  // TLorentzVector scalar_dk_pos = gen_random_scalar_decay_pos(scalar4mom, kaon_decay_pos, scalar_tau(HNL_mass, model_theta),
+
   //     rand, lambdas, dk_weight); //can go back to non uniform but wont matter
   if(!pos_inside_detector(scalar_dk_pos)) return false;
 
-  // const double br_weight = branching_ratio(kaon_4mom.M(), HNL_mass, model_theta, pion_type);
   double br_weight = 1;//if e like need to scale down from mu like to e like br  
   if(prod_lep_type==1) br_weight=br_weight*2.488e-5; //https://pdg.lbl.gov/2018/listings/rpp2018-list-K-plus-minus.pdf
 
@@ -136,13 +135,8 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
 
   br_weight=br_weight*kfactor_weight;
 
-  
-  
 
-  // std::cout<<"decay width: "<<twobodylep_decay_width(HNL_mass, decay_lepmass,model_theta)<<std::endl;
-  // std::cout<<"life time: "<<consts.hbar()/twobodylep_decay_width(HNL_mass, decay_lepmass,model_theta)<<std::endl;
-  // std::cout<<"decay lengths: "<<consts.hbar()/twobodylep_decay_width(HNL_mass, decay_lepmass,model_theta)*consts.speed_light()*scalar4mom.Beta()*scalar4mom.Gamma() <<std::endl;
-  const double decay_len=consts.hbar()/twobodylep_decay_width(HNL_mass, decay_lepmass,model_theta)
+  const double decay_len=consts.hbar()/twobodylep_decay_width(HNL_mass, decay_lepmass)
         *consts.speed_light()*scalar4mom.Beta()*scalar4mom.Gamma(); //[cm]
 
  
@@ -158,7 +152,7 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
   }
 
 
-  result = gen_daughters(kaon_pdg,scalar4mom, model_theta,decay_lep_type,rand);//needs kaon parent info to know what kind of HNL we have * consts.speed_light()*scalar4mom.Beta()
+  result = gen_daughters(kaon_pdg,scalar4mom,decay_lep_type,rand);//needs kaon parent info to know what kind of HNL we have * consts.speed_light()*scalar4mom.Beta()
 
 
 
@@ -174,7 +168,7 @@ bool hpsgen::GenKinematics::generate(const TLorentzVector& kaon_decay_pos, const
 
 
 bool hpsgen::GenKinematics::generate_uniform(const TLorentzVector& kaon_decay_pos, const TLorentzVector& kaon_4mom,const int kaon_pdg, const double HNL_mass,
-          const double model_theta,  rng& rand, std::multimap<int,TLorentzVector>& result) const {
+           rng& rand, std::multimap<int,TLorentzVector>& result) const {
   const double max_weight = geo->max_path_length();
 
 
@@ -201,7 +195,7 @@ bool hpsgen::GenKinematics::generate_uniform(const TLorentzVector& kaon_decay_po
   }
   if(CLHEP::RandFlat::shoot(&rand, max_weight) > weight) return false;
   const int decay_lep_type = (CLHEP::RandFlat::shoot(&rand) > 0.5  ? 0 : 1); //0 mu 1 e, can change to diff prop later
-  result = gen_daughters(kaon_pdg,scalar4mom, model_theta,decay_lep_type, rand);
+  result = gen_daughters(kaon_pdg,scalar4mom,decay_lep_type, rand);
   result.emplace(0,scalar_dk_pos);
   result.emplace(pdg::k_scalar, scalar4mom);
 
@@ -316,7 +310,7 @@ bool hpsgen::GenKinematics::pos_inside_detector(const TLorentzVector& scalar_dk_
 
 
 
-std::multimap<int,TLorentzVector> hpsgen::GenKinematics::gen_daughters(const int kaon_pdg, const TLorentzVector& parent_mom, const double model_theta,const int decay_lep_type, rng& rand) const {
+std::multimap<int,TLorentzVector> hpsgen::GenKinematics::gen_daughters(const int kaon_pdg, const TLorentzVector& parent_mom, const int decay_lep_type, rng& rand) const {
   const double HNL_mass = parent_mom.M();
 
   int pdg, anti_pdg;
@@ -360,7 +354,7 @@ std::multimap<int,TLorentzVector> hpsgen::GenKinematics::gen_daughters(const int
 }
 
 
-double hpsgen::GenKinematics::twobodylep_decay_width(const double HNL_mass, const double lep_mass,const double model_theta) const {
+double hpsgen::GenKinematics::twobodylep_decay_width(const double HNL_mass, const double lep_mass) const {
   auto kallen_lambda = [](double a, double b, double c)->double {
     return a*a + b*b + c*c -2*a*b -2*a*c -2*b*c;
   };

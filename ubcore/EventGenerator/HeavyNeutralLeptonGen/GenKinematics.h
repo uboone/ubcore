@@ -1,5 +1,5 @@
-#ifndef UBCORE_EVENTGENERATOR_HIGGSPORTALSCALARGEN_GENKINEMATICS_H
-#define UBCORE_EVENTGENERATOR_HIGGSPORTALSCALARGEN_GENKINEMATICS_H
+#ifndef UBCORE_EVENTGENERATOR_HEAVYNEUTRALLEPTONGEN_GENKINEMATICS_H
+#define UBCORE_EVENTGENERATOR_HEAVYNEUTRALLEPTONGEN_GENKINEMATICS_H
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "larcore/Geometry/Geometry.h"
@@ -68,10 +68,10 @@ namespace hpsgen {
       //     const double model_theta, const int pion_type, const double flux_weight, const double max_weight, rng& rand, std::multimap<int,TLorentzVector>& result) const;
 
       bool generate(const TLorentzVector& kaon_decay_pos, const TLorentzVector& kaon_4mom, const int kaon_pdg, const double HNL_mass,
-          const double model_theta, const int fProdLepType, const int fDecayLepType ,const double flux_weight, const double max_weight, rng& rand, std::multimap<int,TLorentzVector>& result) const;
+           const int fProdLepType, const int fDecayLepType ,const double flux_weight, const double max_weight, rng& rand, std::multimap<int,TLorentzVector>& result) const;
 
       bool generate_uniform(const TLorentzVector& kaon_decay_pos, const TLorentzVector& kaon_4mom, const int kaon_pdg,const double HNL_mass,
-          const double model_theta, rng& rand, std::multimap<int,TLorentzVector>& result) const;
+          rng& rand, std::multimap<int,TLorentzVector>& result) const;
       const PhysicalConstants& get_constants() const { return consts; }
       void update_geometry(art::ServiceHandle<geo::Geometry const>& g);
     private:
@@ -89,9 +89,9 @@ namespace hpsgen {
 
       bool pos_inside_detector(const TLorentzVector& scalar_dk_pos) const;
 
-      double twobodylep_decay_width(const double HNL_mass, const double lep_mass,const double model_theta) const;
+      double twobodylep_decay_width(const double HNL_mass, const double lep_mass) const;
 
-      std::multimap<int,TLorentzVector> gen_daughters(const int kaon_pdg,const TLorentzVector& parent_mom, const double theta, const int decay_lep_type , rng& rand) const;
+      std::multimap<int,TLorentzVector> gen_daughters(const int kaon_pdg,const TLorentzVector& parent_mom, const int decay_lep_type , rng& rand) const;
 
  
       double kfactor(const double meson_mass,const double lep_mass, const double HNL_mass) const;
@@ -102,4 +102,4 @@ namespace hpsgen {
   };
 }
 
-#endif // UBCORE_EVENTGENERATOR_HIGGSPORTALSCALARGEN_GENKINEMATICS_H
+#endif // UBCORE_EVENTGENERATOR_HEAVYNEUTRALLEPTONGEN_GENKINEMATICS_H

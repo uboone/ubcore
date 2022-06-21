@@ -121,7 +121,7 @@ private:
   double fEventTree_daughter2_energy;
   int    fEventTree_daughter1_pdg;
   int    fEventTree_daughter2_pdg;
-
+//testcomment
   double fEventTree_weight;
   double fEventTree_flux_weight;
   double fEventTree_decay_weight;
@@ -264,15 +264,12 @@ hpsgen::HeavyNeutralLeptonGenFromBNBFlux::~HeavyNeutralLeptonGenFromBNBFlux()
 void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::produce(art::Event& e)
 {
   double HNL_mass = 0.;
-  double model_theta = 0.;
   if(fScalarParams == "fixed") {
     HNL_mass = fScalarMass.front();
-    model_theta = fModelTheta;
-  }
+    }
   else if(fScalarParams == "random") {
     HNL_mass = CLHEP::RandFlat::shoot(&fRNG,fScalarMass.front(),fScalarMass.back());
     std::cout << "Choosing scalar mass "<<HNL_mass<< " from range ["<<fScalarMass.front()<<","<<fScalarMass.back() <<"] "<<std::endl;
-    model_theta = 1e-6; // doesn't matter so much, but I want a relatively long lifetime so that the rate across the detector is roughly uniform. if theta is large, then there will be more decays in the upstream end
   }
   TLorentzVector kaon_4mom, kaon_pos;
   int pion_type;
@@ -296,8 +293,8 @@ void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::produce(art::Event& e)
     std::multimap<int,TLorentzVector> res;
     fSubRunTree_n_scalars_gen++;
     const bool passes = (fScalarParams == "random") ?
-      fKinHelper->generate_uniform(kaon_pos,kaon_4mom,kaon_pdg, HNL_mass, model_theta,  fRNG, res) :
-      fKinHelper->generate(kaon_pos,kaon_4mom, kaon_pdg, HNL_mass, model_theta, fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
+      fKinHelper->generate_uniform(kaon_pos,kaon_4mom,kaon_pdg, HNL_mass,  fRNG, res) :
+      fKinHelper->generate(kaon_pos,kaon_4mom, kaon_pdg, HNL_mass, fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
     if(passes) {
       
       const TLorentzVector& dk_pos = res.find(0)->second;

@@ -5,6 +5,7 @@
 //
 // Generated at Fri Mar 20 11:25:54 2020 by Pawel Guzowski using cetskelgen
 // from cetlib version v3_05_01.
+// adapted to HNL by Owen Goodwin
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDProducer.h"
@@ -270,14 +271,14 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::~HeavyNeutralLeptonGenFromNuMIFlux() 
 void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
 {
   double HNL_mass = 0.;
-  double model_theta = 0.;
+
   if(fScalarParams == "fixed") {
     HNL_mass = fScalarMass.front();
-    model_theta = fModelTheta;
+  
   }
   else if(fScalarParams == "random") {
     HNL_mass = CLHEP::RandFlat::shoot(&fRNG,fScalarMass.front(),fScalarMass.back());
-    model_theta = 1e-6; // doesn't matter so much, but I want a relatively long lifetime so that the rate across the detector is roughly uniform. if theta is large, then there will be more decays in the upstream end
+    
   }
   TLorentzVector kaon_4mom, kaon_pos;
   int pion_type;
@@ -303,8 +304,8 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
     std::multimap<int,TLorentzVector> res;
     fSubRunTree_n_scalars_gen++;
     const bool passes = (fScalarParams == "random") ?
-      fKinHelper->generate_uniform(kaon_pos, kaon_4mom, kaon_pdg,HNL_mass, model_theta, fRNG, res) :
-      fKinHelper->generate(kaon_pos, kaon_4mom, kaon_pdg ,HNL_mass, model_theta,fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
+      fKinHelper->generate_uniform(kaon_pos, kaon_4mom, kaon_pdg,HNL_mass, fRNG, res) :
+      fKinHelper->generate(kaon_pos, kaon_4mom, kaon_pdg ,HNL_mass,fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
     if(passes) {
       const TLorentzVector& dk_pos = res.find(0)->second;
       const TLorentzVector& scalar_mom = res.find(54)->second;
