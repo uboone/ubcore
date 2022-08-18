@@ -132,7 +132,7 @@ private:
   double fEventTree_flux_weight;
   double fEventTree_decay_weight;
   double fEventTree_branching_ratio_weight;
-  int    fEventTree_daughter_pdg;
+  //int    fEventTree_daughter_pdg;
   int    fEventTree_kaon_pdg;
   bool   fEventTree_selected;
 
