@@ -7,7 +7,7 @@
 namespace pdg {
   const int k_elec = 11;
   const int k_muon = 13;
-  const int k_pion_0 = 111;
+  //const int k_pion_0 = 111;
   const int k_pion_pm = 211;
   const int k_scalar = 54;
 }
