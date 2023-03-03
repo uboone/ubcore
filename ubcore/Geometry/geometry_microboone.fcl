@@ -1,5 +1,5 @@
-#include "microboone_opdetmap.fcl"        
-#include "microboone_opchreadoutmap.fcl"  
+#include "microboone_opdetmap.fcl"
+#include "microboone_opchreadoutmap.fcl"
 #include "microboone_crt_geo.fcl"
 
 # opdetmap: maps optical detector to readout channel
@@ -14,10 +14,7 @@ microboone_geo:
  #       will also need to be changed.
  Name:            "microboonev12"
  GDML:            "microboonev12.gdml"
- ROOT:            "microboonev12.gdml"
- DisableWiresInG4: true                           # Whether to use wirefree geometry in LArG4
-                                                  #  As per Brians request, wire free file is specified by
-                                                  #  [GDMLFileName]_nowires.gdml
+ SortingParameters: { tool_type: GeoObjectSorterStandard }
 }
 
 

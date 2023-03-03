@@ -1,8 +1,8 @@
 BEGIN_PROLOG
 
-microboone_geometry_helper:
+microboone_wire_readout:
 {
- service_provider : UBooNEGeometryHelper
+ service_provider : UBooNEWireReadout
 
  numberOfDetectors: 36       # number of optical detectors, 32 PMTs, 4 acrylic light paddles
  numberOfHardwareChanels: 4  # number of readout channels per opdet

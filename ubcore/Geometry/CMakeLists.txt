@@ -1,6 +1,6 @@
 cet_make_library(
   SOURCE
-  ChannelMapUBooNEAlg.cxx
+  WireReadoutUBooNEGeom.cxx
   LIBRARIES
   PUBLIC
   larcorealg::Geometry
@@ -14,7 +14,7 @@ cet_build_plugin(
 )
 
 cet_build_plugin(
-  UBooNEGeometryHelper art::service
+  UBooNEWireReadout art::service
   LIBRARIES
   PUBLIC
   ubcore::Geometry
@@ -26,5 +26,3 @@ add_subdirectory(gdml)
 install_headers()
 install_fhicl()
 install_source()
-
-

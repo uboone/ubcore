@@ -10,8 +10,8 @@
 /// \version $Id:  $
 /// \author taritree@mit.edu
 ////////////////////////////////////////////////////////////////////////
-#ifndef GEO_CHANNELMAP_UBOONE_ALG_H
-#define GEO_CHANNELMAP_UBOONE_ALG_H
+#ifndef GEO_WIREREADOUTGEOM_UBOONE_ALG_H
+#define GEO_WIREREADOUTGEOM_UBOONE_ALG_H
 
 #include <vector>
 #include <set>
@@ -19,18 +19,18 @@
 
 #include "fhiclcpp/ParameterSet.h"
 
-#include "larcorealg/Geometry/ChannelMapStandardAlg.h" // larcore
+#include "larcorealg/Geometry/WireReadoutStandardGeom.h" // larcore
 #include "larcorealg/Geometry/GeoObjectSorterStandard.h" //  larcore
 #include "ubcore/Geometry/UBOpChannelTypes.h" // uboonecode
 
 namespace geo {
 
-  class ChannelMapUBooNEAlg : public ChannelMapStandardAlg {
+  class WireReadoutUBooNEGeom : public WireReadoutStandardGeom {
 
   public:
 
-    ChannelMapUBooNEAlg(fhicl::ParameterSet const& pset, fhicl::ParameterSet const& sortingParameters );
-    ~ChannelMapUBooNEAlg();
+    WireReadoutUBooNEGeom(geo::GeometryCore const* geom, fhicl::ParameterSet const& pset);
+    ~WireReadoutUBooNEGeom();
 
     // Below inherited from ChannelMapStandardAlg
     /* ChannelMapStandardAlg(fhicl::ParameterSet const& p); */
@@ -100,5 +100,4 @@ namespace geo {
 
 
 }
-#endif // GEO_CHANNELMAPSTANDARDALG_H
-
+#endif // GEO_WIREREADOUTGEOM_UBOONE_ALG_H
