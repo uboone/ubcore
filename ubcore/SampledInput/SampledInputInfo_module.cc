@@ -189,7 +189,7 @@ void util::SampledInputInfo::endSubRun(art::SubRun & s)
   if(fVerbose) std::cout << "\t Total POT for subrun " << id.run() << ":" << id.subRun()
 			 << " = " << srpot_ptr->totpot << std::endl;
 
-  s.put(std::move(srpot_ptr));
+  s.put(std::move(srpot_ptr), art::subRunFragment());
   
 }
 

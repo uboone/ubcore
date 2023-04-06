@@ -73,19 +73,17 @@ void dqm::DQMChannelNoiseModule::analyze(art::Event const & e)
 {
   // Implementation of required member function here.
   //
-  art::Handle< std::vector<raw::RawDigit> > rawdigit;
-  if (! e.getByLabel(fDigitModuleLabel, rawdigit)) {
+  auto rawdigit = e.getHandle<std::vector<raw::RawDigit>>(fDigitModuleLabel);
+  if (! rawdigit) {
     std::cout << "WARNING: no label " << fDigitModuleLabel << std::endl;
     return;
   }
-  std::vector< art::Ptr<raw::RawDigit> >  wires;
-  art::fill_ptr_vector(wires, rawdigit);
 
-  for (auto const& wire: wires) {
+  for (auto const& wire: *rawdigit) {
     std::map<Short_t, unsigned int> entries;
-    std::vector<Short_t> uncompressed(wire->Samples());
-    raw::Uncompress(wire->ADCs(), uncompressed, wire->Compression());
-    for (size_t j = 0; j < wire->Samples(); ++j){
+    std::vector<Short_t> uncompressed(wire.Samples());
+    raw::Uncompress(wire.ADCs(), uncompressed, wire.Compression());
+    for (size_t j = 0; j < wire.Samples(); ++j){
       entries[uncompressed[j]]+=1;
     }
     // RMS based on 16 - 84 % quantiles
@@ -93,11 +91,11 @@ void dqm::DQMChannelNoiseModule::analyze(art::Event const & e)
     Short_t low16 = -1;
     Short_t upp16 = 0x7FFF;
     for(auto entry : entries) {
-      if(upp16==0x7FFF && num_seen / (float)wire->Samples() >= 0.84) {
+      if(upp16==0x7FFF && num_seen / (float)wire.Samples() >= 0.84) {
         upp16 = entry.first;
       }
       num_seen += entry.second;
-      if(low16 < 0 && num_seen / (float) wire->Samples() >= 0.16) {
+      if(low16 < 0 && num_seen / (float) wire.Samples() >= 0.16) {
         low16 = entry.first;
       }
     }
@@ -113,14 +111,14 @@ void dqm::DQMChannelNoiseModule::analyze(art::Event const & e)
       }
     }
     float wire_rms = ((N>0) ? ((totSq - total/N*total) / N) : 0.);
-    fVarHist->Fill(wire->Channel(), std::log10(wire_rms+1e-6)); // 1e-6 to offset any log(0) errors
+    fVarHist->Fill(wire.Channel(), std::log10(wire_rms+1e-6)); // 1e-6 to offset any log(0) errors
 
     /*
     if(!(std::log10(wire_rms+1e-6)>=-6.&&std::log10(wire_rms+1e-6)<=3.)) {
       for(auto entry : entries) {
         std::cout << "entries["<<entry.first<<"] = "<<entry.second<<std::endl;
       }
-      std::cout << "Chan: " << wire->Channel() << std::endl;
+      std::cout << "Chan: " << wire.Channel() << std::endl;
       std::cout << "NS " << num_seen << " " << low16 << " " << upp16 << std::endl;
       std::cout << "final " << total << " sq: " << totSq << " n:" << N << " rms "<<wire_rms << std::endl ;
       throw std::exception();

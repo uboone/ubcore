@@ -103,13 +103,11 @@ void dqm::DQMTPCBurstModule::analyze(art::Event const & e)
   }
   //
   //
-  art::Handle< std::vector<raw::RawDigit> > rawdigit;
-  if (! e.getByLabel(fDigitModuleLabel, rawdigit)) {
+  auto rawdigit = e.getHandle< std::vector<raw::RawDigit> >(fDigitModuleLabel);
+  if (! rawdigit) {
     std::cout << "WARNING: no label " << fDigitModuleLabel << std::endl;
     return;
   }
-  std::vector< art::Ptr<raw::RawDigit> >  wires;
-  art::fill_ptr_vector(wires, rawdigit);
 
 
   unsigned int maxtick = 0;
@@ -117,17 +115,17 @@ void dqm::DQMTPCBurstModule::analyze(art::Event const & e)
   std::vector<std::vector<Short_t> > ucwires(num_channels);
   std::vector<double> uberU, uberV, uberY;
 
-  for (auto const& wire: wires) {
-    std::vector<Short_t> uncompressed(wire->Samples());
-    if(wire->Samples() > maxtick) {
-      maxtick = wire->Samples();
+  for (auto const& wire: *rawdigit) {
+    std::vector<Short_t> uncompressed(wire.Samples());
+    if(wire.Samples() > maxtick) {
+      maxtick = wire.Samples();
       uberU.resize(maxtick);
       uberV.resize(maxtick);
       uberY.resize(maxtick);
     }
-    //std::vector<Short_t> uncompressed(wire->Samples());
-    raw::Uncompress(wire->ADCs(), uncompressed, wire->Compression());
-    int plane = fChannelToPlaneMap[wire->Channel()];
+    //std::vector<Short_t> uncompressed(wire.Samples());
+    raw::Uncompress(wire.ADCs(), uncompressed, wire.Compression());
+    int plane = fChannelToPlaneMap[wire.Channel()];
     for(size_t j = 0; j < maxtick; ++j) {
       if(plane == 0) {
         uberU[j] += uncompressed[j];

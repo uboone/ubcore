@@ -3,6 +3,8 @@
 
 #include "GeoObjCollection.h"
 
+#include "TString.h"
+
 namespace geoalgo {
 
   GeoObjCollection::GeoObjCollection() 
