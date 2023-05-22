@@ -10,14 +10,14 @@ microboone_genie.EventGeneratorList:      "Default+CCMEC+NCMEC"
 #     $GENIE/config/EventGeneratorListAssembler.xml
 microboone_genie_hist:               @local::microboone_genie
 microboone_genie_hist.FluxType:       "histogram"
-microboone_genie_hist.FluxFiles:     ["/pnfs/uboone/persistent/uboonebeam/bnb_hist/bnb_hist_fluxes_07.11.2017_470/FluxHist_volAVTPC.root"] 
+microboone_genie_hist.FluxFiles:     ["/cvmfs/uboone.osgstorage.org/stash/uboonebeam/bnb_hist/bnb_hist_fluxes_07.11.2017_470/FluxHist_volAVTPC.root"] 
 microboone_genie_hist.BeamCenter:    [1.25, 0., 0.]  
 microboone_genie_hist.BeamDirection: [0., 0., 1.]    
 microboone_genie_hist.BeamRadius:    4.              
 
 microboone_genie_simple:                   @local::microboone_genie
 microboone_genie_simple.FluxType:          "simple_flux"
-microboone_genie_simple.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_01.09.2019_463/"
+microboone_genie_simple.FluxSearchPaths:   "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_01.09.2019_463/"
 microboone_genie_simple.FluxFiles:         ["converted_beammc_wincorr*.root"]
 microboone_genie_simple.EventsPerSpill:    0
 microboone_genie_simple.POTPerSpill:       5e12
@@ -56,7 +56,7 @@ microboone_genie_uniform_flux_cc.GeomScan:      "flux: 10000 1.1"
 
 microboone_genie_simple_dirt:                   @local::microboone_genie
 microboone_genie_simple_dirt.FluxType:          "simple_flux"
-microboone_genie_simple_dirt.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.05.2018_463_dirt/"
+microboone_genie_simple_dirt.FluxSearchPaths:   "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.05.2018_463_dirt/"
 microboone_genie_simple_dirt.FluxFiles:         ["converted_beammc_dirt_*.root"]
 microboone_genie_simple_dirt.EventsPerSpill:    0
 microboone_genie_simple_dirt.POTPerSpill:       5e12
@@ -67,14 +67,14 @@ microboone_genie_simple_numi.GlobalTimeOffset:  1.6e6
 microboone_genie_simple_numi.POTPerSpill:       3e13
 microboone_genie_simple_numi.EventsPerSpill:    0
 microboone_genie_simple_numi.FluxType:          "simple_flux"
-microboone_genie_simple_numi.FluxSearchPaths:   "/pnfs/uboone/persistent/uboonebeam/numi_gsimple/numi_gsimple_fluxes_12.17.2015_470/"
+microboone_genie_simple_numi.FluxSearchPaths:   "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/numi_gsimple/numi_gsimple_fluxes_12.17.2015_470/"
 microboone_genie_simple_numi.FluxFiles:         ["gsimple_*.root"]					      
 microboone_genie_simple_numi.EventGeneratorList:      "Default+CCMEC+NCMEC"
 
 microboone_genie_simple_numi_dirt:              @local::microboone_genie_simple_numi
 microboone_genie_simple_numi_dirt.BeamName:     "numi"
 microboone_genie_simple_numi_dirt.FluxType:     "simple_flux"
-microboone_genie_simple_numi_dirt.FluxSearchPaths: "/pnfs/uboone/persistent/uboonebeam/numi_gsimple/numi_gsimple_fluxes_12.17.2015_470_dirt/"
+microboone_genie_simple_numi_dirt.FluxSearchPaths: "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/numi_gsimple/numi_gsimple_fluxes_12.17.2015_470_dirt/"
 microboone_genie_simple_numi_dirt.FluxFiles:    ["gsimple_*.root"]
 
 #microboone_genie_simple_numi_dirt:                   @local::microboone_genie_simple_numi
