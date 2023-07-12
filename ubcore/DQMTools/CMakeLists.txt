@@ -1,41 +1,65 @@
+cet_make_library(
+  SOURCE
+  DQMFlashAlg.cxx
+  DQMHitAlg.cxx
+  LIBRARIES
+  PUBLIC
+  lardata::DetectorClocksService
+  larcore::Geometry_Geometry_service
+  lardataobj::RecoBase
+  art::Framework_Services_Registry
+  art_root_io::TFileService_service
+  ROOT::Tree
+)
 
-art_make( BASENAME_ONLY
-          LIBRARY_NAME uboonecode_DQMTools
-          LIB_LIBRARIES
-			lardataobj_RawData
-			lardataobj_RecoBase
-                        larcorealg_Geometry
-                        larcore_Geometry_Geometry_service
-			art::Persistency_Common
-			art::Persistency_Provenance
-			art::Utilities
-                        canvas::canvas
-			messagefacility::MF_MessageLogger
-	                fhiclcpp::fhiclcpp
-			cetlib::cetlib
-                        cetlib_except::cetlib_except
+cet_build_plugin(
+  DQMChannelNoiseModule art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
 
-          MODULE_LIBRARIES
-			uboonecode_DQMTools
-                        lardataobj_RecoBase
-			lardataobj_MCBase
-                        larcorealg_Geometry
-                        larcore_Geometry_Geometry_service
-                        lardata_Utilities
-                        art::Framework_Core
-			art::Framework_Principal
-			art::Framework_Services_Registry
-			art_root_io::tfile_support ROOT::Core
-			art_root_io::TFileService_service
-			art::Persistency_Common
-			art::Utilities
-                        canvas::canvas
-			messagefacility::MF_MessageLogger
-	                fhiclcpp::fhiclcpp
-			cetlib::cetlib
-                        cetlib_except::cetlib_except
-                        ROOT::Tree
-         )
+cet_build_plugin(
+  DQMFlashModule art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
+
+cet_build_plugin(
+  DQMHitModule art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
+
+cet_build_plugin(
+  DQMTPCBurstModule art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
+
+cet_build_plugin(
+  DQMTrackModule art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
+
+cet_build_plugin(
+  GoodRunSelectionAna art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
+
+cet_build_plugin(
+  HVBurstFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  ubcore::DQMTools
+)
 
 install_headers()
 install_fhicl()

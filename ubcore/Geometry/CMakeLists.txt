@@ -1,23 +1,25 @@
+cet_make_library(
+  SOURCE
+  ChannelMapUBooNEAlg.cxx
+  LIBRARIES
+  PUBLIC
+  larcorealg::Geometry
+  art::Framework_Services_Registry
+  messagefacility::MF_MessageLogger
+  fhiclcpp::fhiclcpp
+)
 
-art_make( BASENAME_ONLY
-	  LIBRARY_NAME ubcore_Geometry
-	  LIB_LIBRARIES larcorealg_Geometry
-                        messagefacility::MF_MessageLogger
-                        cetlib::cetlib
-                        cetlib_except::cetlib_except
-                        fhiclcpp::fhiclcpp
+cet_build_plugin(
+  UBOpReadoutMap art::service
+)
 
-	  SERVICE_LIBRARIES larcorealg_Geometry
-	  		ubcore_Geometry
-
-	                fhiclcpp::fhiclcpp
-			cetlib::cetlib
-                        cetlib_except::cetlib_except
-                        ROOT::Geom
-                        ROOT::XMLIO
-                        ROOT::Gdml
-
-        )
+cet_build_plugin(
+  UBooNEGeometryHelper art::service
+  LIBRARIES
+  PUBLIC
+  ubcore::Geometry
+  larcore::Geometry_Geometry_service
+)
 
 add_subdirectory(gdml)
 

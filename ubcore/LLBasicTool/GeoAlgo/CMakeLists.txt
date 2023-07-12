@@ -1,6 +1,21 @@
-art_make( BASENAME_ONLY
-          LIBRARY_NAME     ubana_BasicTool_GeoAlgo
-          LIB_LIBRARIES ROOT::Physics
-        )
+cet_make_library(
+  SOURCE
+  GeoAABox.cxx
+  GeoAlgo.cxx
+  GeoCone.cxx
+  GeoCylinder.cxx
+  GeoDirectedLine.cxx
+  GeoHalfLine.cxx
+  GeoLine.cxx
+  GeoLineSegment.cxx
+  GeoObjCollection.cxx
+  GeoSphere.cxx
+  GeoTrajectory.cxx
+  GeoVector.cxx
+  LIBRARIES
+  PUBLIC
+  ROOT::Physics
+)
+
 install_headers()
 install_source()
