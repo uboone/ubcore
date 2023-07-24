@@ -12,8 +12,6 @@
 #include "larcorealg/Geometry/ChannelMapAlg.h"
 #include "larcorealg/Geometry/GeometryCore.h" // larcore. geo::GeometryData_t
 
-#include "art/Framework/Services/Registry/ServiceDefinitionMacros.h"
-
 // Migration note:
 // Geometry --> ubcore/Geometry for the two below
 #include "ubcore/Geometry/ChannelMapUBooNEAlg.h"
