@@ -52,6 +52,7 @@ cet_build_plugin(
   LIBRARIES
   PRIVATE
   ubcore::DQMTools
+  ubobj::Trigger
 )
 
 cet_build_plugin(

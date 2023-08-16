@@ -3,6 +3,7 @@ cet_make_library(
   UBTriggerAlgo.cxx
   LIBRARIES
   PUBLIC
+  ubobj::Trigger
   lardata::DetectorClocksService
   larcore::ServiceUtil
   ROOT::Core
