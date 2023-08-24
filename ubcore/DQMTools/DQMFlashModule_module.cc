@@ -260,7 +260,8 @@ void dqm::DQMFlashModule::analyze(art::Event const & e)
 
    ///////////Flash related quantities///////////////
 
-    int opflash_all=0, opflash50=0, opflash20=0, opflash0_20=0;   
+    // int opflash_all=0;   // unused
+    int opflash50=0, opflash20=0, opflash0_20=0;
     art::Handle< std::vector<recob::OpFlash>> opflashlistCol;
     e.getByLabel(fOpFlashModuleLabel,opflashlistCol);
     std::vector<recob::OpFlash> const& opflashlistVector(*opflashlistCol);
@@ -269,7 +270,7 @@ void dqm::DQMFlashModule::analyze(art::Event const & e)
     for (size_t it=0; it < opflashlistVector.size(); it++)
     {    
       auto opflash = opflashlistVector.at(it);
-      opflash_all+=1;
+      // opflash_all+=1; // unused
       _flash_ycenter_opFlashSat->Fill(opflash.YCenter()); 
       _flash_zcenter_opFlashSat->Fill(opflash.ZCenter());
       _flash_pe_opFlashSat->Fill(opflash.TotalPE()); 
@@ -298,7 +299,8 @@ void dqm::DQMFlashModule::analyze(art::Event const & e)
     _nflash0_20_opFlashSat->Fill(opflash0_20);
         
     
-    int simpflash_all=0, simpflash50=0, simpflash20=0, simpflash0_20=0;   
+    // int simpflash_all=0;   // unused
+    int simpflash50=0, simpflash20=0, simpflash0_20=0;
     art::Handle< std::vector<recob::OpFlash>> simpflashlistCol;
     e.getByLabel(fSimpFlashBeamModuleLabel,simpflashlistCol);
     std::vector<recob::OpFlash> const& simpflashlistVector(*simpflashlistCol);
@@ -307,7 +309,7 @@ void dqm::DQMFlashModule::analyze(art::Event const & e)
     for (size_t it=0; it < simpflashlistVector.size(); it++)
     {    
       auto simpflash = simpflashlistVector.at(it);
-      simpflash_all+=1;
+      // simpflash_all+=1; // unused
       _flash_ycenter_simpleFlashBeam->Fill(simpflash.YCenter()); 
       _flash_zcenter_simpleFlashBeam->Fill(simpflash.ZCenter());
       _flash_pe_simpleFlashBeam->Fill(simpflash.TotalPE()); 
