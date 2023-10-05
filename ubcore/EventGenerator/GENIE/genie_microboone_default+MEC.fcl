@@ -56,8 +56,8 @@ microboone_genie_uniform_flux_cc.GeomScan:      "flux: 10000 1.1"
 
 microboone_genie_simple_dirt:                   @local::microboone_genie
 microboone_genie_simple_dirt.FluxType:          "simple_flux"
-microboone_genie_simple_dirt.FluxSearchPaths:   "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.05.2018_463_dirt/"
-microboone_genie_simple_dirt.FluxFiles:         ["converted_beammc_dirt_*.root"]
+microboone_genie_simple_dirt.FluxSearchPaths:   "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_01.09.2019_463_dirt/"
+microboone_genie_simple_dirt.FluxFiles:         ["converted_beammc_dirt_wincorr_*.root"]
 microboone_genie_simple_dirt.EventsPerSpill:    0
 microboone_genie_simple_dirt.POTPerSpill:       5e12
 
