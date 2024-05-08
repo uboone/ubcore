@@ -11,28 +11,27 @@
 /// \author  taritree@mit.edu
 ////////////////////////////////////////////////////////////////////////
 
-#include "ubcore/Geometry/ChannelMapUBooNEAlg.h"
+#include "ubcore/Geometry/WireReadoutUBooNEGeom.h"
 #include "larcorealg/Geometry/AuxDetGeo.h"
 #include "larcorealg/Geometry/CryostatGeo.h"
 #include "larcorealg/Geometry/TPCGeo.h"
 #include "larcorealg/Geometry/PlaneGeo.h"
 #include "larcorealg/Geometry/WireGeo.h"
-
-#include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "messagefacility/MessageLogger/MessageLogger.h" 
+#include "larcorealg/Geometry/WireReadoutSorterStandard.h"
 
 namespace geo {
 
   //----------------------------------------------------------------------------
-  ChannelMapUBooNEAlg::ChannelMapUBooNEAlg( fhicl::ParameterSet const& pvals, fhicl::ParameterSet const& sortingParameters )
-    : ChannelMapStandardAlg( sortingParameters )
+  WireReadoutUBooNEGeom::WireReadoutUBooNEGeom( geo::GeometryCore const* geom,
+                                            fhicl::ParameterSet const& pvals)
+    : WireReadoutStandardGeom( pvals, geom , std::make_unique<WireReadoutSorterStandard>() )
   {
     // parameter set will come from UBooNEGomeotryHelper service
     LoadOpticalMapData( pvals );
   }
 
   //----------------------------------------------------------------------------
-  ChannelMapUBooNEAlg::~ChannelMapUBooNEAlg()
+  WireReadoutUBooNEGeom::~WireReadoutUBooNEGeom()
   {
   }
 
@@ -41,28 +40,28 @@ namespace geo {
   //----------------------------------------------------------------------------
 
   //----------------------------------------------------------------------------
-  unsigned int ChannelMapUBooNEAlg::NOpChannels(unsigned int NOpDets) const
+  unsigned int WireReadoutUBooNEGeom::NOpChannels(unsigned int NOpDets) const
   {
     return fNReadoutChannels;
   }
 
-  unsigned int ChannelMapUBooNEAlg::MaxOpChannel(unsigned int NOpDets) const
+  unsigned int WireReadoutUBooNEGeom::MaxOpChannel(unsigned int NOpDets) const
   {
     return fMaxOpChannel;
   }
 
   //----------------------------------------------------------------------------
-  unsigned int ChannelMapUBooNEAlg::NOpHardwareChannels(unsigned int opDet) const
+  unsigned int WireReadoutUBooNEGeom::NOpHardwareChannels(unsigned int opDet) const
   {
     auto it = fPMT2channels.find( opDet );
     if ( it!=fPMT2channels.end() )
       return (*it).second.size();
     else
-      throw std::runtime_error( "ChannelMapUBooNEAlg::NOpHardwareChannels : Invalid opdet value" );
+      throw std::runtime_error( "WireReadoutUBooNEGeom::NOpHardwareChannels : Invalid opdet value" );
   }
 
   //----------------------------------------------------------------------------
-  unsigned int ChannelMapUBooNEAlg::OpChannel(unsigned int pmtID, unsigned int copynum) const
+  unsigned int WireReadoutUBooNEGeom::OpChannel(unsigned int pmtID, unsigned int copynum) const
   {
     // converts OpDet and Gain Channel
     unsigned int uniqueChannel = fPMT2channels.at(pmtID).at(copynum);
@@ -70,14 +69,14 @@ namespace geo {
   }
 
   //----------------------------------------------------------------------------
-  unsigned int ChannelMapUBooNEAlg::OpDetFromOpChannel(unsigned int opChannel) const
+  unsigned int WireReadoutUBooNEGeom::OpDetFromOpChannel(unsigned int opChannel) const
   {
     unsigned int pmtID = fChannel2pmt.at( opChannel );
     return pmtID;
   }
 
   //----------------------------------------------------------------------------
-  unsigned int ChannelMapUBooNEAlg::HardwareChannelFromOpChannel(unsigned int opChannel) const
+  unsigned int WireReadoutUBooNEGeom::HardwareChannelFromOpChannel(unsigned int opChannel) const
   {
     auto it = fPMT2channels.find( OpDetFromOpChannel(opChannel)  );
     if ( it!=fPMT2channels.end() ) {
@@ -91,7 +90,7 @@ namespace geo {
   }
 
   //----------------------------------------------------------------------------
-  bool ChannelMapUBooNEAlg::IsValidOpChannel(unsigned int opChannel, unsigned int NOpDets) const {
+  bool WireReadoutUBooNEGeom::IsValidOpChannel(unsigned int opChannel, unsigned int NOpDets) const {
     auto it=fChannel2pmt.find( opChannel );
     if ( it!=fChannel2pmt.end() ) {
       return true;
@@ -100,7 +99,7 @@ namespace geo {
   }
   
   //----------------------------------------------------------------------------
-  void ChannelMapUBooNEAlg::LoadOpticalMapData( fhicl::ParameterSet const& pset ) {
+  void WireReadoutUBooNEGeom::LoadOpticalMapData( fhicl::ParameterSet const& pset ) {
     fNOpDets = pset.get< unsigned int >("numberOfDetectors");
     fNReadoutChannels = 0;    
     fMaxOpChannel = 0;
