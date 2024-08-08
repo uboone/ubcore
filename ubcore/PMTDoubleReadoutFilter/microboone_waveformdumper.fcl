@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+microboone_waveformdumper:
+{
+  module_type: "OpDetWaveformDumper"
+  
+  triggerLabel: "daq"
+  waveformLabel: "pmtreadout"
+  processName: ""
+}
+
+END_PROLOG
