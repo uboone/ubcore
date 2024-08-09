@@ -9,7 +9,7 @@
 // Fcl parameters:
 //
 // triggerLabel: Module label of Trigger data product.
-// waveformLabel: MOdule label of OpDetWaveform data product.
+// waveformLabel: Module label of OpDetWaveform data product.
 //                This can a simple module label ("<module>") or a
 //                label and instance name separated by a colon 
 //                ("<module>:<instance>"). or it can be an empty string.
@@ -134,11 +134,20 @@ void OpDetWaveformDumper::analyze(art::Event const& e)
 
   for(const auto& wfh : filtered_wfhs) {
 
+    // Count the number of channels.
+
+    std::set<unsigned int> chset;
+    for(auto const& wf : *wfh) {
+      unsigned int ch = wf.ChannelNumber();
+      if(chset.count(ch) == 0)
+        chset.insert(ch);
+    }
     const art::Provenance* prov = wfh.provenance();
     std::cout << "\nModule label = " << prov->moduleLabel() << std::endl;
     std::cout << "Instance name = " << prov->productInstanceName() << std::endl;
     std::cout << "Process name = " << prov->processName() << std::endl;
     std::cout << wfh->size() << " waveforms" << std::endl;
+    std::cout << chset.size() << " channels" << std::endl;
 
     // Loop over OpDetWaveforms.
 
@@ -159,7 +168,7 @@ void OpDetWaveformDumper::analyze(art::Event const& e)
       }
       if(adc_num > 0)
         adc_avg = adc_tot / adc_num;
-      std::cout << "\nChennal " << ch << std::endl;
+      std::cout << "\nChennel " << ch << std::endl;
       std::cout << "Length = " << len << std::endl;
       std::cout << "Start time = " << wftime << std::endl;
       std::cout << "Average ADC = " << adc_avg << std::endl;
