@@ -8,9 +8,9 @@
 //
 // Description:
 //
-// This producer module reads an input OpDetWaveform containing a mixture of
+// This producer module reads input OpDetWaveforms containing a mixture of
 // beam and cosmic waveforms, and produces a new output OpDetWaveform containing
-// only the cosmic waveforms from the input data product.
+// only the cosmic waveforms from the input data products.
 //
 // Beam and cosmic waveforms are distringuished by their length.  Beam waveforms
 // normally have a length of 1501, and cosmic waveforms normally have a length
@@ -19,11 +19,26 @@
 //
 // Fcl parameters:
 //
-// inputLabel: Module label and instance name of input waveform
-//             (<module>:<instance>).
-// outputInstance: Instance name of output waveform
+// inputLabel: Input waveform module label (just the label without the instance name).
+// inputInstance: Input waveform instance name.
+// outputInstance: Output waveform instance name.
 // maxLength: Maximum length of cosmic waveforms.
-// channelIncrement: Increment for channel numbers in output waveform.
+//
+// Usage notes:
+//
+// 1.  The default mode in which this module is intended to be used will have
+//     the following fcl parameters.
+//
+//     inputLabel = "pmtreadout"   (read OpDetWaveforms produced by swizzler).
+//     inputInstance = "OpdetBeamHighGain"  (where HG cosmic waveforms are found in run 1a data).
+//     ouputInstance = "OpdetCosmicHighGain"  (normal instance for HG cosmic waveforms).
+//
+// 2.  This module will attempt to read cosmic waveforms from two input tags:
+//     a) <inputLabel>:<inputInstance>
+//     b) <inputLabel>:<outputInstance>
+//
+// Input tag (a) is where cosmic waveforms would be found in run 1a data.
+// Input tag (b) retains existing cosmic waveforms that have the correct instance already.
 //                
 ////////////////////////////////////////////////////////////////////////
 
@@ -64,60 +79,70 @@ private:
 
   // Fcl parameters.
 
-  art::InputTag fInputLabel;    // Module label + instance name of input waveform.
+  std::string fInputLabel;      // Module label of input waveform.
+  std::string fInputInstance;   // Instance name of input waveform.
   std::string fOutputInstance;  // Instance name of output waveform.
   unsigned int fMaxLength;      // Maximum length cut.
-  int fChannelIncrement;        // Channel increment.
 };
 
 
-PMTCosmicFilter::PMTCosmicFilter(fhicl::ParameterSet const& p)
-  : EDProducer{p},
-  fInputLabel(p.get<art::InputTag>("inputLabel")),
+PMTCosmicFilter::PMTCosmicFilter(fhicl::ParameterSet const& p) :
+  EDProducer{p},
+  fInputLabel(p.get<std::string>("inputLabel")),
+  fInputInstance(p.get<std::string>("inputInstance")),
   fOutputInstance(p.get<std::string>("outputInstance")),
-  fMaxLength(p.get<unsigned int>("maxLength")),
-  fChannelIncrement(p.get<int>("channelIncrement"))
+  fMaxLength(p.get<unsigned int>("maxLength"))
 {
   // Call appropriate produces<>() functions here.
   // Call appropriate consumes<>() for any products to be retrieved by this module.
 
   produces<std::vector<raw::OpDetWaveform> >(fOutputInstance);
-  consumes<std::vector<raw::OpDetWaveform> >(fInputLabel);
+  consumes<std::vector<raw::OpDetWaveform> >(art::InputTag(fInputLabel, fInputInstance));
+  consumes<std::vector<raw::OpDetWaveform> >(art::InputTag(fInputLabel, fOutputInstance));
 }
 
 void PMTCosmicFilter::produce(art::Event& e)
 {
   // Implementation of required member function here.
 
-  // Get the input waveform.
+  // Get the input waveforms.
+  // We try to read the following two waveforms.
+  // 1.  <inputLabel>:<inputInstance>
+  // 2.  <inputLabel>:<outputInstance>
 
-  art::Handle<std::vector<raw::OpDetWaveform> > wfh;
-  e.getByLabel(fInputLabel, wfh);
-
-  // We consider it a fatal error if the input waveform is not found.
-
-  if(!wfh.isValid()) {
-    throw art::Exception(art::errors::ProductNotFound)
-      << "Could not find input waveform with label " << fInputLabel;
-  }
+  std::vector<art::Handle<std::vector<raw::OpDetWaveform> > > wfhvec(2);
+  e.getByLabel(fInputLabel, fInputInstance, wfhvec[0]);
+  e.getByLabel(fInputLabel, fOutputInstance, wfhvec[1]);
 
   // Construct the new data product that will hold the selected waveforms.
 
   std::unique_ptr<std::vector<raw::OpDetWaveform> > new_wfvec(new std::vector<raw::OpDetWaveform>);
-  new_wfvec->reserve(wfh->size());
 
-  // Loop over OpDetWaveforms.
+  // Loop over handles.
 
-  for(auto const& wf : *wfh) {
+  for(auto const& wfh : wfhvec) {
 
-    // Maybe insert waveform into new data product.
+    // It is not an error if handle is not valid.
 
-    if(wf.size() <= fMaxLength) {
-      new_wfvec->push_back(wf);
+    if(wfh.isValid()) {
 
-      // Increment channel number.
+      if(new_wfvec->size() == 0)
+        new_wfvec->reserve(wfh->size());
 
-      new_wfvec->back().SetChannelNumber(wf.ChannelNumber() + fChannelIncrement);
+      // Loop over OpDetWaveforms from this handle.
+
+      for(auto const& wf : *wfh) {
+
+        // Maybe insert waveform into new data product.
+
+        if(wf.size() <= fMaxLength) {
+          new_wfvec->push_back(wf);
+
+          // Adjust channel number.
+
+          new_wfvec->back().SetChannelNumber(wf.ChannelNumber() % 100 + 200);
+        }
+      }
     }
   }
 
