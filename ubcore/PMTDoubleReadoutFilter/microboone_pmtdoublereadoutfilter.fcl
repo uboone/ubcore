@@ -8,6 +8,7 @@ microboone_pmtdoublereadoutfilter:
   waveformLabel: "pmtreadout:OpdetBeamHighGain"
   numberOfChannelsToExpect: 36
   timestampDiffTolerance: 1.1 # nanosecond difference allowed between trigger timestamp and pmt timestamp. 1 is too small
+  minLength: 42     # Exclude cosmic waveforms.
 }
 
 END_PROLOG
