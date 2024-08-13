@@ -96,9 +96,8 @@ void pdrf::PMTDoubleReadoutFilter::produce(art::Event& e)
       if(wf.size() >= fMinLength && std::abs(TriggerTime - wf.TimeStamp()) < fTimestampDiffTolerance) {
         if(wf.ChannelNumber() < fNumOfChannelsExpected) {
           seen[wf.ChannelNumber()] ++;
+          new_waveforms->push_back(wf);
         }
-        else throw art::Exception(art::errors::DataCorruption) << "PMT channel seen with bad channel ID "<<wf.ChannelNumber()<<".\n";
-        new_waveforms->push_back(wf);
       }
     }
     if(std::count(seen.begin(), seen.end(), 1) != fNumOfChannelsExpected) {
