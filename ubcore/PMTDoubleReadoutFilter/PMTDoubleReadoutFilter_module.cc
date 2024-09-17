@@ -47,6 +47,7 @@ namespace pdrf {
       art::InputTag fTriggerLabel, fWaveformLabel;
       unsigned int fNumOfChannelsExpected;
       double fTimestampDiffTolerance;
+      unsigned int fMinLength;
       // Declare member data here.
 
   };
@@ -58,7 +59,8 @@ pdrf::PMTDoubleReadoutFilter::PMTDoubleReadoutFilter(fhicl::ParameterSet const& 
   fTriggerLabel(p.get<art::InputTag>("triggerLabel")),
   fWaveformLabel(p.get<art::InputTag>("waveformLabel")),
   fNumOfChannelsExpected(p.get<unsigned int>("numberOfChannelsToExpect")),
-  fTimestampDiffTolerance(p.get<double>("timestampDiffTolerance"))// ,
+  fTimestampDiffTolerance(p.get<double>("timestampDiffTolerance")),
+  fMinLength(p.get<unsigned int>("minLength"))
   // More initializers here.
 {
   // Call appropriate produces<>() functions here.
@@ -91,16 +93,15 @@ void pdrf::PMTDoubleReadoutFilter::produce(art::Event& e)
     std::vector<int> seen(fNumOfChannelsExpected,0);
     for(auto const& wf : *wfHandle) {
       // we want to select only the waveforms with their timestamp at the trigger time
-      if(std::abs(TriggerTime - wf.TimeStamp()) < fTimestampDiffTolerance) {
-        if(wf.ChannelNumber() >= 0 && wf.ChannelNumber() < fNumOfChannelsExpected) {
+      if(wf.size() >= fMinLength && std::abs(TriggerTime - wf.TimeStamp()) < fTimestampDiffTolerance) {
+        if(wf.ChannelNumber() < fNumOfChannelsExpected) {
           seen[wf.ChannelNumber()] ++;
+          new_waveforms->push_back(wf);
         }
-        else throw art::Exception(art::errors::DataCorruption) << "PMT channel seen with bad channel ID "<<wf.ChannelNumber()<<".\n";
-        new_waveforms->push_back(wf);
       }
     }
     if(std::count(seen.begin(), seen.end(), 1) != fNumOfChannelsExpected) {
-      throw art::Exception(art::errors::DataCorruption) << "Could not find "<<fNumOfChannelsExpected<<" PMT waveforms at the trigger time.\n";
+      throw art::Exception(art::errors::DataCorruption) << "Could not find "<<fNumOfChannelsExpected<<" PMT waveforms at the trigger time.  Found "  << std::count(seen.begin(), seen.end(), 1) << ".\n";
     }
 
     e.put(std::move(new_waveforms),fWaveformLabel.instance());

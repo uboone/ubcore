@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+microboone_pmtcosmicfilter:
+{
+  module_type: "PMTCosmicFilter"  
+  inputLabel: "pmtreadout"
+  inputInstance: "OpdetBeamHighGain"
+  outputInstance: "OpdetCosmicHighGain"
+  maxLength: 41
+}
+
+END_PROLOG
