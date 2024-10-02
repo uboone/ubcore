@@ -18,7 +18,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "art_root_io/TFileService.h"
-#include "larcore/Geometry/Geometry.h"
+#include "larcore/Geometry/WireReadout.h"
 #include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 
 #include "lardataobj/RawData/RawDigit.h"
@@ -87,15 +87,15 @@ void dqm::DQMTPCBurstModule::analyze(art::Event const & e)
   //
   if(fChannelToPlaneMap.empty()) {
     fChannelToPlaneMap.resize(num_channels);
-    geo::GeometryCore const* geom = lar::providerFrom<geo::Geometry>();
+    auto const& channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
     for(uint32_t chan = 0; chan < num_channels; ++chan) {
       int plane = -1;
       {
-        std::vector<geo::WireID> wireIDs = geom->ChannelToWire(chan);
+        std::vector<geo::WireID> wireIDs = channelMapAlg.ChannelToWire(chan);
         if(wireIDs.empty()) {
           continue;
         }
-        plane = geom->View(wireIDs.front().planeID());
+        plane = channelMapAlg.Plane(wireIDs.front().planeID()).View();
       }
       if(plane < 0 || plane > 2) continue;
       fChannelToPlaneMap[chan] = plane;
