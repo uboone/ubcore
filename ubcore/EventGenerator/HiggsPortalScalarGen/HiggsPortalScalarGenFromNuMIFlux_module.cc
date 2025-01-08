@@ -339,7 +339,7 @@ void hpsgen::HiggsPortalScalarGenFromNuMIFlux::produce(art::Event& e)
 
       //Details from https://github.com/NuSoftHEP/nutools/blob/v2_18_01/nutools/EventGeneratorBase/GENIE/EvtTimeFNALBeam.cxx
       
-      //NuMI has one batch per spill
+      //NuMI has six batches per spill
 
       EvtTimeFNALBeam evtTime;
       evtTime.nbatch = 6;
