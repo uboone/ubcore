@@ -129,6 +129,10 @@ private:
   int    fEventTree_kaon_pdg;
   bool   fEventTree_selected;
 
+  //added by Magnus
+  double fEventTree_time_shift;
+  double fEventTree_unshifted_time;
+
   TTree *fSubRunTree;
   double fSubRunTree_totpot;
   ULong64_t   fSubRunTree_n_kaons_read;
@@ -253,6 +257,10 @@ hpsgen::HeavyNeutralLeptonGenFromBNBFlux::HeavyNeutralLeptonGenFromBNBFlux(fhicl
   fSubRunTree_n_kaons_read = 0;
   fSubRunTree_n_scalars_gen = 0;
   fSubRunTree_n_scalar_decays_in_detector = 0;
+
+  //added by Magnus
+  fEventTree->Branch("time_shift",&fEventTree_time_shift);
+  fEventTree->Branch("unshifted_time",&fEventTree_unshifted_time);
 }
 
 hpsgen::HeavyNeutralLeptonGenFromBNBFlux::~HeavyNeutralLeptonGenFromBNBFlux()
@@ -331,8 +339,24 @@ void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::produce(art::Event& e)
           }
         }
       }
+
+      //Added by Magnus
+      auto const seed = 123;
+      auto urbg = std::mt19937 {seed};  
+      double const mu = 0.0; 
+      double const sigma = 1.308; //ns
+      auto norm = std::normal_distribution<double>{mu,sigma};
+      auto gauss = norm(urbg);
+      double bunch_spacing = 18.936; //ns
+
+      //std::cout << "fRNG: "<< fRNG << std::endl;
+
+      double time_shift_crude = fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration);
+      double time_shift = ((int) (time_shift_crude / bunch_spacing)) * bunch_spacing;
+      time_shift += gauss;
       
-      TLorentzVector shift_to_detector_time(0.,0.,0.,fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration));
+      TLorentzVector shift_to_detector_time(0.,0.,0.,time_shift);
+
       const double dk_t = (dk_pos+shift_to_detector_time).T();
       if(!fBeamWindowCut.empty() && ( dk_t < fBeamWindowCut.front() || dk_t > fBeamWindowCut.back() )) {
         selected=false;
@@ -385,6 +409,11 @@ void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::produce(art::Event& e)
       fEventTree_daughter1_pdg = d1.first;
       fEventTree_daughter2_pdg = d2.first;
       fEventTree_selected = selected;
+
+      //Added by Magnus
+      fEventTree_time_shift = time_shift;
+      fEventTree_unshifted_time = dk_pos.T();
+
       fEventTree->Fill();
 
       fSubRunTree_n_scalar_decays_in_detector++;

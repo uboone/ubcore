@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       HiggsPortalScalarGenFromBNBFlux
+// Class:       HNLGenFromBNBFlux
 // Plugin Type: producer (art v3_01_02)
-// File:        HiggsPortalScalarGenFromBNBFlux_module.cc
+// File:        HNLGenFromBNBFlux_module.cc
 //
 // Generated at Fri Mar 20 11:25:20 2020 by Pawel Guzowski using cetskelgen
 // from cetlib version v3_05_01.
@@ -35,23 +35,23 @@
 #include "FluxReaderBNB.h"
 #include "EvtTimeFNALBeam.h"
 
-namespace hpsgen {
-  class HiggsPortalScalarGenFromBNBFlux;
+namespace hnlgen {
+  class HNLGenFromBNBFlux;
 }
 
 
-class hpsgen::HiggsPortalScalarGenFromBNBFlux : public art::EDProducer {
+class hnlgen::HNLGenFromBNBFlux : public art::EDProducer {
 public:
-  explicit HiggsPortalScalarGenFromBNBFlux(fhicl::ParameterSet const& p);
-  ~HiggsPortalScalarGenFromBNBFlux();
+  explicit HNLGenFromBNBFlux(fhicl::ParameterSet const& p);
+  ~HNLGenFromBNBFlux();
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  HiggsPortalScalarGenFromBNBFlux(HiggsPortalScalarGenFromBNBFlux const&) = delete;
-  HiggsPortalScalarGenFromBNBFlux(HiggsPortalScalarGenFromBNBFlux&&) = delete;
-  HiggsPortalScalarGenFromBNBFlux& operator=(HiggsPortalScalarGenFromBNBFlux const&) = delete;
-  HiggsPortalScalarGenFromBNBFlux& operator=(HiggsPortalScalarGenFromBNBFlux&&) = delete;
+  HNLGenFromBNBFlux(HNLGenFromBNBFlux const&) = delete;
+  HNLGenFromBNBFlux(HNLGenFromBNBFlux&&) = delete;
+  HNLGenFromBNBFlux& operator=(HNLGenFromBNBFlux const&) = delete;
+  HNLGenFromBNBFlux& operator=(HNLGenFromBNBFlux&&) = delete;
 
   // Required functions.
   void produce(art::Event& e) override;
@@ -69,9 +69,10 @@ private:
   GenKinematics *fKinHelper;
   FluxReaderBNB *fFluxHelper;
 
-  const std::string fScalarParams;
-  const std::vector<double> fScalarMass;
-  const double fModelTheta;
+  const double fModelUe4;
+  const double fModelUmu4;
+  const double fModelUtau4;
+  const bool fIsMajorana;
   const double fMaxWeight;
 
   double fPrevTotPOT;
@@ -98,14 +99,14 @@ private:
   double fEventTree_kaon_decay_y;
   double fEventTree_kaon_decay_z;
   double fEventTree_kaon_decay_t;
-  double fEventTree_scalar_mom_x;
-  double fEventTree_scalar_mom_y;
-  double fEventTree_scalar_mom_z;
-  double fEventTree_scalar_energy;
-  double fEventTree_scalar_decay_x;
-  double fEventTree_scalar_decay_y;
-  double fEventTree_scalar_decay_z;
-  double fEventTree_scalar_decay_t;
+  double fEventTree_hnl_mom_x;
+  double fEventTree_hnl_mom_y;
+  double fEventTree_hnl_mom_z;
+  double fEventTree_hnl_energy;
+  double fEventTree_hnl_decay_x;
+  double fEventTree_hnl_decay_y;
+  double fEventTree_hnl_decay_z;
+  double fEventTree_hnl_decay_t;
   double fEventTree_daughter1_mom_x;
   double fEventTree_daughter1_mom_y;
   double fEventTree_daughter1_mom_z;
@@ -118,35 +119,33 @@ private:
   double fEventTree_flux_weight;
   double fEventTree_decay_weight;
   double fEventTree_branching_ratio_weight;
-  int    fEventTree_daughter_pdg;
+  int    fEventTree_daughter1_pdg;
+  int    fEventTree_daughter2_pdg;
   int    fEventTree_kaon_pdg;
   bool   fEventTree_selected;
 
   TTree *fSubRunTree;
   double fSubRunTree_totpot;
   ULong64_t   fSubRunTree_n_kaons_read;
-  ULong64_t   fSubRunTree_n_scalars_gen;
-  int    fSubRunTree_n_scalar_decays_in_detector;
+  ULong64_t   fSubRunTree_n_hnl_gen;
+  int    fSubRunTree_n_hnl_decays_in_detector;
 
 };
 
 
-hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::ParameterSet const& p)
+hnlgen::HNLGenFromBNBFlux::HNLGenFromBNBFlux(fhicl::ParameterSet const& p)
   : EDProducer{p},
-  fRNG(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "hpsgen", p, "RNGSeed")),
-  fKinHelper(new GenKinematics(p)), fFluxHelper(new FluxReaderBNB(p, fRNG)),
-  fScalarParams(p.get<std::string>("scalar_params","fixed")),
-  fScalarMass(
-      [&p](){
-        try {
-        return p.get<std::vector<double>>("scalar_mass",{0.125});
-        }
-        catch(...){
-        return std::vector<double>{p.get<double>("scalar_mass",0.125)};
-        }
-      }()
-  ),
-  fModelTheta(p.get<double>("model_theta",1e-5)),
+  fRNG(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "hnlgen", p, "RNGSeed")),
+  fKinHelper(new GenKinematics(p,fRNG)), fFluxHelper(new FluxReaderBNB(p, fRNG)),
+  fModelUe4(p.get<double>("model_U_e_4_angle")),
+  fModelUmu4(p.get<double>("model_U_mu_4_angle")),
+  fModelUtau4(p.get<double>("model_U_tau_4_angle")),
+  fIsMajorana{[](auto const& s) {
+    if(s == "dirac") return false;
+    if(s == "majorana") return true;
+    throw cet::exception("Configuration")
+      << "HNL fermionic nature '"<<s<<"' should be 'dirac' or 'majorana'" ;
+  }(p.get<std::string>("model_hnl_fermion_nature"))},
   fMaxWeight(p.get<double>("max_weight",0.)),
   fSelectKaonPDGs(p.get<std::vector<int>>("select_kaon_pdgs",{})),
   fSelectKaons(p.get<std::string>("select_kaon_decay_type","")),
@@ -168,15 +167,6 @@ hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::
     produces< art::Assns<simb::MCTruth, simb::MCFlux> >();
   }
   
-  if(fScalarMass.empty()) {
-    throw cet::exception("Configuration") << "Need to supply a model scalar mass";
-  }
-  if(fScalarParams != "fixed" && fScalarParams != "random") {
-    throw cet::exception("Configuration") << "scalar_params should be 'fixed' or 'random' only";
-  }
-  if(fScalarParams == "random" && fScalarMass.size() != 2 && fMaxWeight != 0) {
-    throw cet::exception("Configuration") << "Need to supply a model scalar mass range [low,high] and max_weight should be 0";
-  }
   if(!fSelectKaons.empty() && fSelectKaons != "kdar" && fSelectKaons != "kdif") {
     throw cet::exception("Configuration") << "select_kaon_decay_type should be 'kdar' or 'kdif', or not defined";
   }
@@ -209,14 +199,14 @@ hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::
   fEventTree->Branch("kaon_decay_y",&fEventTree_kaon_decay_y);
   fEventTree->Branch("kaon_decay_z",&fEventTree_kaon_decay_z);
   fEventTree->Branch("kaon_decay_t",&fEventTree_kaon_decay_t);
-  fEventTree->Branch("scalar_mom_x",&fEventTree_scalar_mom_x);
-  fEventTree->Branch("scalar_mom_y",&fEventTree_scalar_mom_y);
-  fEventTree->Branch("scalar_mom_z",&fEventTree_scalar_mom_z);
-  fEventTree->Branch("scalar_energy",&fEventTree_scalar_energy);
-  fEventTree->Branch("scalar_decay_x",&fEventTree_scalar_decay_x);
-  fEventTree->Branch("scalar_decay_y",&fEventTree_scalar_decay_y);
-  fEventTree->Branch("scalar_decay_z",&fEventTree_scalar_decay_z);
-  fEventTree->Branch("scalar_decay_t",&fEventTree_scalar_decay_t);
+  fEventTree->Branch("hnl_mom_x",&fEventTree_hnl_mom_x);
+  fEventTree->Branch("hnl_mom_y",&fEventTree_hnl_mom_y);
+  fEventTree->Branch("hnl_mom_z",&fEventTree_hnl_mom_z);
+  fEventTree->Branch("hnl_energy",&fEventTree_hnl_energy);
+  fEventTree->Branch("hnl_decay_x",&fEventTree_hnl_decay_x);
+  fEventTree->Branch("hnl_decay_y",&fEventTree_hnl_decay_y);
+  fEventTree->Branch("hnl_decay_z",&fEventTree_hnl_decay_z);
+  fEventTree->Branch("hnl_decay_t",&fEventTree_hnl_decay_t);
   fEventTree->Branch("daughter1_mom_x",&fEventTree_daughter1_mom_x);
   fEventTree->Branch("daughter1_mom_y",&fEventTree_daughter1_mom_y);
   fEventTree->Branch("daughter1_mom_z",&fEventTree_daughter1_mom_z);
@@ -231,37 +221,27 @@ hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::
   fEventTree->Branch("branching_ratio_weight",&fEventTree_branching_ratio_weight);
   fEventTree->Branch("selected",&fEventTree_selected);
   fEventTree->Branch("kaon_pdg",&fEventTree_kaon_pdg);
-  fEventTree->Branch("daughter_pdg",&fEventTree_daughter_pdg);
+  fEventTree->Branch("daughter1_pdg",&fEventTree_daughter1_pdg);
+  fEventTree->Branch("daughter2_pdg",&fEventTree_daughter2_pdg);
 
   fSubRunTree = tfs->make<TTree>("subrun_tree","");
   fSubRunTree->Branch("tot_pot",&fSubRunTree_totpot);
   fSubRunTree->Branch("n_kaons_read",&fSubRunTree_n_kaons_read);
-  fSubRunTree->Branch("n_scalars_gen",&fSubRunTree_n_scalars_gen);
-  fSubRunTree->Branch("n_scalar_decays_in_detector",&fSubRunTree_n_scalar_decays_in_detector);
+  fSubRunTree->Branch("n_hnl_gen",&fSubRunTree_n_hnl_gen);
+  fSubRunTree->Branch("n_hnl_decays_in_detector",&fSubRunTree_n_hnl_decays_in_detector);
   fSubRunTree_n_kaons_read = 0;
-  fSubRunTree_n_scalars_gen = 0;
-  fSubRunTree_n_scalar_decays_in_detector = 0;
+  fSubRunTree_n_hnl_gen = 0;
+  fSubRunTree_n_hnl_decays_in_detector = 0;
 }
 
-hpsgen::HiggsPortalScalarGenFromBNBFlux::~HiggsPortalScalarGenFromBNBFlux()
+hnlgen::HNLGenFromBNBFlux::~HNLGenFromBNBFlux()
 {
   delete fKinHelper;
   delete fFluxHelper;
 }
 
-void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
+void hnlgen::HNLGenFromBNBFlux::produce(art::Event& e)
 {
-  double scalar_mass = 0.;
-  double model_theta = 0.;
-  if(fScalarParams == "fixed") {
-    scalar_mass = fScalarMass.front();
-    model_theta = fModelTheta;
-  }
-  else if(fScalarParams == "random") {
-    scalar_mass = CLHEP::RandFlat::shoot(&fRNG,fScalarMass.front(),fScalarMass.back());
-    std::cout << "Choosing scalar mass "<<scalar_mass<< " from range ["<<fScalarMass.front()<<","<<fScalarMass.back() <<"] "<<std::endl;
-    model_theta = 1e-6; // doesn't matter so much, but I want a relatively long lifetime so that the rate across the detector is roughly uniform. if theta is large, then there will be more decays in the upstream end
-  }
   TLorentzVector kaon_4mom, kaon_pos;
   int pion_type;
   int kaon_pdg;
@@ -282,15 +262,20 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
       if(kaon_4mom.Vect().Mag() > fCutKaonMom) continue;
     }
     std::multimap<int,TLorentzVector> res;
-    fSubRunTree_n_scalars_gen++;
-    if(fKinHelper->generate(kaon_pos, kaon_4mom, scalar_mass, model_theta, pion_type, flux_weight, fMaxWeight, fRNG, res)) {
+    fSubRunTree_n_hnl_gen++;
+    if(fKinHelper->generate(kaon_pos, kaon_4mom,kaon_pdg, flux_weight, fMaxWeight, fRNG, res)) {
       
       const TLorentzVector& dk_pos = res.find(0)->second;
-      const TLorentzVector& scalar_mom = res.find(54)->second;
+      auto hnl_it = std::find_if(res.begin(), res.end(), [](auto& r) {
+          return r.first == 89 || r.first == 91 || r.first == -89 || r.first==-91;
+          });
+      if(hnl_it == res.end()) continue;
+      const TLorentzVector& hnl_mom = hnl_it->second;
       auto d1ptr = [&res]() {
         for(auto i = res.begin(); i != res.end(); ++i) {
           auto const& v = *i;
-          if(v.first != 54 && v.first != 99 && v.first != 0) return i;
+          if(v.first != 89 && v.first != 91 && v.first != -89 && v.first != -91
+              && v.first != 12 && v.first != -12 && v.first != 99 && v.first != 0) return i;
         }
         return res.end();
       }();
@@ -298,14 +283,14 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
       auto const& d2ptr = [&res,&d1ptr]() {
         for(auto i = res.begin(); i != res.end(); ++i) {
           auto const& v = *i;
-          if(v.first != 54 && v.first != 99 && v.first != 0 && i != d1ptr) return i;
+          if(v.first != 89 && v.first != 91 && v.first != -89 && v.first != -91
+              && ((v.first != 12 && v.first != -12) || d1ptr->first == 111) && v.first != 99 && v.first != 0 && i != d1ptr) return i;
         };
         return res.end();
       }();
       auto const& d2 = *d2ptr;
 
       bool selected = true;
-
       if(!fFinalStateCut.empty()) {
         if(fFinalStateCut.front() > 0) {
           if(std::find(fFinalStateCut.begin(), fFinalStateCut.end(), std::abs(d1.first)) == fFinalStateCut.end()) {
@@ -317,6 +302,17 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
             selected = false;
           }
         }
+      }
+      
+      if(fMaxWeight <= 0.) {
+        auto const& r99 = res.find(99);
+        if(r99 == res.end()) {
+          throw cet::exception("LogicError") << "there should be a weight lorentz vector" <<  std::endl;
+        }
+        fEventTree_weight = r99->second.T();
+        fEventTree_decay_weight = r99->second.X();
+        fEventTree_branching_ratio_weight = r99->second.Y();
+        fEventTree_flux_weight = r99->second.Z();
       }
       
       //Edit for ns timing
@@ -331,26 +327,6 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
 
       TLorentzVector shift_to_detector_time(0.,0.,0.,time_shift);
 
-      const double dk_t = (dk_pos+shift_to_detector_time).T();
-      if(!fBeamWindowCut.empty() && ( dk_t < fBeamWindowCut.front() || dk_t > fBeamWindowCut.back() )) {
-        selected=false;
-      }
-
-      
-
-      if(fMaxWeight < 0.) {
-        auto const& r99 = res.find(99);
-        if(r99 == res.end()) {
-          throw cet::exception("LogicError") << "there should be a weight lorentz vector" <<  std::endl;
-        }
-        fEventTree_weight = r99->second.T();
-        fEventTree_decay_weight = r99->second.X();
-        fEventTree_branching_ratio_weight = r99->second.Y();
-        fEventTree_flux_weight = r99->second.Z();
-        //const double qq = (fScalarParams == "random" ? model_theta : 0.);
-      }
-
-      
       fEventTree_kaon_mom_x = kaon_4mom.X();
       fEventTree_kaon_mom_y = kaon_4mom.Y();
       fEventTree_kaon_mom_z = kaon_4mom.Z();
@@ -359,14 +335,14 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
       fEventTree_kaon_decay_y = kaon_pos.Y();
       fEventTree_kaon_decay_z = kaon_pos.Z();
       fEventTree_kaon_decay_t = (kaon_pos+shift_to_detector_time).T();
-      fEventTree_scalar_mom_x = scalar_mom.X();
-      fEventTree_scalar_mom_y = scalar_mom.Y();
-      fEventTree_scalar_mom_z = scalar_mom.Z();
-      fEventTree_scalar_energy = scalar_mom.E();
-      fEventTree_scalar_decay_x = dk_pos.X();
-      fEventTree_scalar_decay_y = dk_pos.Y();
-      fEventTree_scalar_decay_z = dk_pos.Z();
-      fEventTree_scalar_decay_t = (dk_pos+shift_to_detector_time).T();
+      fEventTree_hnl_mom_x = hnl_mom.X();
+      fEventTree_hnl_mom_y = hnl_mom.Y();
+      fEventTree_hnl_mom_z = hnl_mom.Z();
+      fEventTree_hnl_energy = hnl_mom.E();
+      fEventTree_hnl_decay_x = dk_pos.X();
+      fEventTree_hnl_decay_y = dk_pos.Y();
+      fEventTree_hnl_decay_z = dk_pos.Z();
+      fEventTree_hnl_decay_t = (dk_pos+shift_to_detector_time).T();
       fEventTree_daughter1_mom_x = d1.second.X();
       fEventTree_daughter1_mom_y = d1.second.Y();
       fEventTree_daughter1_mom_z = d1.second.Z();
@@ -376,12 +352,13 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
       fEventTree_daughter2_mom_z = d2.second.Z();
       fEventTree_daughter2_energy = d2.second.E();
       fEventTree_kaon_pdg = kaon_pdg;
-      fEventTree_daughter_pdg = std::abs(d1.first);
+      fEventTree_daughter1_pdg = d1.first;
+      fEventTree_daughter2_pdg = d2.first;
       fEventTree_selected = selected;
       fEventTree->Fill();
 
-      fSubRunTree_n_scalar_decays_in_detector++;
-
+      fSubRunTree_n_hnl_decays_in_detector++;
+      
       if(!selected) continue;
 
       if(!fTreeOnlyMode) {
@@ -392,9 +369,9 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
         simb::MCParticle kaon(1,kaon_pdg,"beamline",-1,kaon_4mom.M(),0);
         kaon.AddTrajectoryPoint(kaon_pos+shift_to_detector_time,kaon_4mom);
 
-        simb::MCParticle scalar(2,54,"decay",1,scalar_mass,2);
-        scalar.AddTrajectoryPoint(kaon_pos,scalar_mom);
-        scalar.AddTrajectoryPoint(dk_pos+shift_to_detector_time,scalar_mom);
+        simb::MCParticle hnl(2,hnl_it->first,"decay",1,hnl_mom.M(),2);
+        hnl.AddTrajectoryPoint(kaon_pos+shift_to_detector_time,hnl_mom);
+        hnl.AddTrajectoryPoint(dk_pos+shift_to_detector_time,hnl_mom);
 
         simb::MCParticle dgt1(3,d1.first,"decay",2,d1.second.M(),1);
         dgt1.AddTrajectoryPoint(dk_pos+shift_to_detector_time,d1.second);
@@ -403,7 +380,7 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
         dgt2.AddTrajectoryPoint(dk_pos+shift_to_detector_time,d2.second);
 
         truth.Add(kaon);
-        truth.Add(scalar);
+        truth.Add(hnl);
         truth.Add(dgt1);
         truth.Add(dgt2);
 
@@ -428,13 +405,13 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::produce(art::Event& e)
   }
 }
 
-void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginJob()
+void hnlgen::HNLGenFromBNBFlux::beginJob()
 {
   fPrevTotPOT = 0.;
   fPrevTotGoodPOT = 0.;
 }
 
-void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginRun(art::Run& r)
+void hnlgen::HNLGenFromBNBFlux::beginRun(art::Run& r)
 {
   art::ServiceHandle<geo::Geometry const> geo;
   r.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
@@ -452,19 +429,20 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginRun(art::Run& r)
   (*mc_config)["lifetime_kaon_0"] = fKinHelper->get_constants().lifetime_kaon_0();
   (*mc_config)["lifetime_kaon_pm"] = fKinHelper->get_constants().lifetime_kaon_pm();
   (*mc_config)["mass_top"] = fKinHelper->get_constants().mass_top();
-  if(fScalarParams == "fixed") {
-    (*mc_config)["model_theta"] = fModelTheta;
-  }
+    (*mc_config)["model_Ue4"] = fModelUe4;
+    (*mc_config)["model_Umu4"] = fModelUmu4;
+    (*mc_config)["model_Utau4"] = fModelUtau4;
+    (*mc_config)["model_majorana"] = fIsMajorana ? 1.:0.;
   r.put(std::move(mc_config),"generatorConfig");
 }
 
-void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginSubRun(art::SubRun& sr)
+void hnlgen::HNLGenFromBNBFlux::beginSubRun(art::SubRun& sr)
 {
   fPrevTotPOT = fFluxHelper->POTSeen(fMaxWeight);
   fPrevTotGoodPOT = fFluxHelper->POTSeen(fMaxWeight);
 }
 
-void hpsgen::HiggsPortalScalarGenFromBNBFlux::endSubRun(art::SubRun& sr)
+void hnlgen::HNLGenFromBNBFlux::endSubRun(art::SubRun& sr)
 {
   auto p = std::make_unique<sumdata::POTSummary>();
   p->totpot = fFluxHelper->POTSeen(fMaxWeight) - fPrevTotPOT;
@@ -474,4 +452,4 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::endSubRun(art::SubRun& sr)
   sr.put(std::move(p));
 }
 
-DEFINE_ART_MODULE(hpsgen::HiggsPortalScalarGenFromBNBFlux)
+DEFINE_ART_MODULE(hnlgen::HNLGenFromBNBFlux)

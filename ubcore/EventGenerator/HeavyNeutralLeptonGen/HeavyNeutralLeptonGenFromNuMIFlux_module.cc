@@ -132,6 +132,11 @@ private:
   double fEventTree_flux_weight;
   double fEventTree_decay_weight;
   double fEventTree_branching_ratio_weight;
+
+  //added by Magnus
+  double fEventTree_time_shift;
+  double fEventTree_unshifted_time;
+
   //int    fEventTree_daughter_pdg;
   int    fEventTree_kaon_pdg;
   bool   fEventTree_selected;
@@ -250,6 +255,11 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   fEventTree->Branch("selected",&fEventTree_selected);
   fEventTree->Branch("kaon_pdg",&fEventTree_kaon_pdg);
 
+  //added by Magnus
+  fEventTree->Branch("time_shift",&fEventTree_time_shift);
+  fEventTree->Branch("unshifted_time",&fEventTree_unshifted_time);
+
+
 
   fSubRunTree = tfs->make<TTree>("subrun_tree","pot counting tree");
   fSubRunTree->Branch("tot_pot",&fSubRunTree_totpot);
@@ -360,7 +370,22 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
         fEventTree_flux_weight = r99->second.Z();
         //const double qq = (fScalarParams == "random" ? model_theta : 0.);
       }
-      TLorentzVector shift_to_detector_time(0.,0.,0.,fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration));
+
+      auto const seed = 123;
+      auto urbg = std::mt19937 {seed};  
+      double const mu = 0.0; 
+      double const sigma = 1.308; //ns
+      auto norm = std::normal_distribution<double>{mu,sigma};
+      auto gauss = norm(urbg);
+      double bunch_spacing = 18.936; //ns
+
+      //std::cout << "fRNG: "<< fRNG << std::endl;
+
+      double time_shift_crude = fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration);
+      double time_shift = ((int) (time_shift_crude / bunch_spacing)) * bunch_spacing;
+      time_shift += gauss;
+
+      TLorentzVector shift_to_detector_time(0.,0.,0.,time_shift);
 
       fEventTree_kaon_mom_x = kaon_4mom.X();
       fEventTree_kaon_mom_y = kaon_4mom.Y();
@@ -390,6 +415,11 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
       fEventTree_daughter1_pdg = d1.first;
       fEventTree_daughter2_pdg = d2.first;
       fEventTree_selected = selected;
+
+      //Added by Magnus
+      fEventTree_time_shift = time_shift;
+      fEventTree_unshifted_time = dk_pos.T();
+
       fEventTree->Fill();
 
       fSubRunTree_n_scalar_decays_in_detector++;
@@ -419,9 +449,15 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
         truth.Add(dgt1);
         truth.Add(dgt2);
 
-        if(fMaxWeight < 0.) {
-          truth.SetNeutrino(0,0,0,0,0,0,fEventTree_weight,fEventTree_decay_weight,fEventTree_branching_ratio_weight,fEventTree_flux_weight);
-        }
+
+
+        //if(fMaxWeight < 0.) {
+          //truth.SetNeutrino(0,0,0,0,0,0,fEventTree_weight,fEventTree_decay_weight,fEventTree_branching_ratio_weight,fEventTree_flux_weight);
+        //}
+
+        //Magnus edit - force hnl to register as a neutrino.
+        truth.SetNeutrino(0,0,0,0,0,0,fEventTree_weight,fEventTree_decay_weight,fEventTree_branching_ratio_weight,fEventTree_flux_weight);
+        
         truth.SetOrigin(simb::kUnknown);
 
         std::unique_ptr< std::vector<simb::MCFlux> > mcfluxcol(new std::vector<simb::MCFlux>(1));
