@@ -4,7 +4,8 @@ add_subdirectory(GENIE)
 add_subdirectory(HepMC)
 add_subdirectory(HeavySterileNeutrino)
 add_subdirectory(HiggsPortalScalarGen)
-add_subdirectory(HeavyNeutralLeptonGen)
+add_subdirectory(HNL)
+
 art_make( BASENAME_ONLY
           MODULE_LIBRARIES 	  		   
 		   larcorealg_Geometry
