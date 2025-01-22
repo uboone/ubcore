@@ -249,8 +249,8 @@ gdmldir	product_dir	gdml
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-lardata		v10_00_02	-
-ubobj		v10_02_02_01	-
+lardata		v10_00_03	-
+ubobj		v10_03_00	-
 cetmodules	v3_24_01	-	only_for_build
 end_product_list
 ####################################
