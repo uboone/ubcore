@@ -13,10 +13,10 @@ namespace pdgcodes {
   const int k_muon = 13;
   const int k_nu_e = 12;
   const int k_nu_mu = 14;
-  const int k_nu_tau = 16;
+  //const int k_nu_tau = 16;
   const int k_pion_0 = 111;
-  const int k_pion_pm = 211;
-  const int k_kaon_0 = 130;
+  //const int k_pion_pm = 211;
+  //const int k_kaon_0 = 130;
   const int k_kaon_pm = 321;
   const int k_HNL_poshel = 91;
   const int k_HNL_neghel = 89;
@@ -669,7 +669,7 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
       : (params.is_Dirac() ? 0.5 : 1.) * params.sum_U2() * gF2
       * std::pow(consts.pion_decay_constant(),2) * std::pow(mN,3) / 16. / M_PI * I1_x0(mpi02/mN2);
     
-    auto gamma_mes_lep = [Vud2=std::pow(consts.ckm_ud(),2),mN,mN2,mN3=mN*mN2,mP2=mpi2,
+    auto gamma_mes_lep = [Vud2=std::pow(consts.ckm_ud(),2),mN2,mN3=mN*mN2,mP2=mpi2,
          fP2=std::pow(consts.pion_decay_constant(),2),I1,gF2]
       (const double U2, const double ml2) {
        return Vud2 * U2 * gF2 * fP2 * mN3 / 16. / M_PI * I1(ml2/mN2,mP2/mN2);
@@ -729,7 +729,7 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
     auto C5_anu = negate_func(C2_anu);
     auto C6_anu = negate_func(C3_anu);
 
-    auto C1_maj = [Ue2,Um2,Ut2,gL,gR,gsum=gL*gL+gR*gR](int neg_type /* 1=elec, 2=mu, 3=tau */, int pos_type) {
+    auto C1_maj = [Ue2,Um2,Ut2,gL,gsum=gL*gL+gR*gR](int neg_type /* 1=elec, 2=mu, 3=tau */, int pos_type) {
       return Ue2*((neg_type==pos_type?gsum:0.) + (neg_type==1?1.:0.)*(1.+(neg_type==pos_type?gL:0.)))
         + Um2*((neg_type==pos_type?gsum:0.) + (neg_type==2?1.:0.)*(1.+(neg_type==pos_type?gL:0.)))
         + Ut2*((neg_type==pos_type?gsum:0.) + (neg_type==3?1.:0.)*(1.+(neg_type==pos_type?gL:0.))); 
@@ -758,7 +758,7 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
     auto make_partial_gamma_nu_lepm_lepp = [gF2,mN,mN2,sqkl1=sqrt_kallen_1](int hel, const double mlm2, const double mlp2, const double C1, const double C2, const double C3, const double C4, const double C5, const double C6) {
       const double xi_p = mlp2/mN2;
       const double xi_m = mlm2/mN2;
-      return [pfac=gF2*std::pow(mN,5)/128./std::pow(M_PI,5),sqkl1,hel,C1,C2,C3,C4,C5,C6,xi_m,xi_p,mN]
+      return [pfac=gF2*std::pow(mN,5)/128./std::pow(M_PI,5),sqkl1,hel,C1,C2,C3,C4,C5,C6,xi_m,xi_p]
         (const double s_nu_m, const double s_nu_p, const double cos_theta_m, const double cos_theta_p) {
           /* These equations changed based on arXiv:2104.05719 */
         const double A0_2 = C1*(s_nu_m)*(1.+xi_p-s_nu_m) + C2*(s_nu_p)*(1+xi_m-s_nu_p) + 2.*C3*std::sqrt(xi_m*xi_p)*(s_nu_m+s_nu_p-xi_m-xi_p);
@@ -922,7 +922,7 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
         return 0.5*(xi0-xi_m)/std::sqrt(xi0);
       };
 
-      auto integrand_fn = [mN,mN2,pdk1,pdk0,xi_p,xi_m,gamma_fn,max_evals,s23weighting]
+      auto integrand_fn = [mN,mN2,pdk1,pdk0,xi_p,xi_m,gamma_fn,s23weighting]
         (double s_nu_lep_neg, double costh_p, double phi_p, double costh_n_rest, double phi_n_rest, bool save_output = true) {
         const double p_pos = mN * pdk1(s_nu_lep_neg);
         const double sinth_p = std::sqrt(1.-costh_p*costh_p);
@@ -1118,7 +1118,7 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
       };
     };
       
-    auto append_decays = [make_partial_gamma_nu_lepm_lepp,make_3body_decay_integrand,make_final_state_function,mN,gF2,print_ratio=params.print_ratio,sw2=sin2_thW,Ue2,Um2,Ut2,mj=params.is_Majorana()]
+    auto append_decays = [make_partial_gamma_nu_lepm_lepp,make_3body_decay_integrand,make_final_state_function,mN,gF2,print_ratio=params.print_ratio,mj=params.is_Majorana()]
       (auto& decayinfo, int hel, int pdgnu, int pdgneg, int pdgpos,
        double mlm2, double mlp2, int flavm, int flavp,
        auto C1, auto C2, auto C3, auto C4, auto C5, auto C6,
@@ -1162,16 +1162,16 @@ void hnlgen::GenKinematics::calculate_branching_ratios(rng& rand) {
           const double i1_43= flavm == flavp ? i1_34
             : std::max(xi1,xi2) < 0.96 ? 1 + 8*xi2*std::pow(-1 + xi1,3) - xi1*(8 + (-8 + xi1)*std::pow(xi1,2)) + 8*std::pow(xi2,3)*(1 + xi1)*(1 + 2*(std::pow(xi1,2) + std::pow(xi1,4))) + (16*std::pow(xi2,5)*std::pow(xi1,2)*(1 + 5*xi1*(1 + xi1*(3 + 7*xi1))))/5. + std::pow(xi2,4)*(-1 + 2*std::pow(xi1,2)*(3 + xi1*(8 + 3*xi1*(5 + 8*xi1)))) + (2*std::pow(xi2,2)*xi1*(-60 + xi1*(-30 + xi1*(40 + xi1*(15 + 8*xi1)))))/5. + 12*std::pow(xi2,2)*(-1 + std::pow(xi1,2))*std::log(xi2) + 12*(-1 + std::pow(xi2,2))*std::pow(xi1,2)*std::log(xi1) : i1_43_fullform
             ;
-          const double i2_34_fullform = flavm == flavp
-            ? 8*xi1*(std::sqrt(1 - 4*xi1)*(1 + (5 - 6*xi1)*xi1) + 6*xi1*(1 + 2*(-1 + xi1)*xi1)*(-2*std::log(1 + std::sqrt(1 - 4*xi1)) + std::log(4*xi1)))
-            : 12*std::sqrt(xi1*xi2)*(-1./3.*((-2 + (-5 + xi1)*xi1 - 5*xi2 + 10*xi1*xi2 + std::pow(xi2,2))*std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2))) + 4*xi1*xi2*(-1 + xi1 + xi2)*acoth((-1 + xi1 + xi2)/std::sqrt(std::pow(xi1,2) + std::pow(-1 + xi2,2) - 2*xi1*(1 + xi2))) + 2*(-xi1 + xi2)*std::atanh(((xi1 - xi2)*std::sqrt(std::pow(xi1,2) + std::pow(-1 + xi2,2) - 2*xi1*(1 + xi2)))/(std::pow(xi1,2) + (-1 + xi2)*xi2 - xi1*(1 + 2*xi2))) + (-xi1 - xi2 + 2*xi1*xi2)*std::log((-1 + xi1 + xi2 - std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2)))/(-1 + xi1 + xi2 + std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2)))));
+          //const double i2_34_fullform = flavm == flavp
+          //  ? 8*xi1*(std::sqrt(1 - 4*xi1)*(1 + (5 - 6*xi1)*xi1) + 6*xi1*(1 + 2*(-1 + xi1)*xi1)*(-2*std::log(1 + std::sqrt(1 - 4*xi1)) + std::log(4*xi1)))
+          //  : 12*std::sqrt(xi1*xi2)*(-1./3.*((-2 + (-5 + xi1)*xi1 - 5*xi2 + 10*xi1*xi2 + std::pow(xi2,2))*std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2))) + 4*xi1*xi2*(-1 + xi1 + xi2)*acoth((-1 + xi1 + xi2)/std::sqrt(std::pow(xi1,2) + std::pow(-1 + xi2,2) - 2*xi1*(1 + xi2))) + 2*(-xi1 + xi2)*std::atanh(((xi1 - xi2)*std::sqrt(std::pow(xi1,2) + std::pow(-1 + xi2,2) - 2*xi1*(1 + xi2)))/(std::pow(xi1,2) + (-1 + xi2)*xi2 - xi1*(1 + 2*xi2))) + (-xi1 - xi2 + 2*xi1*xi2)*std::log((-1 + xi1 + xi2 - std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2)))/(-1 + xi1 + xi2 + std::sqrt(std::pow(-1 + xi1,2) - 2*(1 + xi1)*xi2 + std::pow(xi2,2)))));
           const double i2_34 = flavm == flavp 
             ? (xi1<0.15 ? 8*xi1*((-1 + xi1)*(-1 + 2*xi1*(-2 + xi1 + 5*std::pow(xi1,2))) + 6*xi1*(1 + 2*(-1 + xi1)*xi1)*std::log(xi1))
             : (32*std::pow(1 - 4*xi1,3.5)*(1 + 8*xi1))/105.)
             :4*std::sqrt(xi1*xi2)*(2 + xi1*(3 + (-6 + xi1)*xi1) + 3*xi2 + std::pow(xi1,2)*(-9 + xi1*(4 + xi1))*xi2 + (-6 + xi1*(-9 + 2*xi1*(6 + xi1*(3 + 2*xi1))))*std::pow(xi2,2) + (1 + 2*xi1*(2 + xi1*(3 + xi1*(4 + 5*xi1))))*std::pow(xi2,3) + xi1*(1 + 2*xi1*(2 + 5*xi1*(1 + 2*xi1)))*std::pow(xi2,4) + 6*xi1*(1 + xi2*(-2 + xi1 + xi2))*std::log(xi1) + 6*xi2*(1 + xi1*(-2 + xi1 + xi2))*std::log(xi2))
             ;
           const double calc_gamma_durham = gF2 * std::pow(mN,5) / (192. * M_PI * M_PI * M_PI) * (c1 * i1_34 + c2 * i1_43 + c3 * i2_34); /* FIXME!!!! gamma from equations, not MC integration */
-          [&](){return i1_43_fullform*i2_34_fullform*calc_gamma_durham;};
+          //[&](){return i1_43_fullform*i2_34_fullform*calc_gamma_durham;};
           //const double calc_gamma_durham_fullform = gF2 * std::pow(mN,5) / (192. * M_PI * M_PI * M_PI) * (c1 * i1_34_fullform + c2 * i1_43_fullform + c3 * i2_34_fullform); /* FIXME!!!! gamma from equations, not MC integration */
 
           /*
