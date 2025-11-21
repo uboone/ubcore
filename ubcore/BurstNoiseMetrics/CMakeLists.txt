@@ -5,6 +5,7 @@ cet_build_plugin(
   lardata::AssociationUtil
   lardataobj::RecoBase
   art_root_io::TFileService_service
+  ROOT::Hist
 )
 
 cet_build_plugin(
@@ -14,6 +15,7 @@ cet_build_plugin(
   lardata::AssociationUtil
   lardataobj::RecoBase
   art_root_io::TFileService_service
+  ROOT::Hist
 )
 
 install_headers()
