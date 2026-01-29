@@ -978,29 +978,52 @@ namespace evgen{
 
 
 		//STEP2 Prepare the mother particle, we only need the momentum, p0vec
-		// Choose momentum
+                //Choose mass
+                double m = 0.0;
+                // --- generate m ---
+                if (fMotherMassDist == kGAUS) {
+                  m = gauss.fire(fMotherMass[0], fSigmaMotherMass[0]);
+                }
+                else {
+                  m = fMotherMass[0] + fSigmaMotherMass[0] * (2.0 * flat.fire() - 1.0);
+                }
+
+
+
+                //Choose momentum, but started with Energy
+                double E = 0.0;
 		double p = 0.0;
+                int ntry = 0;
 
-		if (fPDist == kGAUS) {
-			p = abs(gauss.fire(fP0[0], fSigmaP[0]));// CHECK, use absolute value
-		}
-		else if (fPDist == kHIST){
-			p = SelectFromHist(*(hPHist[0]));
-		}
-		else {
-			p = fP0[0] + fSigmaP[0]*(2.0*flat.fire()-1.0);
+                while (ntry < 20) {
+
+                  // --- generate p ---
+                  if (fPDist == kGAUS) {
+                    E = std::abs(gauss.fire(fP0[0], fSigmaP[0]));
+                  }
+                  else if (fPDist == kHIST){
+                    E = SelectFromHist(*(hPHist[0]));
+                  }
+                  else {
+                    E = fP0[0] + fSigmaP[0] * (2.0 * flat.fire() - 1.0);
+                  }
+
+                  // stop if valid
+                  if (E > m){
+                    // correct p (energy -> momentum)
+                    p = std::sqrt(E*E - m*m);
+                    break;
+                  }
+
+                  ++ntry;
 		}
 
-		// Choose mass
-		double m = 0.0;
-		if (fMotherMassDist == kGAUS) {//p1vec[last_index] = p0vec upon initialization;
-			m = gauss.fire(fMotherMass[0], fSigmaMotherMass[0]);
+                // fail if not valid after 20 tries
+                if (ntry == 20) {
+                  std::cout<<"Warning: cannot sample energy satisfied E>m after 20 tries. Skip this particle.\n"<<std::endl;
+                  return;   // or just `return;` depending on function type
 		}
-		else {
-			m = fMotherMass[0] + fSigmaMotherMass[0]*(2.0*flat.fire()-1.0);
-		}
-		//Need to correct p, which was taken as energy
-		p = sqrt(p*p - m*m); 
+
 
 
 		// Choose angles
