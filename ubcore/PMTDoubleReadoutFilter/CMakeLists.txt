@@ -5,6 +5,14 @@ cet_build_plugin(
   lardataobj::RawData
 )
 
+cet_build_plugin(
+  PMTCosmicFilter art::EDProducer
+  LIBRARIES
+  PRIVATE
+  lardataobj::RawData
+)
+
+
 install_headers()
 install_fhicl()
 install_source()
