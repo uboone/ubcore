@@ -87,7 +87,7 @@
 #>  define_pythonpath
 ####################################
 parent		ubcore
-defaultqual	e20
+defaultqual	e26
 ####################################
 
 ####################################
@@ -313,8 +313,8 @@ c7:debug	c7:debug	c7:debug
 c7:prof		c7:prof		c7:prof
 e26:debug       e26:debug       e26:debug
 e26:prof        e26:prof        e26:prof
-e20:debug	e20:debug	e20:debug
-e20:prof	e20:prof	e20:prof
+e28:debug       e28:debug       e28:debug
+e28:prof        e28:prof        e28:prof
 end_qualifier_list
 ####################################
 
